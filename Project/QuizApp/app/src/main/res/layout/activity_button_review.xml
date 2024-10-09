@@ -99,7 +99,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:padding="10dp"
-        android:text="আপনি যে প্রশ্নের উত্তর পর্যালোচনা করতে চান তাতে ক্লিক করুন"
+        android:text="যে প্রশ্নের উত্তর পর্যালোচনা করতে চান, তাতে ক্লিক করুন"
         android:textColor="@color/black"
         android:textSize="15sp"
         android:textStyle="bold">

@@ -12,7 +12,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class ButtonReviewActivity extends AppCompatActivity {
     List<Question> lstQuestion = QuizActivity.questionList;
@@ -78,151 +80,189 @@ public class ButtonReviewActivity extends AppCompatActivity {
         }
     }
 
+    private static final Map<Integer, Integer> VIEW_ID_TO_QUESTION_NUMBER = new HashMap<>();
+
+    static {
+        VIEW_ID_TO_QUESTION_NUMBER.put(R.id.cau1, 1);
+        VIEW_ID_TO_QUESTION_NUMBER.put(R.id.cau2, 2);
+        VIEW_ID_TO_QUESTION_NUMBER.put(R.id.cau3, 3);
+        VIEW_ID_TO_QUESTION_NUMBER.put(R.id.cau4, 4);
+        VIEW_ID_TO_QUESTION_NUMBER.put(R.id.cau5, 5);
+        VIEW_ID_TO_QUESTION_NUMBER.put(R.id.cau6, 6);
+        VIEW_ID_TO_QUESTION_NUMBER.put(R.id.cau7, 7);
+        VIEW_ID_TO_QUESTION_NUMBER.put(R.id.cau8, 8);
+        VIEW_ID_TO_QUESTION_NUMBER.put(R.id.cau9, 9);
+        VIEW_ID_TO_QUESTION_NUMBER.put(R.id.cau10, 10);
+        VIEW_ID_TO_QUESTION_NUMBER.put(R.id.cau11, 11);
+        VIEW_ID_TO_QUESTION_NUMBER.put(R.id.cau12, 12);
+        VIEW_ID_TO_QUESTION_NUMBER.put(R.id.cau13, 13);
+        VIEW_ID_TO_QUESTION_NUMBER.put(R.id.cau14, 14);
+        VIEW_ID_TO_QUESTION_NUMBER.put(R.id.cau15, 15);
+        VIEW_ID_TO_QUESTION_NUMBER.put(R.id.cau16, 16);
+        VIEW_ID_TO_QUESTION_NUMBER.put(R.id.cau17, 17);
+        VIEW_ID_TO_QUESTION_NUMBER.put(R.id.cau18, 18);
+        VIEW_ID_TO_QUESTION_NUMBER.put(R.id.cau19, 19);
+        VIEW_ID_TO_QUESTION_NUMBER.put(R.id.cau20, 20);
+    }
+
     public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.cau1: {
-                Intent intent = new Intent(ButtonReviewActivity.this, ReviewTestActivity.class);
+        Integer questionNumber = VIEW_ID_TO_QUESTION_NUMBER.get(v.getId());
 
-                intent.putExtra("numberQuestion",1);
-                startActivity(intent);
-                break;
-            }
-
-            case R.id.cau2: {
-                Intent intent = new Intent(ButtonReviewActivity.this, ReviewTestActivity.class);
-                intent.putExtra("numberQuestion",2);
-                startActivity(intent);
-                break;
-            }
-
-            case R.id.cau3: {
-                Intent intent = new Intent(ButtonReviewActivity.this, ReviewTestActivity.class);
-                intent.putExtra("numberQuestion",3);
-                startActivity(intent);
-                break;
-            }
-
-            case R.id.cau4: {
-                Intent intent = new Intent(ButtonReviewActivity.this, ReviewTestActivity.class);
-                intent.putExtra("numberQuestion",4);
-                startActivity(intent);
-                break;
-            }
-
-            case R.id.cau5: {
-                Intent intent = new Intent(ButtonReviewActivity.this, ReviewTestActivity.class);
-                intent.putExtra("numberQuestion",5);
-                startActivity(intent);
-                break;
-            }
-
-            case R.id.cau6: {
-                Intent intent = new Intent(ButtonReviewActivity.this, ReviewTestActivity.class);
-                intent.putExtra("numberQuestion",6);
-                startActivity(intent);
-                break;
-            }
-
-            case R.id.cau7: {
-                Intent intent = new Intent(ButtonReviewActivity.this, ReviewTestActivity.class);
-                intent.putExtra("numberQuestion",7);
-                startActivity(intent);
-                break;
-            }
-
-            case R.id.cau8: {
-                Intent intent = new Intent(ButtonReviewActivity.this, ReviewTestActivity.class);
-                intent.putExtra("numberQuestion",8);
-                startActivity(intent);
-                break;
-            }
-
-            case R.id.cau9: {
-                Intent intent = new Intent(ButtonReviewActivity.this, ReviewTestActivity.class);
-                intent.putExtra("numberQuestion",9);
-                startActivity(intent);
-                break;
-            }
-
-            case R.id.cau10: {
-                Intent intent = new Intent(ButtonReviewActivity.this, ReviewTestActivity.class);
-                intent.putExtra("numberQuestion",10);
-                startActivity(intent);
-                break;
-            }
-
-            case R.id.cau11: {
-                Intent intent = new Intent(ButtonReviewActivity.this, ReviewTestActivity.class);
-                intent.putExtra("numberQuestion",11);
-                startActivity(intent);
-                break;
-            }
-
-            case R.id.cau12: {
-                Intent intent = new Intent(ButtonReviewActivity.this, ReviewTestActivity.class);
-                intent.putExtra("numberQuestion",12);
-                startActivity(intent);
-                break;
-            }
-
-            case R.id.cau13: {
-                Intent intent = new Intent(ButtonReviewActivity.this, ReviewTestActivity.class);
-                intent.putExtra("numberQuestion",13);
-                startActivity(intent);
-                break;
-            }
-
-            case R.id.cau14: {
-                Intent intent = new Intent(ButtonReviewActivity.this, ReviewTestActivity.class);
-                intent.putExtra("numberQuestion",14);
-                startActivity(intent);
-                break;
-            }
-
-            case R.id.cau15: {
-                Intent intent = new Intent(ButtonReviewActivity.this, ReviewTestActivity.class);
-                intent.putExtra("numberQuestion",15);
-                startActivity(intent);
-                break;
-            }
-
-            case R.id.cau16: {
-                Intent intent = new Intent(ButtonReviewActivity.this, ReviewTestActivity.class);
-                intent.putExtra("numberQuestion",16);
-                startActivity(intent);
-                break;
-            }
-
-            case R.id.cau17: {
-                Intent intent = new Intent(ButtonReviewActivity.this, ReviewTestActivity.class);
-                intent.putExtra("numberQuestion",17);
-                startActivity(intent);
-                break;
-            }
-
-            case R.id.cau18: {
-                Intent intent = new Intent(ButtonReviewActivity.this, ReviewTestActivity.class);
-                intent.putExtra("numberQuestion",18);
-                startActivity(intent);
-                break;
-            }
-            case R.id.cau19: {
-                Intent intent = new Intent(ButtonReviewActivity.this, ReviewTestActivity.class);
-                intent.putExtra("numberQuestion",19);
-                startActivity(intent);
-                break;
-            }
-            case R.id.cau20: {
-                Intent intent = new Intent(ButtonReviewActivity.this, ReviewTestActivity.class);
-                intent.putExtra("numberQuestion",20);
-                startActivity(intent);
-                break;
-            }
-
-            default: {
-                Toast.makeText(ButtonReviewActivity.this, "Chua biet", Toast.LENGTH_SHORT).show();
-                break;
-            }
+        if (questionNumber != null) {
+            Intent intent = new Intent(ButtonReviewActivity.this, ReviewTestActivity.class);
+            intent.putExtra("numberQuestion", questionNumber);
+            startActivity(intent);
+        } else {
+            Toast.makeText(ButtonReviewActivity.this, "Chua biet", Toast.LENGTH_SHORT).show();
         }
     }
+
+
+//    public void onClick(View v) {
+//        switch (v.getId()) {
+//            case R.id.cau1: {
+//                Intent intent = new Intent(ButtonReviewActivity.this, ReviewTestActivity.class);
+//
+//                intent.putExtra("numberQuestion",1);
+//                startActivity(intent);
+//                break;
+//            }
+//
+//            case R.id.cau2: {
+//                Intent intent = new Intent(ButtonReviewActivity.this, ReviewTestActivity.class);
+//                intent.putExtra("numberQuestion",2);
+//                startActivity(intent);
+//                break;
+//            }
+//
+//            case R.id.cau3: {
+//                Intent intent = new Intent(ButtonReviewActivity.this, ReviewTestActivity.class);
+//                intent.putExtra("numberQuestion",3);
+//                startActivity(intent);
+//                break;
+//            }
+//
+//            case R.id.cau4: {
+//                Intent intent = new Intent(ButtonReviewActivity.this, ReviewTestActivity.class);
+//                intent.putExtra("numberQuestion",4);
+//                startActivity(intent);
+//                break;
+//            }
+//
+//            case R.id.cau5: {
+//                Intent intent = new Intent(ButtonReviewActivity.this, ReviewTestActivity.class);
+//                intent.putExtra("numberQuestion",5);
+//                startActivity(intent);
+//                break;
+//            }
+//
+//            case R.id.cau6: {
+//                Intent intent = new Intent(ButtonReviewActivity.this, ReviewTestActivity.class);
+//                intent.putExtra("numberQuestion",6);
+//                startActivity(intent);
+//                break;
+//            }
+//
+//            case R.id.cau7: {
+//                Intent intent = new Intent(ButtonReviewActivity.this, ReviewTestActivity.class);
+//                intent.putExtra("numberQuestion",7);
+//                startActivity(intent);
+//                break;
+//            }
+//
+//            case R.id.cau8: {
+//                Intent intent = new Intent(ButtonReviewActivity.this, ReviewTestActivity.class);
+//                intent.putExtra("numberQuestion",8);
+//                startActivity(intent);
+//                break;
+//            }
+//
+//            case R.id.cau9: {
+//                Intent intent = new Intent(ButtonReviewActivity.this, ReviewTestActivity.class);
+//                intent.putExtra("numberQuestion",9);
+//                startActivity(intent);
+//                break;
+//            }
+//
+//            case R.id.cau10: {
+//                Intent intent = new Intent(ButtonReviewActivity.this, ReviewTestActivity.class);
+//                intent.putExtra("numberQuestion",10);
+//                startActivity(intent);
+//                break;
+//            }
+//
+//            case R.id.cau11: {
+//                Intent intent = new Intent(ButtonReviewActivity.this, ReviewTestActivity.class);
+//                intent.putExtra("numberQuestion",11);
+//                startActivity(intent);
+//                break;
+//            }
+//
+//            case R.id.cau12: {
+//                Intent intent = new Intent(ButtonReviewActivity.this, ReviewTestActivity.class);
+//                intent.putExtra("numberQuestion",12);
+//                startActivity(intent);
+//                break;
+//            }
+//
+//            case R.id.cau13: {
+//                Intent intent = new Intent(ButtonReviewActivity.this, ReviewTestActivity.class);
+//                intent.putExtra("numberQuestion",13);
+//                startActivity(intent);
+//                break;
+//            }
+//
+//            case R.id.cau14: {
+//                Intent intent = new Intent(ButtonReviewActivity.this, ReviewTestActivity.class);
+//                intent.putExtra("numberQuestion",14);
+//                startActivity(intent);
+//                break;
+//            }
+//
+//            case R.id.cau15: {
+//                Intent intent = new Intent(ButtonReviewActivity.this, ReviewTestActivity.class);
+//                intent.putExtra("numberQuestion",15);
+//                startActivity(intent);
+//                break;
+//            }
+//
+//            case R.id.cau16: {
+//                Intent intent = new Intent(ButtonReviewActivity.this, ReviewTestActivity.class);
+//                intent.putExtra("numberQuestion",16);
+//                startActivity(intent);
+//                break;
+//            }
+//
+//            case R.id.cau17: {
+//                Intent intent = new Intent(ButtonReviewActivity.this, ReviewTestActivity.class);
+//                intent.putExtra("numberQuestion",17);
+//                startActivity(intent);
+//                break;
+//            }
+//
+//            case R.id.cau18: {
+//                Intent intent = new Intent(ButtonReviewActivity.this, ReviewTestActivity.class);
+//                intent.putExtra("numberQuestion",18);
+//                startActivity(intent);
+//                break;
+//            }
+//            case R.id.cau19: {
+//                Intent intent = new Intent(ButtonReviewActivity.this, ReviewTestActivity.class);
+//                intent.putExtra("numberQuestion",19);
+//                startActivity(intent);
+//                break;
+//            }
+//            case R.id.cau20: {
+//                Intent intent = new Intent(ButtonReviewActivity.this, ReviewTestActivity.class);
+//                intent.putExtra("numberQuestion",20);
+//                startActivity(intent);
+//                break;
+//            }
+//
+//            default: {
+//                Toast.makeText(ButtonReviewActivity.this, "Chua biet", Toast.LENGTH_SHORT).show();
+//                break;
+//            }
+//        }
+//    }
 }
