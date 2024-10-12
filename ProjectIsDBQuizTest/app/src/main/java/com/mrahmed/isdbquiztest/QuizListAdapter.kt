@@ -9,14 +9,15 @@ import com.mrahmed.isdbquiztest.databinding.QuizItemRecyclerRowBinding
 class QuizListAdapter(private val quizModelList: List<QuizModel>) : RecyclerView.Adapter<QuizListAdapter.MyViewHolder>() {
 
     class MyViewHolder(private val binding: QuizItemRecyclerRowBinding) : RecyclerView.ViewHolder(binding.root){
-        fun bind(quizModel: QuizModel){
+        fun bind(model: QuizModel){
             binding.apply {
-                quizTitleText.text = quizModel.title
-                quizSubtitleText.text = quizModel.subtitle
-                quizTimeText.text = quizModel.time + " min"
+                quizTitleText.text = model.title
+                quizSubtitleText.text = model.subtitle
+                quizTimeText.text = model.time + " min"
                 root.setOnClickListener{
                     val intent = Intent(root.context, QuizActivity::class.java)
-                    QuizActivity.questionModelList = quizModel.questionList
+                    QuizActivity.questionModelList = model.questionList
+                    QuizActivity.time = model.time
                     root.context.startActivity(intent)
                 }
             }

@@ -6,6 +6,7 @@ data class QuizModel(
     val subtitle: String,
     val time: String,
     val questionList: List<QuestionModel>
+    
 )
 {
     constructor(): this("", "", "",  "", emptyList())
