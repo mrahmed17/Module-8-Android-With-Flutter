@@ -5,16 +5,13 @@ import android.os.CountDownTimer
 import android.util.Log
 import android.view.View
 import android.widget.Button
-import androidx.activity.enableEdgeToEdge
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
-import com.mrahmed.isdbquiztest.QuizActivity.Companion.questionModelList
 import com.mrahmed.isdbquiztest.databinding.ActivityQuizBinding
 import com.mrahmed.isdbquiztest.databinding.ScoreDialogBinding
 
-class QuizActivity : AppCompatActivity(), View.OnClickListener {
+class QuizActivity : AppCompatActivity(),View.OnClickListener {
 
     companion object {
         var questionModelList: List<QuestionModel> = listOf()
@@ -61,16 +58,16 @@ class QuizActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     private fun loadQuestions(){
-
+        selectedAnswer = ""
         if(currentQuestionIndex == questionModelList.size){
-            selectedAnswer = ""
             finishQuiz()
             return
         }
 
         binding.apply {
             questionIndicatorTextview.text = "Question ${currentQuestionIndex+1}/ ${questionModelList.size}"
-            questionProgressIndicator.progress = (currentQuestionIndex.toFloat()/questionModelList.size.toFloat()* 100).toInt()
+            questionProgressIndicator.progress =
+                (currentQuestionIndex.toFloat()/questionModelList.size.toFloat()* 100).toInt()
             questionTextview.text = questionModelList[currentQuestionIndex].question
             btn0.text= questionModelList[currentQuestionIndex].options[0]
             btn1.text= questionModelList[currentQuestionIndex].options[1]
@@ -88,8 +85,12 @@ class QuizActivity : AppCompatActivity(), View.OnClickListener {
         }
 
         val clickedBtn = view as Button
-        if (clickedBtn.id == R.id.nextBtn){
+        if (clickedBtn.id == R.id.next_btn){
             //next button is clicked
+            if (selectedAnswer.isEmpty()){
+                Toast.makeText(applicationContext, "Please select an answer to continue", Toast.LENGTH_SHORT).show()
+            return
+            }
             if(selectedAnswer == questionModelList[currentQuestionIndex].correct){
                 score++
                 Log.i("Score of quiz", score.toString())
@@ -112,7 +113,17 @@ class QuizActivity : AppCompatActivity(), View.OnClickListener {
         dialogBinding.apply {
             scoreProgressIndicator.progress = percentage
             scoreProgressText.text = "$percentage%"
-            if (percentage>60){
+            if (percentage>99){
+                scoreTitle.text = "Wow! You are a genius"
+                scoreTitle.setTextColor(getColor(R.color.peach))
+            }
+            else if (percentage>80){
+                scoreTitle.text = "Congrats! You are a brilliant student"
+                scoreTitle.setTextColor(getColor(R.color.green))
+            } else if (percentage>60){
+                scoreTitle.text = "Congrats! You are a medium level student"
+                scoreTitle.setTextColor(getColor(R.color.green))
+            } else if (percentage>30) {
                 scoreTitle.text = "Congrats! You have passed"
                 scoreTitle.setTextColor(getColor(R.color.green))
             } else {

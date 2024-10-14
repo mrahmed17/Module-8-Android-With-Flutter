@@ -29,7 +29,7 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:letterSpacing="0.1"
-            android:text="@string/app_name"
+            android:text="Quiz Test"
             android:textColor="@color/white"
             android:textSize="34sp"
             android:textStyle="bold" />
@@ -60,6 +60,12 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
+        <ProgressBar
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_centerInParent="true"
+            android:visibility="gone"
+            android:id="@+id/progress_bar"/>
 
         <androidx.recyclerview.widget.RecyclerView
             android:layout_width="match_parent"

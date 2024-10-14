@@ -127,7 +127,7 @@
                 android:textStyle="bold" />
 
             <Button
-                android:id="@+id/nextBtn"
+                android:id="@+id/next_btn"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_marginVertical="4dp"

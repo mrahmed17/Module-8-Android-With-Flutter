@@ -58,7 +58,10 @@ dependencies {
     debugImplementation libs.androidx.ui.tooling
     debugImplementation libs.androidx.ui.test.manifest
 
+    //for image sdp (Scalable Density Pixel)
     implementation 'com.intuit.sdp:sdp-android:1.1.1'
+
+    //for font ssp (Scalable Size Pixel)
     implementation 'com.intuit.ssp:ssp-android:1.1.1'
 
 
