@@ -15,15 +15,29 @@ class MainActivity : AppCompatActivity() {
     lateinit var binding: ActivityMainBinding
     lateinit var quizModelList: MutableList<QuizModel>
     lateinit var adapter: QuizListAdapter
+    private lateinit var auth: FirebaseAuth
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        quizModelList = mutableListOf()
-        getDataFromFirebase()
+        // Initialize Firebase Auth
+        auth = FirebaseAuth.getInstance()
 
+        // Check if the user is logged in
+        if (auth.currentUser == null) {
+            // If not logged in, redirect to LoginActivity
+            val intent = Intent(this, LoginActivity::class.java)
+            startActivity(intent)
+            finish()
+            return
+        }
+
+        // Redirect to HomeActivity instead of MainActivity if logged in
+        val intent = Intent(this, HomeActivity::class.java)
+        startActivity(intent)
+        finish()
     }
 
 

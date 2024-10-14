@@ -29,6 +29,14 @@ class QuizActivity : AppCompatActivity() ,View.OnClickListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        // Check if the user is logged in
+        if (FirebaseAuth.getInstance().currentUser == null) {
+            val intent = Intent(this, LoginActivity::class.java)
+            startActivity(intent)
+            finish()
+            return
+        }
+
         binding = ActivityQuizBinding.inflate(layoutInflater)
         setContentView(binding.root)
         binding.apply {
@@ -42,7 +50,6 @@ class QuizActivity : AppCompatActivity() ,View.OnClickListener {
         loadQuestions()
         startTimer()
     }
-
     private fun startTimer(){
         val totalTimeInMillis = time.toInt() * 60 * 1000L
         object : CountDownTimer (totalTimeInMillis, 1000L){
