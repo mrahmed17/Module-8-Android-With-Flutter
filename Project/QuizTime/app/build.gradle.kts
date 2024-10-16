@@ -46,12 +46,12 @@ dependencies {
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
     implementation(libs.androidx.activity)
-    implementation(libs.androidx.constraintlayout)
+//    implementation(libs.androidx.constraintlayout)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
 
-
+    implementation("androidx.constraintlayout:constraintlayout:2.1.4")
     implementation ("com.github.ismaeldivita:chip-navigation-bar:1.4.0")
     implementation ("com.github.bumptech.glide:glide:4.12.0")
 }
