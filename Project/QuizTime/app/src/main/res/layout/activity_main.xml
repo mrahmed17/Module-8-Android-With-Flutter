@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/gray"
-    tools:context=".MainActivity">
+    tools:context=".Activity.MainActivity">
 
     <ScrollView
         android:id="@+id/scrollView2"
@@ -82,7 +82,7 @@
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="145dp"
+                android:layout_height="130dp"
                 android:layout_margin="24dp"
                 android:orientation="horizontal">
 

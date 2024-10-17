@@ -1,4 +1,4 @@
-package com.mrahmed.quiztime
+package com.mrahmed.quiztime.Activity
 
 import android.os.Bundle
 import android.view.Window
@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import com.mrahmed.quiztime.R
 import com.mrahmed.quiztime.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
@@ -23,6 +24,6 @@ class MainActivity : AppCompatActivity() {
             insets
         }
         val window: Window=this@MainActivity.window
-        window.statusBarColor= ContextCompat.getColor(this@MainActivity,R.color.gray)
+        window.statusBarColor= ContextCompat.getColor(this@MainActivity, R.color.gray)
     }
 }
