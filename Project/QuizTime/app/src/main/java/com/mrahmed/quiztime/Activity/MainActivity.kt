@@ -1,5 +1,6 @@
 package com.mrahmed.quiztime.Activity
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.Window
 import androidx.activity.enableEdgeToEdge
@@ -25,5 +26,15 @@ class MainActivity : AppCompatActivity() {
         }
         val window: Window=this@MainActivity.window
         window.statusBarColor= ContextCompat.getColor(this@MainActivity, R.color.gray)
+
+        binding.apply {
+            bottomMenu.setItemSelected(R.id.home)
+            bottomMenu.setOnItemSelectedListener {
+                if (it==R.id.home){
+                    startActivity(Intent(this@MainActivity, LeaderActivity::class.java))
+                }
+            }
+        }
+
     }
 }
