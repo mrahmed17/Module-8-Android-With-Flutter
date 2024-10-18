@@ -1,5 +1,6 @@
 package com.mrahmed.quiztime.Activity
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.Window
 import androidx.activity.enableEdgeToEdge
@@ -15,15 +16,20 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
-        }
+
         val window: Window=this@MainActivity.window
         window.statusBarColor= ContextCompat.getColor(this@MainActivity, R.color.gray)
+
+        binding.apply {
+            bottomMenu.setItemSelected(R.id.home)
+            bottomMenu.setOnItemSelectedListener {
+                if (it==R.id.home){
+                    startActivity(Intent(this@MainActivity, LeaderActivity::class.java))
+                }
+            }
+        }
     }
+    private fun questionList(): MutableList<QuestionMo>
 }
