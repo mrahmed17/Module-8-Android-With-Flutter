@@ -99,7 +99,6 @@ class QuestionAdapter(
                         R.color.white
                     )
                 )
-
                 val drawable = ContextCompact.getDrawable(binding.root.context, R.drawable.thievea)
                 binding.answerTxt.setCompoundDrawablesRelativeWithIntrinsicBounds(
                     null,
@@ -111,27 +110,30 @@ class QuestionAdapter(
 
         }
         if (position == 4) {
-            binding.root.visibility= View.GONE
+            binding.root.visibility = View.GONE
         }
         holder.itemView.setOnClickListener {
-            var str=""
+            var str = ""
             when (position) {
                 0 -> {
                     str = "a"
                 }
+
                 1 -> {
                     str = "b"
                 }
+
                 2 -> {
                     str = "c"
                 }
+
                 3 -> {
                     str = "d"
                 }
             }
-            users.add(4, str){}
-        notifyDataSetChanged()
-            if (correctPos == position){
+            users.add(4, str) {}
+            notifyDataSetChanged()
+            if (correctPos == position) {
                 binding.answerTxt.setBackgroundResource(R.drawable.green_background)
                 binding.answerTxt.setTextColor(
                     ContextCompact.getCcolor(
@@ -139,7 +141,6 @@ class QuestionAdapter(
                         R.color.white
                     )
                 )
-
                 val drawable = ContextCompact.getDrawable(binding.root.context, R.drawable.tick)
                 binding.answerTxt.setCompoundDrawablesRelativeWithIntrinsicBounds(
                     null,
@@ -147,8 +148,7 @@ class QuestionAdapter(
                     drawable,
                     null
                 )
-            }
-            else{
+            } else {
                 binding.answerTxt.setBackgroundResource(R.drawable.red_background)
                 binding.answerTxt.setTextColor(
                     ContextCompact.getCcolor(
@@ -164,10 +164,10 @@ class QuestionAdapter(
                     drawable,
                     null
                 )
-                returnScore.amount(0,str)
+                returnScore.amount(0, str)
             }
         }
-        if (differ.currentList.size=5) holder.itemView.setOnClickListener (null)
+        if (differ.currentList.size = 5) holder.itemView.setOnClickListener(null)
     }
 
     override fun getItemCount(): differ.currentList.size
@@ -182,10 +182,6 @@ class QuestionAdapter(
         override fun areItemsTheSame(oldItem: String, newItem: String): Boolean {
             return oldItem == newItem
         }
-
     }
-
     val differ = AsyncListDiffer(this, differCallback)
-
-
 }
