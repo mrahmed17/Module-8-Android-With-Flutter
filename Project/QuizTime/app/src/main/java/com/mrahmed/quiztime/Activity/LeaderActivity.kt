@@ -8,6 +8,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.mrahmed.quiztime.Activity.MainActivity
 import com.mrahmed.quiztime.Domain.UserModel
@@ -15,18 +16,18 @@ import com.mrahmed.quiztime.R
 import com.mrahmed.quiztime.databinding.ActivityLeaderBinding
 
 class LeaderActivity : AppCompatActivity() {
-    lateinit var bindiing: ActivityLeaderBinding
-    private val leaderAdapter by lazy { LeaderAdapter() }
+    lateinit var binding: ActivityLeaderBinding
+    private val leaderAdapter by lazy {LeaderAdapter()}
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        bindiing = ActivityLeaderBinding.inflate(layoutInflater)
-        setContentView(bindiing.root)
+        binding = ActivityLeaderBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         val window: Window = this@LeaderActivity.window
         window.statusBarColor = ContextCompat.getColor(this@LeaderActivity, R.color.gray)
 
-        bindiing.apply {
+        binding.apply {
             scoreTop1Txt.text = loadData().get(0).score.toString()
             scoreTop2Txt.text = loadData().get(1).score.toString()
             scoreTop3Txt.text = loadData().get(2).score.toString()
@@ -34,30 +35,29 @@ class LeaderActivity : AppCompatActivity() {
             titleTop2Txt.text = loadData().get(1).name
             titleTop3Txt.text = loadData().get(2).name
 
-            val drawableResourceId1: Int = bindiing.root.resources.getIdentifier(
-                loadData().get(0).pic, "drawable", bindiing.root.context.packageName
+            val drawableResourceId1: Int = binding.root.resources.getIdentifier(
+                loadData().get(0).pic, "drawable", binding.root.context.packageName
             )
 
             Glide.with(root.context)
                 .load(drawableResourceId1)
                 .into(pic1)
 
-            val drawableResourceId2: Int = bindiing.root.resources.getIdentifier(
-                loadData().get(1).pic, "drawable", bindiing.root.context.packageName
+            val drawableResourceId2: Int = binding.root.resources.getIdentifier(
+                loadData().get(1).pic, "drawable", binding.root.context.packageName
             )
 
             Glide.with(root.context)
                 .load(drawableResourceId2)
                 .into(pic2)
 
-            val drawableResourceId3: Int = bindiing.root.resources.getIdentifier(
-                loadData().get(2).pic, "drawable", bindiing.root.context.packageName
+            val drawableResourceId3: Int = binding.root.resources.getIdentifier(
+                loadData().get(2).pic, "drawable", binding.root.context.packageName
             )
 
             Glide.with(root.context)
                 .load(drawableResourceId3)
                 .into(pic3)
-
 
             bottomMenu.setItemSelected(R.id.board) {
                 bottomMenu.setOnItemSelectedListener {

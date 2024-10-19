@@ -11,7 +11,7 @@ data class QuestionModel(
     val options2: String?,
     val options3: String?,
     val options4: String?,
-    val scrore: Int,
+    val score: Int,
     val picPath: String?,
     val clickedAnswer: String?
 ) : Parcelable {
@@ -39,7 +39,7 @@ data class QuestionModel(
         parcel.writeString(options2)
         parcel.writeString(options3)
         parcel.writeString(options4)
-        parcel.writeInt(scrore)
+        parcel.writeInt(score)
         parcel.writeString(picPath)
         parcel.writeString(clickedAnswer)
     }

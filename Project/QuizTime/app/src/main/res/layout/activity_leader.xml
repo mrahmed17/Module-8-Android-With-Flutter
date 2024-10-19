@@ -319,17 +319,20 @@
 
 
     <com.ismaeldivita.chipnavigation.ChipNavigationBar
-        android:id="@+id/menu"
+        android:id="@+id/bottomMenu"
         android:layout_width="match_parent"
         android:layout_height="70dp"
+        android:background="@color/white"
+        app:cnb_animationDuration="175"
+        app:cnb_backgroundColor="@color/orange"
+        app:cnb_iconColor="@color/orange"
         app:cnb_iconSize="20dp"
         app:cnb_menuResource="@menu/bottom_menu"
         app:cnb_orientationMode="horizontal"
         app:cnb_radius="50dp"
-        app:cnb_animationDuration="175"
-        android:background="@color/white"
         app:cnb_unselectedColor="#757575"
         app:layout_constraintBottom_toBottomOf="parent"
-        />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
