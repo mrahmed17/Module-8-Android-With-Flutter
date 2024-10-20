@@ -1,17 +1,17 @@
-package com.mrahmed.quiztime.Adapter;
+package com.mrahmed.itsquiztime.Adapter;
 
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.AsyncListDiffer;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
-import com.mrahmed.quiztime.Domain.QuestionModel;
-import com.mrahmed.quiztime.Domain.UserModel;
-import com.mrahmed.quiztime.R;
-import com.mrahmed.quiztime.databinding.ViewholderQuestionBinding;
-import androidx.core.content.ContextCompat;
-import android.graphics.Color;
+
+import com.mrahmed.itsquiztime.R;
+import com.mrahmed.itsquiztime.databinding.ViewholderQuestionBinding;
 
 import java.util.ArrayList;
 import java.util.List;
