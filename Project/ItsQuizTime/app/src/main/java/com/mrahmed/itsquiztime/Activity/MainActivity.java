@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.view.Window;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
-import com.ismaeldivita.chipnavigation.ChipNavigationBar;
 import com.mrahmed.itsquiztime.Domain.QuestionModel;
 import com.mrahmed.itsquiztime.R;
 import com.mrahmed.itsquiztime.databinding.ActivityMainBinding;
@@ -25,10 +24,8 @@ public class MainActivity extends AppCompatActivity {
         Window window = this.getWindow();
         window.setStatusBarColor(ContextCompat.getColor(this, R.color.gray));
 
-        // Set the selected item in the ChipNavigationBar
         binding.bottomMenu.setItemSelected(R.id.home, true);
 
-        // Set the listener for item selection
         binding.bottomMenu.setOnItemSelectedListener(new ChipNavigationBar.OnItemSelectedListener() {
             @Override
             public void onItemSelected(int id) {

@@ -24,7 +24,6 @@ public class LeaderActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         binding = ActivityLeaderBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-
         leaderAdapter = new LeaderAdapter();
 
         Window window = this.getWindow();

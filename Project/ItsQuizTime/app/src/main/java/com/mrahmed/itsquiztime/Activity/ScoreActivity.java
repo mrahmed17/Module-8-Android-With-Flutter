@@ -3,8 +3,13 @@ package com.mrahmed.itsquiztime.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 
+import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 
+import com.mrahmed.itsquiztime.R;
 import com.mrahmed.itsquiztime.databinding.ActivityScoreBinding;
 
 public class ScoreActivity extends AppCompatActivity {
