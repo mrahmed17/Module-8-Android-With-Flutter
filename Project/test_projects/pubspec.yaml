@@ -50,6 +50,10 @@ dev_dependencies:
   date_field: ^5.3.0
   http: ^1.2.2
 
+#  for  secure login and logout and signup
+  flutter_secure_storage: ^7.0.1
+  jwt_decode: ^0.3.1
+#  jwt_decoder: ^2.0.1
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

@@ -261,7 +261,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                         MaterialPageRoute(builder: (context) => LoginPage()),
                       );
                     }, child: Text("Login", style: TextStyle(
-                  color: Colors.cyanAccent,
+                  color: Colors.green,
                   decoration: TextDecoration.underline,
                 ),))
               ],
