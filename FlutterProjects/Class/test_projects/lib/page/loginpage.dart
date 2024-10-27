@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:test_projects/page/all_hotel_view_page.dart';
 import 'package:test_projects/page/homepage.dart';
 import 'package:test_projects/page/registrationpage.dart';
 import 'dart:convert';
@@ -39,7 +40,8 @@ class LoginPage extends StatelessWidget {
 
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => HomePage()),
+        // MaterialPageRoute(builder: (context) => HomePage()),
+        MaterialPageRoute(builder: (context) => AllHotelViewPage()),
       );
 
     } else {

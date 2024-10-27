@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:test_projects/page/all_hotel_view_page.dart';
 import 'package:test_projects/page/loginpage.dart';
 import 'package:test_projects/page/registrationpage.dart';
 
@@ -14,7 +15,8 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: RegistrationPage(),
+      home: AllHotelViewPage(),
+      // home: RegistrationPage(),
       // home: LoginPage(),
       title: 'My first app',
       // theme: ThemeData(fontFamily: 'Raleway'),
