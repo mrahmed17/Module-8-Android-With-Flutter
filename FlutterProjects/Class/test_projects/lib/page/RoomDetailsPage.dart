@@ -6,7 +6,7 @@ import 'package:test_projects/services/room_service.dart';
 class RoomDetailsPage extends StatefulWidget {
   final Hotel hotel;
 
-  RoomDetailsPage({required this.hotel});
+  const RoomDetailsPage({super.key, required this.hotel});
 
   @override
   State<RoomDetailsPage> createState() => _RoomDetailsPageState();
@@ -98,7 +98,7 @@ class _RoomDetailsPageState extends State<RoomDetailsPage> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      'Price: \$${room.price?.toStringAsFixed(2)}\n'
+                                      'Price: \$${room.price.toStringAsFixed(2)}\n'
                                       'Area: ${room.area} sq. ft.\n'
                                       'Adults: ${room.adultNo}, Children: ${room.childNo}\n'
                                       'Availability: ${room.availability ? "Available" : "Not available"}',

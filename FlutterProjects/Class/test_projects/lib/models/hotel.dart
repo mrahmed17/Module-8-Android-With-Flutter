@@ -29,21 +29,21 @@ class Hotel {
     maxPrice = json['maxPrice'];
     image = json['image'];
     location = json['location'] != null
-        ? new Location.fromJson(json['location'])
+        ? Location.fromJson(json['location'])
         : null;
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    data['name'] = this.name;
-    data['address'] = this.address;
-    data['rating'] = this.rating;
-    data['minPrice'] = this.minPrice;
-    data['maxPrice'] = this.maxPrice;
-    data['image'] = this.image;
-    if (this.location != null) {
-      data['location'] = this.location!.toJson();
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['id'] = id;
+    data['name'] = name;
+    data['address'] = address;
+    data['rating'] = rating;
+    data['minPrice'] = minPrice;
+    data['maxPrice'] = maxPrice;
+    data['image'] = image;
+    if (location != null) {
+      data['location'] = location!.toJson();
     }
     return data;
   }

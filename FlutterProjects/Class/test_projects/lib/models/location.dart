@@ -1,7 +1,7 @@
 class Location {
   int? id;
   String? name;
-  Null? image;
+  Null image;
 
   Location({this.id, this.name, this.image});
 
@@ -12,10 +12,10 @@ class Location {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    data['name'] = this.name;
-    data['image'] = this.image;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['id'] = id;
+    data['name'] = name;
+    data['image'] = image;
     return data;
   }
 }

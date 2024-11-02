@@ -1,57 +1,96 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:test_projects/page/AdminPage.dart';
+import 'package:test_projects/page/HotelProfilePage.dart';
 import 'package:test_projects/page/all_hotel_view_page.dart';
-import 'package:test_projects/page/homepage.dart';
 import 'package:test_projects/page/registrationpage.dart';
-import 'dart:convert';
-import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:jwt_decode/jwt_decode.dart';
-
+import 'package:test_projects/services/AuthService.dart';
 
 class LoginPage extends StatelessWidget {
   final TextEditingController email = TextEditingController();
   final TextEditingController password = TextEditingController();
-  final storage = new FlutterSecureStorage();
+  final storage = FlutterSecureStorage();
+  AuthService authService = AuthService();
+
+  LoginPage({super.key});
 
   Future<void> loginUser(BuildContext context) async {
-    final url = Uri.parse('http://localhost:8080/login');
-    final response = await http.post(
-      url,
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({'email': email.text, 'password': password.text}),
-    );
+    try {
+      final response = await authService.login(email.text, password.text);
 
-    if (response.statusCode == 200) {
-      final responseData = jsonDecode(response.body);
-      final token = responseData['token'];
+      //successful login, role-based navigation
+      final role = await authService.getUserRole(); //get role from authService
 
-      // Decode JWT to get 'sub' and 'role'
-      Map<String, dynamic> payload = Jwt.parseJwt(token);
-      String sub = payload['sub'];
-      String role = payload['role'];
-
-      // Store token, sub, and role securely
-      await storage.write(key: 'token', value: token);
-      await storage.write(key: 'sub', value: sub);
-      await storage.write(key: 'role', value: role);
-
-      print('Login successful. Sub: $sub, Role: $role');
-
-      Navigator.push(
-        context,
-        // MaterialPageRoute(builder: (context) => HomePage()),
-        MaterialPageRoute(builder: (context) => AllHotelViewPage()),
-      );
-
-    } else {
-      print('Login failed with status: ${response.statusCode}');
+      if (role == 'ADMIN') {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => AdminPage()),
+        );
+      } else if (role == 'HOTEL') {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => HotelProfilePage(
+              hotelName: "Grand Plaza",
+              hotelImageUrl: "http://localhost:8080/images/hotel/The *****",
+              address: '123 Main St, CityVally',
+              rating: '4.5',
+              minPrice: 100,
+              maxPrice: 300,
+            ),
+          ),
+        );
+      } else if (role == 'USER') {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => AllHotelViewPage()),
+        );
+      } else {
+        print('Unknown role: $role');
+      }
+    } catch (error) {
+      print("Login failed: $error");
     }
   }
 
+  // Future<void> loginUser(BuildContext context) async {
+  //   final url = Uri.parse('http://localhost:8080/login');
+  //   final response = await http.post(
+  //     url,
+  //     headers: {'Content-Type': 'application/json'},
+  //     body: jsonEncode({'email': email.text, 'password': password.text}),
+  //   );
+  //
+  //   if (response.statusCode == 200) {
+  //     final responseData = jsonDecode(response.body);
+  //     final token = responseData['token'];
+  //
+  //     // Decode JWT to get 'sub' and 'role'
+  //     Map<String, dynamic> payload = Jwt.parseJwt(token);
+  //     String sub = payload['sub'];
+  //     String role = payload['role'];
+  //
+  //     // Store token, sub, and role securely
+  //     await storage.write(key: 'token', value: token);
+  //     await storage.write(key: 'sub', value: sub);
+  //     await storage.write(key: 'role', value: role);
+  //
+  //     print('Login successful. Sub: $sub, Role: $role');
+  //
+  //     Navigator.push(
+  //       context,
+  //       // MaterialPageRoute(builder: (context) => HomePage()),
+  //       MaterialPageRoute(builder: (context) => AllHotelViewPage()),
+  //     );
+  //
+  //   } else {
+  //     print('Login failed with status: ${response.statusCode}');
+  //   }
+  // }
+
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       body: Padding(
         padding: EdgeInsets.all(16.0),
@@ -82,8 +121,6 @@ class LoginPage extends StatelessWidget {
             ElevatedButton(
                 onPressed: () {
                   loginUser(context);
-
-
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.blueAccent,
@@ -93,10 +130,8 @@ class LoginPage extends StatelessWidget {
                   "Login",
                   style: TextStyle(
                       fontWeight: FontWeight.w600,
-                      fontFamily:GoogleFonts.lato().fontFamily
-                  ),
-                )
-            ),
+                      fontFamily: GoogleFonts.lato().fontFamily),
+                )),
             SizedBox(height: 20),
 
             // Login Text Button

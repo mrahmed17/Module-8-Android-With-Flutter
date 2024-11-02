@@ -62,8 +62,8 @@ class _AllHotelViewPageState extends State<AllHotelViewPage> {
                               } else {
                                 ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Hotel ID is missing. Cannot load rooms.')),);
                               }
-                            }, child: Text('View Room'),
-                            style: ElevatedButton.styleFrom(),),),
+                            },
+                            style: ElevatedButton.styleFrom(), child: Text('View Room'),),),
                         ],
                       ),
                     );
