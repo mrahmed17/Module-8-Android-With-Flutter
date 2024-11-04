@@ -1,50 +1,52 @@
 import 'package:test_projects/models/location.dart';
-
 class Hotel {
-  int? id;
-  String? name;
-  String? address;
-  String? rating;
-  int? minPrice;
-  int? maxPrice;
-  String? image;
-  Location? location;
 
-  Hotel(
-      {this.id,
-      this.name,
-      this.address,
-      this.rating,
-      this.minPrice,
-      this.maxPrice,
-      this.image,
-      this.location});
+  final int id;
+  final String name;
+  final String address;
+  final String rating;
+  final double minPrice;
+  final double maxPrice;
+  final String image;
+  final Location location;
 
-  Hotel.fromJson(Map<String, dynamic> json) {
-    id = json['id'];
-    name = json['name'];
-    address = json['address'];
-    rating = json['rating'];
-    minPrice = json['minPrice'];
-    maxPrice = json['maxPrice'];
-    image = json['image'];
-    location = json['location'] != null
-        ? Location.fromJson(json['location'])
-        : null;
+  Hotel({
+    required this.id,
+    required this.name,
+    required this.address,
+    required this.rating,
+    required this.minPrice,
+    required this.maxPrice,
+    required this.image,
+    required this.location,
+  });
+
+  // Factory constructor for creating a Hotel instance from JSON
+  factory Hotel.fromJson(Map<String, dynamic> json) {
+    return Hotel(
+      id: json['id'],
+      name: json['name'],
+      address: json['address'],
+      rating: json['rating'],
+      minPrice: json['minPrice'].toDouble(),
+      maxPrice: json['maxPrice'].toDouble(),
+      image: json['image'],
+      location: Location.fromJson(json['location']),
+    );
   }
 
+  // Method for converting a Hotel instance to JSON
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = <String, dynamic>{};
-    data['id'] = id;
-    data['name'] = name;
-    data['address'] = address;
-    data['rating'] = rating;
-    data['minPrice'] = minPrice;
-    data['maxPrice'] = maxPrice;
-    data['image'] = image;
-    if (location != null) {
-      data['location'] = location!.toJson();
-    }
-    return data;
+    return {
+      'id': id,
+      'name': name,
+      'address': address,
+      'rating': rating,
+      'minPrice': minPrice,
+      'maxPrice': maxPrice,
+      'image': image,
+      'location': location.toJson(), // Assuming Location has a toJson method
+    };
   }
+
 }
