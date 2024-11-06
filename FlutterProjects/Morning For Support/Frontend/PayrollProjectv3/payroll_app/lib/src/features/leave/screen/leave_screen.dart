@@ -47,7 +47,7 @@ class _LeaveScreenState extends State<LeaveScreen> {
       appBar: AppBar(
         leading: IconButton(
             onPressed: () => Get.back(),
-            icon: const Icon(LineAwesomeIcons.angle_left_solid)),
+            icon: const Icon(LineAwesomeIcons.angle_left)),
         title: Text("Recent Leave List",
             style: Theme.of(context).textTheme.headlineMedium),
       ),
@@ -106,7 +106,7 @@ class _LeaveScreenState extends State<LeaveScreen> {
             title:
             // Text(day.checkIn!),
             Text("Employee: ${data.employee?.name!}"),
-            subtitle: Text("Leave Date: ${f.format(DateTime.parse(data.leaveDate!))} \nLeave Reason: ${data.leaveReason}\nLeave Grant: ${isGranted(data.grant!)}" ),
+            subtitle: Text("Leave Date: ${f.format(DateTime.parse(data.leaveDate!).toLocal())} \nLeave Reason: ${data.leaveReason}\nLeave Grant: ${isGranted(data.grant!)}" ),
 
             contentPadding:const EdgeInsets.all(10.0),
             // subtitle: Text(f.format(DateTime.parse(day.checkOut!))),

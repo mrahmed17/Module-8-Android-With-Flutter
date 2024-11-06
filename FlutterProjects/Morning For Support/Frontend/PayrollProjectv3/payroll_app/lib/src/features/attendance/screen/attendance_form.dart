@@ -78,7 +78,7 @@ class _AttendanceFormState extends State<AttendanceForm> {
       appBar: AppBar(
         leading: IconButton(
             onPressed: () => Get.back(),
-            icon: const Icon(LineAwesomeIcons.angle_left_solid)),
+            icon: const Icon(LineAwesomeIcons.angle_left)),
         title: Text("Attendance Entry",
             style: Theme.of(context).textTheme.headlineMedium),
       ),
@@ -180,7 +180,7 @@ class _AttendanceFormState extends State<AttendanceForm> {
                                       ),
                                       style: TextStyle(
                                         fontSize: screenWidth / 32,
-                                        color: tSecondaryColor,
+                                        color: isDarkMode ?  tWhiteColor : tSecondaryColor ,
                                       ),
                                     ),
                                   );

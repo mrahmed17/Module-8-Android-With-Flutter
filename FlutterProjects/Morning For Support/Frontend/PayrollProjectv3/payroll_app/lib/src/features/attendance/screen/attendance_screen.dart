@@ -40,7 +40,7 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
       appBar: AppBar(
         leading: IconButton(
             onPressed: () => Get.back(),
-            icon: const Icon(LineAwesomeIcons.angle_left_solid)),
+            icon: const Icon(LineAwesomeIcons.angle_left)),
         title: Text("Recent Attendance List",
             style: Theme.of(context).textTheme.headlineMedium),
       ),

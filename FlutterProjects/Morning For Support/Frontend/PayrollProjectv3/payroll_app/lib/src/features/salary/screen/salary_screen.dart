@@ -39,7 +39,7 @@ class _SalaryScreenState extends State<SalaryScreen> {
       appBar: AppBar(
         leading: IconButton(
             onPressed: () => Get.back(),
-            icon: const Icon(LineAwesomeIcons.angle_left_solid)),
+            icon: const Icon(LineAwesomeIcons.angle_left)),
         title: Text("Recent Salary List",
             style: Theme.of(context).textTheme.headlineMedium),
       ),
@@ -91,7 +91,7 @@ class _SalaryScreenState extends State<SalaryScreen> {
             title:
             // Text(day.checkIn!),
             Text("Employee: ${data.employee?.name!}"),
-            subtitle: Text("Salary Date: ${f.format(DateTime.parse(data.date!))} "
+            subtitle: Text("Salary Date: ${f.format(DateTime.parse(data.date!).toLocal())} "
                 "\nBonus: ${data.empBonus}\nSalary Advance: ${data.empAdvance}\nSalary Amount: ${data.totalSalary}"),
 
             contentPadding:const EdgeInsets.all(10.0),

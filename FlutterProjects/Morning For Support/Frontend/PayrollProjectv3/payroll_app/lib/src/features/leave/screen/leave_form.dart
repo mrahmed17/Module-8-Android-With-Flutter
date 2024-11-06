@@ -64,7 +64,7 @@ class _LeaveFormState extends State<LeaveForm> {
       appBar: AppBar(
         leading: IconButton(
             onPressed: () => Get.back(),
-            icon: const Icon(LineAwesomeIcons.angle_left_solid)),
+            icon: const Icon(LineAwesomeIcons.angle_left)),
         title: Text("Leave Request",
             style: Theme.of(context).textTheme.headlineMedium),
       ),

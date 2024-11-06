@@ -20,7 +20,7 @@ class UpdateProfileScreen extends StatelessWidget {
       appBar: AppBar(
         leading: IconButton(
             onPressed: () => Get.back(),
-            icon: const Icon(LineAwesomeIcons.angle_left_solid)),
+            icon: const Icon(LineAwesomeIcons.angle_left)),
         title: Text("Profile Details",
             style: Theme.of(context).textTheme.headlineMedium),
       ),
@@ -57,7 +57,7 @@ class UpdateProfileScreen extends StatelessWidget {
                                 decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(100),
                                     color: tPrimaryColor),
-                                child: const Icon(LineAwesomeIcons.camera_solid,
+                                child: const Icon(LineAwesomeIcons.camera,
                                     color: Colors.black, size: 20),
                               ),
                             ),
@@ -81,14 +81,14 @@ class UpdateProfileScreen extends StatelessWidget {
                                 decoration: const InputDecoration(
                                     label: Text(tEmail),
                                     prefixIcon:
-                                        Icon(LineAwesomeIcons.envelope)),
+                                        Icon(LineAwesomeIcons.envelope_1)),
                               ),
                               const SizedBox(height: tFormHeight - 20),
                               TextFormField(
                                 initialValue: userData.phoneNo,
                                 decoration: const InputDecoration(
                                     label: Text(tPhoneNo),
-                                    prefixIcon: Icon(LineAwesomeIcons.phone_solid)),
+                                    prefixIcon: Icon(LineAwesomeIcons.phone)),
                               ),
                               const SizedBox(height: tFormHeight - 20),
                               TextFormField(
