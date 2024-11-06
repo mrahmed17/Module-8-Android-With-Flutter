@@ -25,7 +25,7 @@ class ProfileScreen extends StatelessWidget {
       appBar: AppBar(
         leading: IconButton(
             onPressed: () => Get.back(), icon: const Icon(Icons.arrow_left)),
-        title: Text("Profile", style: Theme.of(context).textTheme.headline4),
+        title: Text("Profile", style: Theme.of(context).textTheme.headlineMedium),
         actions: [
           IconButton(
               onPressed: () {},
