@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
+<<<<<<< Updated upstream
 import 'package:test_projects/page/AddHotelPage.dart';
 import 'package:test_projects/page/loginpage.dart';
+=======
+import 'package:test_projects/page/LoginPage.dart';
+>>>>>>> Stashed changes
 
 class AdminPage extends StatelessWidget {
   const AdminPage({super.key});

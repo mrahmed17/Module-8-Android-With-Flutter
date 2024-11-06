@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:test_projects/page/AdminPage.dart';
+import 'package:test_projects/page/AllHotelViewPage.dart';
 import 'package:test_projects/page/HotelProfilePage.dart';
-import 'package:test_projects/page/all_hotel_view_page.dart';
-import 'package:test_projects/page/registrationpage.dart';
+import 'package:test_projects/page/RegistrationPage.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:test_projects/services/AuthService.dart';
 

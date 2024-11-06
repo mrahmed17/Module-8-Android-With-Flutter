@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:date_field/date_field.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
-import 'package:test_projects/page/loginpage.dart';
+import 'package:test_projects/page/LoginPage.dart';
 
 class RegistrationPage extends StatefulWidget {
   const RegistrationPage({super.key});
