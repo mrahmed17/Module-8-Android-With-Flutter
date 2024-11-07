@@ -9,9 +9,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -87,47 +89,81 @@ public class UserRestController {
     }
 
 
-    @GetMapping("/salary/greaterThanOrEqual/{salary}")
-    public ResponseEntity<List<User>> getUsersWithSalaryGreaterThanOrEqual(@PathVariable("salary") BigDecimal salary) {
-        List<User> users = userService.getUsersWithSalaryGreaterThanOrEqual(salary);
+    @GetMapping("/salary/greaterThanOrEqual")
+    public ResponseEntity<Page<User>> getUsersWithSalaryGreaterThanOrEqual(
+            @RequestParam("salary") double salary,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<User> users = userService.getUsersWithSalaryGreaterThanOrEqual(salary, pageable);
         return new ResponseEntity<>(users, HttpStatus.OK);
     }
 
-    @GetMapping("/salary/lessThanOrEqual/{salary}")
-    public ResponseEntity<List<User>> getUsersWithSalaryLessThanOrEqual(@PathVariable("salary") BigDecimal salary) {
-        List<User> users = userService.getUsersWithSalaryLessThanOrEqual(salary);
+    // Get Users with Salary Less Than or Equal with Pagination
+    @GetMapping("/salary/lessThanOrEqual")
+    public ResponseEntity<Page<User>> getUsersWithSalaryLessThanOrEqual(
+            @RequestParam("salary") double salary,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<User> users = userService.getUsersWithSalaryLessThanOrEqual(salary, pageable);
         return new ResponseEntity<>(users, HttpStatus.OK);
     }
 
+
+    // Get Users by Role with Pagination
     @GetMapping("/role/{role}")
-    public ResponseEntity<List<User>> getUsersByRole(@PathVariable String role) {
+    public ResponseEntity<Page<User>> getUsersByRole(
+            @PathVariable String role,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
         try {
-            // Convert the incoming role string to uppercase and match with the Role enum
             Role userRole = Role.valueOf(role.toUpperCase());
-            List<User> users = userService.getUsersByRole(userRole);
-            return ResponseEntity.ok(users);
+            Pageable pageable = PageRequest.of(page, size);
+            Page<User> users = userService.getUsersByRole(userRole, pageable);
+            return new ResponseEntity<>(users, HttpStatus.OK);
         } catch (IllegalArgumentException e) {
-            // Handle the case where the role string doesn't match any enum values
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
 
 
+    // Search Users by Name with Pagination
     @GetMapping("/search/name/{name}")
-    public ResponseEntity<List<User>> getUsersByFullNamePart(@PathVariable("name") String name) {
-        List<User> users = userService.getUsersByFullNamePart(name);
+    public ResponseEntity<Page<User>> getUsersByFullNamePart(
+            @PathVariable("name") String name,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<User> users = userService.getUsersByFullNamePart(name, pageable);
         return new ResponseEntity<>(users, HttpStatus.OK);
     }
 
+    // Search Users by Gender with Pagination
     @GetMapping("/gender/{gender}")
-    public ResponseEntity<List<User>> getUsersByGender(@PathVariable("gender") String gender) {
-        List<User> users = userService.getUsersByGender(gender);
+    public ResponseEntity<Page<User>> getUsersByGender(
+            @PathVariable("gender") String gender,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<User> users = userService.getUsersByGender(gender, pageable);
         return new ResponseEntity<>(users, HttpStatus.OK);
     }
 
+    // Search Users by Joined Date with Pagination
     @GetMapping("/joinedDate/{joinedDate}")
-    public ResponseEntity<List<User>> getUsersByJoinedDate(@PathVariable("joinedDate") LocalDate joinedDate) {
-        List<User> users = userService.getUsersByJoinedDate(joinedDate);
+    public ResponseEntity<Page<User>> getUsersByJoinedDate(
+            @PathVariable("joinedDate") LocalDate joinedDate,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<User> users = userService.getUsersByJoinedDate(joinedDate, pageable);
         return new ResponseEntity<>(users, HttpStatus.OK);
     }
 }

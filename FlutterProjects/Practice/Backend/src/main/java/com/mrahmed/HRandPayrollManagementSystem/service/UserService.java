@@ -9,6 +9,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -97,28 +99,28 @@ public class UserService {
         return userRepository.findByEmail(email);
     }
 
-    public List<User> getUsersWithSalaryGreaterThanOrEqual(BigDecimal salary) {
-        return userRepository.findUsersWithSalaryGreaterThanOrEqual(salary);
+    public Page<User> getUsersWithSalaryGreaterThanOrEqual(double salary, Pageable pageable) {
+        return userRepository.findUsersWithSalaryGreaterThanOrEqual(salary, pageable);
     }
 
-    public List<User> getUsersWithSalaryLessThanOrEqual(BigDecimal salary) {
-        return userRepository.findUsersWithSalaryLessThanOrEqual(salary);
+    public Page<User> getUsersWithSalaryLessThanOrEqual(double salary, Pageable pageable) {
+        return userRepository.findUsersWithSalaryLessThanOrEqual(salary, pageable);
     }
 
-    public List<User> getUsersByRole(Role role) {
-        return userRepository.findByRole(role);
+    public Page<User> getUsersByRole(Role role, Pageable pageable) {
+        return userRepository.findByRole(role, pageable);
     }
 
-    public List<User> getUsersByFullNamePart(String fullNamePart) {
-        return userRepository.findByFullNameContaining(fullNamePart);
+    public Page<User> getUsersByFullNamePart(String fullNamePart, Pageable pageable) {
+        return userRepository.findByFullNameContaining(fullNamePart, pageable);
     }
 
-    public List<User> getUsersByGender(String gender) {
-        return userRepository.findByGender(gender);
+    public Page<User> getUsersByGender(String gender, Pageable pageable) {
+        return userRepository.findByGender(gender, pageable);
     }
 
-    public List<User> getUsersByJoinedDate(LocalDate joinedDate) {
-        return userRepository.findByJoinedDate(joinedDate);
+    public Page<User> getUsersByJoinedDate(LocalDate joinedDate, Pageable pageable) {
+        return userRepository.findByJoinedDate(joinedDate, pageable);
     }
 
 }
