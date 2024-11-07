@@ -8,70 +8,68 @@ class UserListScreen extends StatefulWidget {
   const UserListScreen({super.key});
 
   @override
-  State<UserListScreen> createState() => _UserListScreenState();
+  _UserListScreenState createState() => _UserListScreenState();
 }
 
 class _UserListScreenState extends State<UserListScreen> {
-  List<User> users = [];
-  int currentPage = 0;
-  bool isLoading = true;
+  final UserService _userService = UserService();
+  List<User> _users = [];
+  bool _isLoading = true;
 
   @override
   void initState() {
     super.initState();
-    fetchUsers();
+    _fetchUsers();
   }
 
-  Future<void> fetchUsers() async {
-    setState(() {
-      isLoading = true;
-    });
-
-    List<User> fetchedUsers =
-        await UserService().getAllUsers(page: currentPage, size: 10);
-    setState(() {
-      users.addAll(fetchedUsers);
-      isLoading = false;
-    });
+  Future<void> _fetchUsers() async {
+    try {
+      List<User> users = await _userService.getAllUsers();
+      setState(() {
+        _users = users;
+        _isLoading = false;
+      });
+    } catch (e) {
+      setState(() => _isLoading = false);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error fetching users: $e')),
+      );
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text("User List"),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.add),
-            onPressed: () {
+      appBar: AppBar(title: const Text('User List')),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const UserFormScreen()),
+          ).then((value) => _fetchUsers());
+        },
+        child: const Icon(Icons.add),
+      ),
+      body: _isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : ListView.builder(
+        itemCount: _users.length,
+        itemBuilder: (context, index) {
+          User user = _users[index];
+          return ListTile(
+            title: Text(user.fullName),
+            subtitle: Text(user.email),
+            onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => UserFormScreen()),
-              );
+                MaterialPageRoute(
+                  builder: (context) => UserDetailScreen(userId: user.id),
+                ),
+              ).then((value) => _fetchUsers());
             },
-          ),
-        ],
+          );
+        },
       ),
-      body: isLoading
-          ? Center(child: CircularProgressIndicator())
-          : ListView.builder(
-              itemCount: users.length,
-              itemBuilder: (context, index) {
-                final user = users[index];
-                return ListTile(
-                  title: Text(user.fullName),
-                  subtitle: Text(user.email),
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => UserDetailScreen(userId: user.id),
-                      ),
-                    );
-                  },
-                );
-              },
-            ),
     );
   }
 }

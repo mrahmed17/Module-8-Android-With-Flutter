@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:hr_and_payroll_management/utils/theme/widget_theme/ElevatedButtonTheme.dart';
 import 'package:hr_and_payroll_management/utils/theme/widget_theme/FloatingButtonTheme.dart';
 import 'package:hr_and_payroll_management/utils/theme/widget_theme/OutlinedButtonTheme.dart';

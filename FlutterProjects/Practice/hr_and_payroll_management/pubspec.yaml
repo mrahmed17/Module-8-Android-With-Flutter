@@ -30,6 +30,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  get: ^4.6.5
 
 
   # The following adds the Cupertino Icons font to your application.
@@ -40,7 +41,7 @@ dependencies:
   http: ^1.2.2
 
   #  for  secure login and logout and signup
-#  flutter_secure_storage: ^7.0.1
+  flutter_secure_storage: ^7.0.1
 #  jwt_decode: ^0.3.1
 
   shared_preferences: ^2.3.2
@@ -51,6 +52,7 @@ dependencies:
   http_parser: ^4.0.2
 
 
+  google_fonts: any
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -61,7 +63,6 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^4.0.0
-  google_fonts: any
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

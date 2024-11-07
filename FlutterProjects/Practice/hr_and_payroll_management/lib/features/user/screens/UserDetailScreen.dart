@@ -6,62 +6,101 @@ import 'UserFormScreen.dart';
 class UserDetailScreen extends StatefulWidget {
   final int userId;
 
-  UserDetailScreen({required this.userId});
+  const UserDetailScreen({super.key, required this.userId});
 
   @override
   _UserDetailScreenState createState() => _UserDetailScreenState();
 }
 
 class _UserDetailScreenState extends State<UserDetailScreen> {
-  User? user;
-  bool isLoading = true;
+  final UserService _userService = UserService();
+  User? _user;
+  bool _isLoading = true;
 
   @override
   void initState() {
     super.initState();
-    fetchUser();
+    _fetchUser();
   }
 
-  Future<void> fetchUser() async {
-    user = await UserService().findUserById(widget.userId);
-    setState(() {
-      isLoading = false;
-    });
+  Future<void> _fetchUser() async {
+    try {
+      User? user = await _userService.findUserById(widget.userId);
+      setState(() {
+        _user = user;
+        _isLoading = false;
+      });
+    } catch (e) {
+      setState(() => _isLoading = false);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error fetching user details: $e')),
+      );
+    }
+  }
+
+  void _deleteUser() async {
+    final confirmation = await showDialog<bool>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Confirm Delete'),
+          content: const Text('Are you sure you want to delete this user?'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(false),
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(true),
+              child: const Text('Delete'),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (confirmation == true) {
+      await _userService.deleteUser(widget.userId);
+      Navigator.pop(context);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('User Detail'),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.edit),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => UserFormScreen(user: user)),
-              );
-            },
-          ),
-        ],
-      ),
-      body: isLoading
-          ? Center(child: CircularProgressIndicator())
-          : user != null
-          ? Padding(
+      appBar: AppBar(title: const Text('User Details')),
+      body: _isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : _user == null
+          ? const Center(child: Text('User not found'))
+          : Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text("Full Name: ${user!.fullName}"),
-            Text("Email: ${user!.email}"),
-            Text("Role: ${user!.role}"),
-            // Add more fields as needed
+            Text('Name: ${_user!.fullName}', style: const TextStyle(fontSize: 18)),
+            Text('Email: ${_user!.email}'),
+            // Additional details can be added here.
+            const SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => UserFormScreen(user: _user),
+                  ),
+                );
+              },
+              child: const Text('Edit User'),
+            ),
+            ElevatedButton(
+              onPressed: _deleteUser,
+              style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+              child: const Text('Delete User'),
+            ),
           ],
         ),
-      )
-          : Center(child: Text("User not found")),
+      ),
     );
   }
 }

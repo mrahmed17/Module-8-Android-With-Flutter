@@ -54,7 +54,7 @@ public class UserRestController {
     }
 
 
-    @GetMapping("/")
+    @GetMapping("/all")
     public ResponseEntity<List<User>> getAllUsers() {
         List<User> users = userService.getAllUsers();
         return ResponseEntity.ok(users);

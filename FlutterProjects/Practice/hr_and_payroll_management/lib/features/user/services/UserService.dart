@@ -4,7 +4,7 @@ import 'package:hr_and_payroll_management/features/user/models/User.dart';
 import 'package:http/http.dart' as http;
 
 class UserService {
-  final String baseUrl = 'http://localhost:8080/api/users'; // Replace with your backend URL
+  final String baseUrl = 'http://localhost:8080/api/users';
 
   // Create a new user
   Future<String> createUser(User user, String? profilePhotoPath) async {
@@ -48,7 +48,7 @@ class UserService {
 
   // Get all users
   Future<List<User>> getAllUsers() async {
-    var response = await http.get(Uri.parse('$baseUrl/'));
+    var response = await http.get(Uri.parse('$baseUrl/all'));
     if (response.statusCode == 200) {
       List<dynamic> usersJson = jsonDecode(response.body);
       return usersJson.map((json) => User.fromJson(json)).toList();

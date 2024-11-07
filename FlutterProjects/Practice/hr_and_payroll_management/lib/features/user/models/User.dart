@@ -33,7 +33,7 @@ class User {
     required this.joinedDate,
     required this.profilePhoto,
     required this.role,
-    required this.attendances,
+    this.attendances = const [],
   });
 
   // Method to convert JSON to User instance
@@ -45,13 +45,13 @@ class User {
       password: json['password'] ?? '',
       address: json['address'] ?? '',
       gender: json['gender'] ?? '',
-      dateOfBirth: DateTime.parse(json['dateOfBirth'] ?? DateTime.now().toString()),
+      dateOfBirth: DateTime.tryParse(json['dateOfBirth'] ?? '') ?? DateTime.now(),
       nationalId: json['nationalId'] ?? '',
       contact: json['contact'] ?? '',
-      basicSalary: json['basicSalary']?.toDouble() ?? 0.0,
-      joinedDate: DateTime.parse(json['joinedDate'] ?? DateTime.now().toString()),
+      basicSalary: (json['basicSalary'] ?? 0).toDouble(),
+      joinedDate: DateTime.tryParse(json['joinedDate'] ?? '') ?? DateTime.now(),
       profilePhoto: json['profilePhoto'] ?? '',
-      role: Role.values.firstWhere((e) => e.toString() == 'Role.${json['role']}'),
+      role: RoleExtension.fromString(json['role'] ?? 'EMPLOYEE'),
       attendances: (json['attendances'] as List<dynamic>?)
           ?.map((attendance) => Attendance.fromJson(attendance))
           .toList() ??
@@ -74,7 +74,7 @@ class User {
       'basicSalary': basicSalary,
       'joinedDate': joinedDate.toIso8601String(),
       'profilePhoto': profilePhoto,
-      'role': role.toString().split('.').last,
+      'role': role.toShortString(),
       'attendances': attendances.map((attendance) => attendance.toJson()).toList(),
     };
   }

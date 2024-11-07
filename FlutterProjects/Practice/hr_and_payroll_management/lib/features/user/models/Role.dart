@@ -1,4 +1,4 @@
-enum Role { admin, manager, employee }
+enum Role { ADMIN, MANAGER, EMPLOYEE }
 
 extension RoleExtension on Role {
   // Convert a string to Role enum

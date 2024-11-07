@@ -15,7 +15,7 @@ class Attendance {
     required this.user,  // Using User object instead of userId
   });
 
-  // Method to convert JSON to Attendance instance
+  // Method to convert JSON to attendance instance
   factory Attendance.fromJson(Map<String, dynamic> json) {
     return Attendance(
       id: json['id'] ?? 0,
@@ -26,7 +26,7 @@ class Attendance {
     );
   }
 
-  // Method to convert Attendance instance to JSON
+  // Method to convert attendance instance to JSON
   Map<String, dynamic> toJson() {
     return {
       'id': id,
