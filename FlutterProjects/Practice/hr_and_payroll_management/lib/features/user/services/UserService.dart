@@ -7,6 +7,7 @@ class UserService {
   final String baseUrl = 'http://localhost:8080/api/users';
 
   // Create a new user
+
   Future<String> createUser(User user, String? profilePhotoPath) async {
     var uri = Uri.parse('$baseUrl/create');
     var request = http.MultipartRequest('POST', uri);
@@ -26,6 +27,18 @@ class UserService {
       return 'Failed to create user: ${response.reasonPhrase}';
     }
   }
+
+  // Future<void> createUser(User user) async {
+  //   final response = await http.post(
+  //     Uri.parse('http://localhost:8080/users'),
+  //     headers: {
+  //       'Content-Type': 'application/json',
+  //       'Accept': 'application/json',
+  //     },
+  //     body: jsonEncode(user.toJson()),
+  //   );
+  //   // Handle response
+  // }
 
   // Update an existing user
   Future<String> updateUser(int id, User user, String? profilePhotoPath) async {
