@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:hr_and_payroll_management/features/user/models/User.dart';
-import 'package:hr_and_payroll_management/features/user/services/UserService.dart';
+import 'package:hr_and_payroll_management/features/user/model/User.dart';
+import 'package:hr_and_payroll_management/features/user/UserService.dart';
 import 'UserFormScreen.dart';
 
 class UserDetailScreen extends StatefulWidget {
@@ -65,6 +65,32 @@ class _UserDetailScreenState extends State<UserDetailScreen> {
     }
   }
 
+  Widget _buildUserImage(String? profilePhoto) {
+    final imageUrl = profilePhoto != null
+        ? "http://localhost:8080/uploadDirectory/profilePhotos/$profilePhoto"
+        : null;
+
+    return imageUrl != null
+        ? Image.network(
+      imageUrl,
+      width: 100,
+      height: 100,
+      fit: BoxFit.cover,
+      errorBuilder: (context, error, stackTrace) =>
+      const Icon(Icons.account_circle, size: 100),
+      loadingBuilder: (context, child, progress) {
+        return progress == null
+            ? child
+            : const SizedBox(
+          width: 100,
+          height: 100,
+          child: Center(child: CircularProgressIndicator()),
+        );
+      },
+    )
+        : const Icon(Icons.account_circle, size: 100);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -78,17 +104,7 @@ class _UserDetailScreenState extends State<UserDetailScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            if (_user!.profilePhoto.isNotEmpty)
-              Center(
-                child: Image.network(
-                  _user!.profilePhoto,
-                  width: 100,
-                  height: 100,
-                  fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) =>
-                      const Icon(Icons.account_circle, size: 100),
-                ),
-              ),
+            Center(child: _buildUserImage(_user!.profilePhoto)),
             const SizedBox(height: 20),
             Text('Name: ${_user!.fullName}',
                 style: const TextStyle(fontSize: 18)),
@@ -96,31 +112,36 @@ class _UserDetailScreenState extends State<UserDetailScreen> {
             Text('Address: ${_user!.address}'),
             Text('Contact: ${_user!.contact}'),
             Text('Gender: ${_user!.gender}'),
-            Text('Date of Birth: ${_user!.dateOfBirth.toLocal().toString().split(' ')[0]}'),
+            Text(
+                'Date of Birth: ${_user!.dateOfBirth.toLocal().toString().split(' ')[0]}'),
             Text('National ID: ${_user!.nationalId}'),
-            Text('Joined Date: ${_user!.joinedDate.toLocal().toString().split(' ')[0]}'),
+            Text(
+                'Joined Date: ${_user!.joinedDate.toLocal().toString().split(' ')[0]}'),
             const SizedBox(height: 20),
-            const Spacer(),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => UserFormScreen(user: _user),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            UserFormScreen(user: _user),
+                      ),
+                    );
+                  },
+                  child: const Text('Edit User'),
+                ),
+                ElevatedButton(
+                  onPressed: _deleteUser,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.red,
                   ),
-                );
-              },
-              child: const Text('Edit User'),
+                  child: const Text('Delete User'),
+                ),
+              ],
             ),
-            const SizedBox(height: 8,),
-            ElevatedButton(
-              onPressed: _deleteUser,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.red,
-              ),
-              child: const Text('Delete User'),
-            ),
-            const Spacer(),
           ],
         ),
       ),

@@ -7,7 +7,6 @@ class UserService {
   final String baseUrl = 'http://localhost:8080/api/users';
 
   // Create a new user
-
   Future<String> createUser(User user, String? profilePhotoPath) async {
     var uri = Uri.parse('$baseUrl/create');
     var request = http.MultipartRequest('POST', uri);

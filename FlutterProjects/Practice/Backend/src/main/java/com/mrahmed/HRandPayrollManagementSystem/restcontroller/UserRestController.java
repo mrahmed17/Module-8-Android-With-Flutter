@@ -3,6 +3,7 @@ package com.mrahmed.HRandPayrollManagementSystem.restcontroller;
 
 import com.mrahmed.HRandPayrollManagementSystem.entity.Role;
 import com.mrahmed.HRandPayrollManagementSystem.entity.User;
+import com.mrahmed.HRandPayrollManagementSystem.repository.UserRepository;
 import com.mrahmed.HRandPayrollManagementSystem.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -25,6 +26,8 @@ public class UserRestController {
 
     @Autowired
     private UserService userService;
+    @Autowired
+    private UserRepository userRepository;
 
     @PostMapping("/create")
     public ResponseEntity<String> createUser(
@@ -72,14 +75,15 @@ public class UserRestController {
 
 
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<?> deleteUser(@PathVariable Long id) {
-        try {
-            userService.deleteUserById(id);
-            return new ResponseEntity<>("User deleted successfully.", HttpStatus.OK);
-        } catch (RuntimeException e) {
-            return new ResponseEntity<>("User not found: " + e.getMessage(), HttpStatus.NOT_FOUND);
+    public ResponseEntity<String> deleteUser(@PathVariable Long id) {
+        Optional<User> user = userRepository.findById(id);
+        if (!user.isPresent()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found.");
         }
+        userRepository.deleteById(id);
+        return ResponseEntity.ok("User successfully deleted.");
     }
+
 
     @GetMapping("/email/{email}")
     public ResponseEntity<User> getUserByEmail(@PathVariable("email") String email) {

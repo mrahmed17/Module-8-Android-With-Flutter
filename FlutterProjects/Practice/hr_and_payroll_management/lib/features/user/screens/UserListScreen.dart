@@ -57,8 +57,17 @@ class _UserListScreenState extends State<UserListScreen> {
         itemBuilder: (context, index) {
           User user = _users[index];
           return ListTile(
-            title: Text(user.fullName),
-            subtitle: Text(user.email),
+            leading: user.profilePhoto != null
+                ? Image.network(
+              "http://localhost:8080/images/profilePhotos/${user.profilePhoto}",
+              errorBuilder: (context, error, stackTrace) => const Icon(Icons.error),
+              loadingBuilder: (context, child, progress) {
+                return progress == null ? child : const CircularProgressIndicator();
+              },
+            )
+                : const Icon(Icons.person),
+            title: Text(user.fullName ?? 'Unnamed person'),
+            subtitle: Text(user.email ?? 'No email available'),
             onTap: () {
               Navigator.push(
                 context,
