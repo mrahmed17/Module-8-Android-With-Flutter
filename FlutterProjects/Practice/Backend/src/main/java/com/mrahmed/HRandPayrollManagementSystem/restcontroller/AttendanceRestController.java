@@ -70,6 +70,7 @@ public class AttendanceRestController {
         return ResponseEntity.ok(overtimeRecords); // Return the list of overtime records
     }
 
+
     @GetMapping("/today")
     public ResponseEntity<List<Attendance>> getTodayAttendance() {
         List<Attendance> attendances = attendanceService.getTodayAttendances();
@@ -94,16 +95,21 @@ public class AttendanceRestController {
         return ResponseEntity.ok(users);
     }
 
-
     @GetMapping("/find/{id}")
     public ResponseEntity<Attendance> findAttendanceById(@PathVariable("id") long id) {
         Attendance attendance = attendanceService.findAttendanceById(id);
+        if (attendance == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build(); // Return 404 if not found
+        }
         return ResponseEntity.ok(attendance);
     }
 
     @GetMapping("/user/{id}/attendances")
     public ResponseEntity<List<Attendance>> getAttendancesByUserId(@PathVariable Long id) {
         List<Attendance> attendances = attendanceService.getAttendanceByUserId(id);
+        if (attendances.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        }
         return ResponseEntity.ok(attendances);
     }
 
@@ -181,7 +187,6 @@ public class AttendanceRestController {
         }
         return ResponseEntity.ok(attendances);
     }
-
 
     @GetMapping("/todayAttendance/{userId}")
     public ResponseEntity<List<Attendance>> getTodayAttendanceByUserId(@PathVariable("userId") long userId) {

@@ -1,4 +1,3 @@
-import 'package:intl/intl.dart';
 import 'package:payroll_app/src/features/employee/model/employee.dart';
 
 class Attendance {

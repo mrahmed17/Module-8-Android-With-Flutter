@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:hr_and_payroll_management/features/attendance/screens/AttendanceScreen.dart';
 import 'package:hr_and_payroll_management/features/user/screens/UserListScreen.dart';
-// import 'package:hr_and_payroll_management/features/attendance/screens/AttendanceScreen.dart';
 // import 'package:hr_and_payroll_management/features/payroll/screens/PayrollScreen.dart';
 // import 'package:hr_and_payroll_management/features/leave/screens/LeaveScreen.dart';
 // import 'package:hr_and_payroll_management/features/bonus/screens/BonusScreen.dart';
@@ -27,7 +27,7 @@ class DashboardScreen extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(icon, size: 48, color: iconColor ?? Colors.blue),
+              Icon(icon, size: 48, color: iconColor ?? Colors.cyanAccent),
               const SizedBox(height: 10),
               Text(
                 title,
@@ -61,17 +61,17 @@ class DashboardScreen extends StatelessWidget {
             _buildDashboardCard(
               icon: Icons.people,
               title: "User Management",
-              onTap: () => Get.to(() => const UserListScreen()),
+              onTap: () => Get.to(() => UserListScreen()),
               iconColor: Colors.deepPurple,
               backgroundColor: Colors.deepPurple.shade50,
             ),
-            // _buildDashboardCard(
-            //   icon: Icons.calendar_today,
-            //   title: "Attendance",
-            //   onTap: () => Get.to(() => const AttendanceScreen()),
-            //   iconColor: Colors.blue,
-            //   backgroundColor: Colors.blue.shade50,
-            // ),
+            _buildDashboardCard(
+              icon: Icons.calendar_today,
+              title: "Attendance",
+              onTap: () => Get.to(() => AttendanceScreen()),
+              iconColor: Colors.blue,
+              backgroundColor: Colors.blue.shade50,
+            ),
             // _buildDashboardCard(
             //   icon: Icons.attach_money,
             //   title: "Payroll",

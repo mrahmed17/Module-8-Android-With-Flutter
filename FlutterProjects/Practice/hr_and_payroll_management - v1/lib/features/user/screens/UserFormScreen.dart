@@ -219,10 +219,9 @@ class _UserFormScreenState extends State<UserFormScreen> {
                         ? const Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Icon(Icons.camera_alt, color: Colors.grey),
-                        Text("Choose a profile photo"),
+                        Icon(Icons.camera_alt, color:Colors.teal),
+                        Text('Select Profile Photo', selectionColor: Colors.teal),
                         SizedBox(height: 16,),
-                        Text('Select Profile Photo'),
                       ],
                     )
                         : CircleAvatar(

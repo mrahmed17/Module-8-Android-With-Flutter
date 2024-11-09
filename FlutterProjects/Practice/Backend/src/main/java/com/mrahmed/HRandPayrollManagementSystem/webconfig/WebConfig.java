@@ -24,17 +24,36 @@ public class WebConfig implements WebMvcConfigurer {
         WebMvcConfigurer.super.addResourceHandlers(registry);
     }
 
-    @Bean
+    /*@Bean
+    public WebMvcConfigurer corsConfigurer() {
+        return new WebMvcConfigurer() {
+            @Override
+            public void addCorsMappings(CorsRegistry registry) {
+                registry.addMapping("/**") // Applies to all endpoints
+                        .allowedOrigins("*") // Allows all origins
+                        .allowedMethods("*") // Allows all HTTP methods
+                        .allowedHeaders("*"); // Allows all headers
+            }
+        };
+    }*/
+
+
+    /*@Bean
     public WebMvcConfigurer corsConfigurer() {
         return new WebMvcConfigurer() {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/api/**")
-                        .allowedOrigins("http://localhost:4200", "http://localhost:8000", "http://localhost:<Flutter-web-port>", "http://127.0.0.1:4200")
+                        .allowedOrigins("http://localhost:4200", "http://localhost:8081", "http://127.0.0.1:8081")
+                        .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS");
+//                        .allowedHeaders("*");
+//                        .allowCredentials(true);
+                registry.addMapping("/images/**")
+                        .allowedOrigins("http://localhost:4200", "http://localhost:8081", "http://127.0.0.1:8081")
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS");
 //                        .allowedHeaders("*");
 //                        .allowCredentials(true);
             }
         };
-    }
+    }*/
 }

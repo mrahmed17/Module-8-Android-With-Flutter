@@ -9,7 +9,6 @@ import 'package:payroll_app/src/features/attendance/controller/attendance_contro
 import 'package:payroll_app/src/features/attendance/model/attendance.dart';
 import 'package:payroll_app/src/features/attendance/screen/attendance_form.dart';
 
-import '../../../constants/sizes.dart';
 import '../../../repository/authentication/authentication_repository.dart';
 
 class AttendanceScreen extends StatefulWidget {

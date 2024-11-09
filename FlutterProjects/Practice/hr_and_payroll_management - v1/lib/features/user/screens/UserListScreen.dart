@@ -83,14 +83,18 @@ class _UserListScreenState extends State<UserListScreen> {
     final imageUrl = profilePhoto != null
         ? "http://localhost:8080/uploadDirectory/profilePhotos/$profilePhoto"
         : null;
-
+    print(imageUrl);
     return imageUrl != null
         ? Image.network(
       imageUrl,
       width: 40,
       height: 40,
       fit: BoxFit.cover,
-      errorBuilder: (context, error, stackTrace) => const Icon(Icons.error),
+      errorBuilder: (context, error, stackTrace) {
+        print('Image loading error: $error');
+        print('Stack trace: $stackTrace');
+        return const Icon(Icons.error);
+      },
       loadingBuilder: (context, child, progress) {
         return progress == null ? child : const CircularProgressIndicator();
       },

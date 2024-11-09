@@ -1,15 +1,12 @@
-import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:payroll_app/src/constants/colors.dart';
-import 'package:payroll_app/src/constants/image_strings.dart';
 import 'package:payroll_app/src/constants/sizes.dart';
 import 'package:payroll_app/src/constants/text_strings.dart';
 import 'package:payroll_app/src/features/attendance/screen/attendance_screen.dart';
 import 'package:payroll_app/src/features/core/screens/profile/profile_screen.dart';
 import 'package:payroll_app/src/features/employee/screen/employee_screen.dart';
-import 'package:payroll_app/src/features/salary/model/salary.dart';
 import 'package:payroll_app/src/features/salary/screen/salary_screen.dart';
 
 import '../carousel_dashboard/carousel_dashboard.dart';

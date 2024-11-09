@@ -5,7 +5,6 @@ import 'package:get/get_core/src/get_main.dart';
 import 'package:payroll_app/src/constants/sizes.dart';
 import 'package:payroll_app/src/constants/text_strings.dart';
 import 'package:payroll_app/src/features/authentication/controllers/login_controller/login_controller.dart';
-import 'package:payroll_app/src/features/core/screens/dashboard/dashboard.dart';
 
 class LoginForm extends StatelessWidget {
   const LoginForm({

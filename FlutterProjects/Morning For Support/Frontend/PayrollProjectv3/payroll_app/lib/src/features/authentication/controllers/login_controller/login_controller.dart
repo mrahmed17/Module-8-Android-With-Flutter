@@ -1,7 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:payroll_app/src/features/core/screens/dashboard/dashboard.dart';
 import 'package:payroll_app/src/repository/authentication/authentication_repository.dart';
 
 class LoginController extends GetxController {

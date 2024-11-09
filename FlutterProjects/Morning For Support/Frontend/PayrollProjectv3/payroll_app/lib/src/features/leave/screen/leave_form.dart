@@ -5,7 +5,6 @@ import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:intl/intl.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
-import 'package:payroll_app/src/constants/colors.dart';
 import 'package:payroll_app/src/features/leave/controller/leave_controller.dart';
 import 'package:payroll_app/src/features/leave/model/leave.dart';
 

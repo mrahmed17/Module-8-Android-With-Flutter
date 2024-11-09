@@ -10,7 +10,6 @@ import 'package:payroll_app/src/constants/image_strings.dart';
 import 'package:payroll_app/src/constants/sizes.dart';
 import 'package:payroll_app/src/constants/text_strings.dart';
 import 'package:payroll_app/src/features/authentication/controllers/splash_screen_controller.dart';
-import 'package:payroll_app/src/features/authentication/screens/welcome/welcome_screen.dart';
 
 class SplashScreen extends StatelessWidget {
    SplashScreen({super.key});

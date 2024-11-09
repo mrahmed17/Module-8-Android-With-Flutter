@@ -67,28 +67,25 @@ class _UserDetailScreenState extends State<UserDetailScreen> {
 
   Widget _buildUserImage(String? profilePhoto) {
     final imageUrl = profilePhoto != null
-        ? "http://localhost:8080/uploadDirectory/profilePhotos/$profilePhoto"
+        ? "http://localhost:8080/uploadDirectory/profilePhotos/raju_0f9a26bb-e6fa-4ab3-8e16-9a4079e60a83.jpg"
         : null;
-
+    print(imageUrl);
     return imageUrl != null
         ? Image.network(
       imageUrl,
       width: 100,
       height: 100,
       fit: BoxFit.cover,
-      errorBuilder: (context, error, stackTrace) =>
-      const Icon(Icons.account_circle, size: 100),
+      errorBuilder: (context, error, stackTrace) {
+        print('Image loading error: $error');
+        print('Stack trace: $stackTrace');
+        return const Icon(Icons.error);
+      },
       loadingBuilder: (context, child, progress) {
-        return progress == null
-            ? child
-            : const SizedBox(
-          width: 100,
-          height: 100,
-          child: Center(child: CircularProgressIndicator()),
-        );
+        return progress == null ? child : const CircularProgressIndicator();
       },
     )
-        : const Icon(Icons.account_circle, size: 100);
+        : const Icon(Icons.person, size: 100);
   }
 
   @override

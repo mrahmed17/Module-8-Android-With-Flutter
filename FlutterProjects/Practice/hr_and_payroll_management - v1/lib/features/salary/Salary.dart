@@ -1,4 +1,4 @@
-import 'package:hr_and_payroll_management/features/attendance/Attendance.dart';
+import 'package:hr_and_payroll_management/features/attendance/AttendanceModel.dart';
 import 'package:hr_and_payroll_management/features/bonus/Bonus.dart';
 import 'package:hr_and_payroll_management/features/leave/model/Leave.dart';
 
