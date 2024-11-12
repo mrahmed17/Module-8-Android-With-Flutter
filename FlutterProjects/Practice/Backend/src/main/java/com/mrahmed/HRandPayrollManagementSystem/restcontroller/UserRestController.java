@@ -26,6 +26,7 @@ public class UserRestController {
 
     @Autowired
     private UserService userService;
+
     @Autowired
     private UserRepository userRepository;
 
@@ -56,11 +57,16 @@ public class UserRestController {
         }
     }
 
-
     @GetMapping("/all")
     public ResponseEntity<List<User>> getAllUsers() {
         List<User> users = userService.getAllUsers();
         return ResponseEntity.ok(users);
+    }
+
+    @GetMapping("/managers")
+    public ResponseEntity<List<User>> getAllManagers() {
+        List<User> managers = userService.getAllManagers();
+        return ResponseEntity.ok(managers);
     }
 
     @GetMapping("/find/{id}")
@@ -73,7 +79,6 @@ public class UserRestController {
         }
     }
 
-
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<String> deleteUser(@PathVariable Long id) {
         Optional<User> user = userRepository.findById(id);
@@ -84,14 +89,12 @@ public class UserRestController {
         return ResponseEntity.ok("User successfully deleted.");
     }
 
-
     @GetMapping("/email/{email}")
     public ResponseEntity<User> getUserByEmail(@PathVariable("email") String email) {
         Optional<User> userOptional = userService.getUserByEmail(email);
         return userOptional.map(user -> new ResponseEntity<>(user, HttpStatus.OK))
                 .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
-
 
     @GetMapping("/salary/greaterThanOrEqual")
     public ResponseEntity<Page<User>> getUsersWithSalaryGreaterThanOrEqual(

@@ -11,20 +11,20 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   final _authService = AuthService();
   final TextEditingController _emailController = TextEditingController();
 
-  Future<void> _resetPassword() async {
-    if (_formKey.currentState!.validate()) {
-      bool success = await _authService.forgotPassword(_emailController.text);
-      if (success) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Password reset link sent to your email.')),
-        );
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to send reset link. Try again.')),
-        );
-      }
-    }
-  }
+  // Future<void> _resetPassword() async {
+  //   if (_formKey.currentState!.validate()) {
+  //     bool success = await _authService.forgotPassword(_emailController.text);
+  //     if (success) {
+  //       ScaffoldMessenger.of(context).showSnackBar(
+  //         SnackBar(content: Text('Password reset link sent to your email.')),
+  //       );
+  //     } else {
+  //       ScaffoldMessenger.of(context).showSnackBar(
+  //         SnackBar(content: Text('Failed to send reset link. Try again.')),
+  //       );
+  //     }
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -43,10 +43,10 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                 value!.isEmpty ? 'Please enter your email' : null,
               ),
               SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: _resetPassword,
-                child: Text('Reset Password'),
-              ),
+              // ElevatedButton(
+              //   onPressed: _resetPassword,
+              //   child: Text('Reset Password'),
+              // ),
             ],
           ),
         ),

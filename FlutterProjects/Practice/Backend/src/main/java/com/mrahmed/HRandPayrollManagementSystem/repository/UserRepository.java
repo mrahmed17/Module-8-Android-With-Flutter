@@ -10,12 +10,16 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 @Repository
 public interface UserRepository extends JpaRepository <User, Long> {
 
-    // Finding Users by Email
+    // Finding Users by Role for JWT
+    Optional<List<User>> findAllByRole(Role role);
+
+    // Finding Users by Email by Role for JWT
     Optional<User> findByEmail(String email);
 
     @Query("SELECT u FROM User u WHERE u.basicSalary >= :salary")

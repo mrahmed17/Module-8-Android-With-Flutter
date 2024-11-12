@@ -42,7 +42,7 @@ dependencies:
   http: ^1.2.2
   #  for  secure login and logout and signup
   flutter_secure_storage: ^7.0.1
-#  jwt_decode: ^0.3.1
+  jwt_decode: ^0.3.1
 
   shared_preferences: ^2.3.2
   dio: ^5.7.0
@@ -50,6 +50,7 @@ dependencies:
   image_picker_for_web: ^2.1.6
   path_provider: ^2.1.5
   http_parser: ^4.0.2
+
   google_fonts: any
   get: ^4.6.6
   # date_time_format
@@ -68,6 +69,7 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^5.0.0
+  google_fonts: ^4.0.1
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

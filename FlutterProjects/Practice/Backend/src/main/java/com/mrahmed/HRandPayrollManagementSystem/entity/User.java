@@ -25,28 +25,27 @@ public class User {
 
     @Email(message = "Email should be valid")
     @NotBlank(message = "Email is required")
+    @Column(unique = true, nullable = false)
     private String email;
 
     @NotBlank(message = "Password is required")
     @Size(min = 6, message = "Password should have at least 6 characters")
+    @Column(nullable = false)
     private String password;
+
+    @NotBlank(message = "Cell number is required")
+    @Pattern(regexp = "^[+]?[0-9]{10,15}$", message = "Contact must be a valid phone number")
+    @Column(unique = true)
+    private String cell;
 
     @NotBlank(message = "Address is required")
     private String address;
 
-    @Pattern(regexp = "^(Male|Female|Other)$", message = "Gender must be Male, Female, or Other")
-    private String gender;
-
     @Past(message = "Date of Birth must be a past date")
     private LocalDate dateOfBirth;
 
-    @NotBlank(message = "National ID is required")
-    @Size(max = 20, message = "National ID can have a maximum of 20 characters")
-    private String nationalId;
-
-    @NotBlank(message = "Contact number is required")
-    @Pattern(regexp = "^[+]?[0-9]{10,15}$", message = "Contact must be a valid phone number")
-    private String contact;
+    @Pattern(regexp = "^(Male|Female|Other)$", message = "Gender must be Male, Female, or Other")
+    private String gender;
 
     @PositiveOrZero(message = "Basic salary cannot be negative")
     private double basicSalary;
@@ -54,15 +53,18 @@ public class User {
     @PastOrPresent(message = "Joined date cannot be in the future")
     private LocalDate joinedDate;
 
+    @Column(nullable = false)
+    private boolean active;
+
     @NotBlank(message = "Profile photo path is required")
     private String profilePhoto;
 
     @Enumerated(EnumType.STRING)
     @NotNull(message = "Role is required")
-    @Column(name = "role")
     private Role role;
 
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JsonIgnore
     private List<Attendance> attendances;
+
 }

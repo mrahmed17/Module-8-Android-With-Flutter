@@ -2,7 +2,6 @@ package com.mrahmed.HRandPayrollManagementSystem.service;
 
 import com.mrahmed.HRandPayrollManagementSystem.entity.Role;
 import com.mrahmed.HRandPayrollManagementSystem.entity.User;
-import com.mrahmed.HRandPayrollManagementSystem.repository.AttendanceRepository;
 import com.mrahmed.HRandPayrollManagementSystem.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -13,11 +12,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -31,16 +30,13 @@ public class UserService {
     @Value("${upload.directory}")
     private String uploadDir;
 
-    @Autowired
-    private AttendanceRepository attendanceRepository;
-
     @Transactional
-    public User saveUser(User user, MultipartFile profilePhoto) throws IOException {
+    public void saveUser(User user, MultipartFile profilePhoto) throws IOException {
         if (profilePhoto != null && !profilePhoto.isEmpty()) {
             String profilePhotoFilename = saveImage(profilePhoto, user.getFullName());
             user.setProfilePhoto(profilePhotoFilename);
         }
-        return userRepository.save(user);
+        userRepository.save(user);
     }
 
     private String saveImage(MultipartFile file, String fullName) throws IOException {
@@ -62,6 +58,10 @@ public class UserService {
         return userRepository.findAll();
     }
 
+    public List<User> getAllManagers() {
+        return userRepository.findAllByRole(Role.MANAGER).orElse(new ArrayList<>());
+    }
+
     public User findUserById(Long id) {
         return userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("User Not Found"));
@@ -75,11 +75,10 @@ public class UserService {
         // Update user details
         existingUser.setFullName(updatedUser.getFullName());
         existingUser.setEmail(updatedUser.getEmail());
+        existingUser.setCell(updatedUser.getCell());
         existingUser.setAddress(updatedUser.getAddress());
         existingUser.setGender(updatedUser.getGender());
         existingUser.setDateOfBirth(updatedUser.getDateOfBirth());
-        existingUser.setNationalId(updatedUser.getNationalId());
-        existingUser.setContact(updatedUser.getContact());
         existingUser.setBasicSalary(updatedUser.getBasicSalary());
         existingUser.setRole(updatedUser.getRole());
         if (profilePhoto != null && !profilePhoto.isEmpty()) {
@@ -88,11 +87,6 @@ public class UserService {
         }
 
         userRepository.save(existingUser);
-    }
-
-    public void deleteUserById(Long id) {
-        attendanceRepository.deleteByUserId(id);
-        userRepository.deleteById(id);
     }
 
     public Optional<User> getUserByEmail(String email) {
