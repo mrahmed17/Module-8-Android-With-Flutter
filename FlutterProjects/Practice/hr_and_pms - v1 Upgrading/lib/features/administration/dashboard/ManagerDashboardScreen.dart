@@ -1,45 +1,60 @@
 import 'package:flutter/material.dart';
 import 'package:hr_and_pms/features/administration/authentication/LoginScreen.dart';
 
-class ManagerDashboardScreen extends StatelessWidget {
+class ManagerDashboardScreen extends StatefulWidget {
   const ManagerDashboardScreen({super.key});
+
+  @override
+  _ManagerDashboardScreenState createState() => _ManagerDashboardScreenState();
+}
+
+class _ManagerDashboardScreenState extends State<ManagerDashboardScreen> {
+  int _selectedIndex = 0;
+
+  void _onBottomNavigationItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Manager Dashboard'),
-        automaticallyImplyLeading: false, // Hides the back button
+        title: const Text('Manager Dashboard'),
+        automaticallyImplyLeading: false,
         backgroundColor: Colors.teal,
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: GridView.builder(
-          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 3, // 3 columns in each row
-            crossAxisSpacing: 16, // Horizontal space between columns
-            mainAxisSpacing: 16, // Vertical space between rows
-            childAspectRatio: 1, // Adjust the aspect ratio for square-shaped grid items
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2,
+            crossAxisSpacing: 16,
+            mainAxisSpacing: 16,
+            childAspectRatio: 1.2,
           ),
-          itemCount: 6, // Total number of items
+          itemCount: 5,
           itemBuilder: (context, index) {
             return GestureDetector(
               onTap: () {
-                // Implement navigation logic for each button
                 switch (index) {
                   case 0:
-                    print('View Employees Clicked');
+                    print('Give Attendance Clicked');
                     break;
                   case 1:
-                    print('View Departments Clicked');
+                    print('View Employees Clicked');
                     break;
                   case 2:
-                    print('Add Department Clicked');
+                    print('View Departments Clicked');
                     break;
                   case 3:
-                    print('Settings Clicked');
+                    print('Add Department Clicked');
                     break;
                   case 4:
+                    print('Settings Clicked');
+                    break;
+                  case 5:
                     print('Logout Clicked');
                     Navigator.pushReplacement(
                       context,
@@ -53,14 +68,15 @@ class ManagerDashboardScreen extends StatelessWidget {
               child: Container(
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(12),
-                  gradient: LinearGradient(
-                    colors: [
-                      _getGradientColor(index)[0],
-                      _getGradientColor(index)[1],
-                    ],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
+                  color: Colors.teal, // Consistent teal color for all items
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.teal.shade700.withOpacity(0.2),
+                      spreadRadius: 2,
+                      blurRadius: 5,
+                      offset: Offset(3, 3), // Subtle shadow effect
+                    ),
+                  ],
                 ),
                 child: Center(
                   child: Column(
@@ -71,11 +87,11 @@ class ManagerDashboardScreen extends StatelessWidget {
                         size: 40,
                         color: Colors.white,
                       ),
-                      SizedBox(height: 8),
+                      const SizedBox(height: 8),
                       Text(
                         _getLabel(index),
                         textAlign: TextAlign.center,
-                        style: TextStyle(
+                        style: const TextStyle(
                           color: Colors.white,
                           fontWeight: FontWeight.bold,
                           fontSize: 16,
@@ -89,60 +105,72 @@ class ManagerDashboardScreen extends StatelessWidget {
           },
         ),
       ),
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: _selectedIndex,
+        onTap: _onBottomNavigationItemTapped,
+        selectedItemColor: Colors.white,
+        unselectedItemColor: Colors.teal.shade100,
+        backgroundColor: Colors.teal,
+        showSelectedLabels: true,
+        showUnselectedLabels: true,
+        type: BottomNavigationBarType.fixed,
+        items: const [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.dashboard),
+            label: 'Dashboard',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.people),
+            label: 'Employees',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.notifications),
+            label: 'Notifications',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person),
+            label: 'Profile',
+          ),
+        ],
+      ),
     );
   }
 
-  // Get the label for each item based on index
   String _getLabel(int index) {
     switch (index) {
       case 0:
-        return 'View Employees';
+        return 'Give Attendance';
       case 1:
-        return 'View Departments';
+        return 'View Employees';
       case 2:
-        return 'Add Department';
+        return 'View Departments';
       case 3:
-        return 'Settings';
+        return 'Add Department';
       case 4:
+        return 'Settings';
+      case 5:
         return 'Logout';
       default:
         return '';
     }
   }
 
-  // Get the icon for each item based on index
   IconData _getIcon(int index) {
     switch (index) {
       case 0:
-        return Icons.people;
+        return Icons.access_time;
       case 1:
-        return Icons.house;
+        return Icons.people;
       case 2:
-        return Icons.add;
+        return Icons.house;
       case 3:
-        return Icons.settings;
+        return Icons.add;
       case 4:
+        return Icons.settings;
+      case 5:
         return Icons.exit_to_app;
       default:
         return Icons.help;
-    }
-  }
-
-  // Get the gradient colors for each grid item based on index
-  List<Color> _getGradientColor(int index) {
-    switch (index) {
-      case 0:
-        return [Colors.blueAccent, Colors.lightBlue];
-      case 1:
-        return [Colors.orangeAccent, Colors.orange];
-      case 2:
-        return [Colors.greenAccent, Colors.green];
-      case 3:
-        return [Colors.purpleAccent, Colors.purple];
-      case 4:
-        return [Colors.redAccent, Colors.red];
-      default:
-        return [Colors.grey, Colors.grey];
     }
   }
 }

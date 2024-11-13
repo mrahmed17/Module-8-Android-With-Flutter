@@ -14,10 +14,10 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  final TextEditingController email = TextEditingController()
-    ..text = 'mrahmed1796@gmail.com';
-  final TextEditingController password = TextEditingController()
-    ..text = '123456';
+  final TextEditingController email = TextEditingController();
+    // ..text = 'mrahmed1796@gmail.com';
+  final TextEditingController password = TextEditingController();
+    // ..text = '123456';
   final storage = FlutterSecureStorage();
   bool _isPasswordVisible = false;
 
@@ -25,6 +25,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Future<void> loginUser(BuildContext context) async {
     try {
+      final response = await authService.login(email.text, password.text);
       final role = await authService.getUserRole();
 
       if (role == 'ADMIN') {

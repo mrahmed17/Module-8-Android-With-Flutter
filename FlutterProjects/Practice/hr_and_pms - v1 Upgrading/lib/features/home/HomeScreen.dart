@@ -14,20 +14,27 @@ class _HomeScreenState extends State<HomeScreen> {
 
   // List of pages for bottom navigation
   final List<Widget> _pages = [
-    HomePage(),         // Home Page
+    HomePage(), // Home Page
     RegistrationScreen(), // Registration Page
-    LoginScreen(),        // Login Page
+    LoginScreen(), // Login Page
   ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Kormi Sheba', style: TextStyle(fontSize: 60, fontWeight: FontWeight.bold, color: Colors.white,),),
+        title: const Text(
+          'Kormi Sheba',
+          style: TextStyle(
+            fontSize: 60,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
+        ),
         backgroundColor: Colors.teal,
         centerTitle: true,
       ),
-      body: _pages[_currentIndex], // Display page based on bottom navigation index
+      body: _pages[_currentIndex],
       // Bottom Navigation Bar
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
@@ -38,15 +45,24 @@ class _HomeScreenState extends State<HomeScreen> {
         },
         items: const [
           BottomNavigationBarItem(
-            icon: Icon(Icons.home, color: Colors.teal,),
+            icon: Icon(
+              Icons.home,
+              color: Colors.teal,
+            ),
             label: 'Home',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.app_registration, color: Colors.teal,),
+            icon: Icon(
+              Icons.app_registration,
+              color: Colors.teal,
+            ),
             label: 'Registration',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.login, color: Colors.teal,),
+            icon: Icon(
+              Icons.login,
+              color: Colors.teal,
+            ),
             label: 'Login',
           ),
         ],
@@ -116,13 +132,16 @@ class HomePage extends StatelessWidget {
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => RegistrationScreen()),
+                    MaterialPageRoute(
+                        builder: (context) => RegistrationScreen()),
                   );
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.teal,
-                  padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 50),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 15, horizontal: 50),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10)),
                 ),
                 child: const Text(
                   'Get Started',

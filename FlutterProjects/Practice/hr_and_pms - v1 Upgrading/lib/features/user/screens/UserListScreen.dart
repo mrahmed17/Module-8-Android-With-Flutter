@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:hr_and_pms/features/user/UserService.dart';
+import 'package:hr_and_pms/features/user/service/UserService.dart';
 import 'package:hr_and_pms/features/user/model/User.dart';
-import 'package:hr_and_pms/features/user/screens/UserDetailScreen.dart';
+import 'package:hr_and_pms/features/user/screens/UserProfileScreen.dart';
 
 
 class UserListScreen extends StatefulWidget {
@@ -221,7 +221,7 @@ class _UserListScreenState extends State<UserListScreen> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => UserDetailScreen(userId: user.id),
+                        builder: (context) => UserProfileScreen(userId: user.id, role: '',),
                       ),
                     ).then((value) => _fetchUsers());
                   },

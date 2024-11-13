@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:hr_and_pms/features/attendance/AttendanceModel.dart';
-import 'package:hr_and_pms/features/attendance/AttendanceService.dart';
+import 'package:hr_and_pms/features/attendance/model/AttendanceModel.dart';
+import 'package:hr_and_pms/features/attendance/service/AttendanceService.dart';
 
 class AttendanceScreen extends StatefulWidget {
   @override
@@ -9,7 +9,7 @@ class AttendanceScreen extends StatefulWidget {
 
 class _AttendanceScreenState extends State<AttendanceScreen> {
   final AttendanceService attendanceService = AttendanceService();
-  List<Attendance> todayAttendance = [];
+  Attendance? todayAttendance;
   bool isLoading = false;
   int selectedUserId = 1; // Default user ID; adjust as needed
 
@@ -19,46 +19,49 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
     fetchTodayAttendance();
   }
 
+  // Fetch today's attendance records
   Future<void> fetchTodayAttendance() async {
     setState(() => isLoading = true);
     try {
-      List<Attendance> attendanceRecords = await attendanceService.getTodayAttendance();
+      List<Attendance> attendanceRecords = await attendanceService.getTodayAttendanceByUserId(selectedUserId);
       setState(() {
-        todayAttendance = attendanceRecords;
+        todayAttendance = attendanceRecords.isNotEmpty ? attendanceRecords.first : null;
       });
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Failed to load attendance records")),
+        SnackBar(content: Text("Failed to load attendance records. Error: $e")),
       );
     } finally {
       setState(() => isLoading = false);
     }
   }
 
+  // Handle check-in action
   Future<void> checkIn() async {
     try {
-      await attendanceService.checkIn(selectedUserId);
-      await fetchTodayAttendance();
+      Attendance attendance = await attendanceService.checkIn(selectedUserId);
+      setState(() => todayAttendance = attendance);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Checked in successfully!")),
       );
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Failed to check in")),
+        SnackBar(content: Text("Failed to check in. Error: $e")),
       );
     }
   }
 
+  // Handle check-out action
   Future<void> checkOut() async {
     try {
-      await attendanceService.checkOut(selectedUserId);
-      await fetchTodayAttendance();
+      Attendance attendance = await attendanceService.checkOut(selectedUserId);
+      setState(() => todayAttendance = attendance);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Checked out successfully!")),
       );
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Failed to check out")),
+        SnackBar(content: Text("Failed to check out. Error: $e")),
       );
     }
   }
@@ -67,62 +70,90 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Daily Attendance"),
+        title: Text("Attendance Tracker",
+          style: TextStyle(
+            fontSize: 24,
+            fontWeight: FontWeight.w600,
+            color: Colors.white,
+          ),
+        ),
+        backgroundColor: Colors.teal,
+        centerTitle: true,
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                ElevatedButton(
-                  onPressed: checkIn,
-                  child: Text("Check In"),
-                ),
-                ElevatedButton(
-                  onPressed: checkOut,
-                  child: Text("Check Out"),
-                ),
-              ],
-            ),
-            SizedBox(height: 20),
-            Text(
-              "Today's Attendance",
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            // Check In Button
+            ElevatedButton(
+              onPressed: canCheckIn() ? checkIn : null,
+              child: Text("Check In", style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+                color: Colors.teal,
+              )),
             ),
             SizedBox(height: 10),
+            // Check Out Button
+            ElevatedButton(
+              onPressed: canCheckOut() ? checkOut : null,
+              child: Text("Check Out", style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+                color: Colors.redAccent,
+              )),
+            ),
+            SizedBox(height: 20),
+            // Loading indicator or attendance details
             isLoading
                 ? Center(child: CircularProgressIndicator())
-                : todayAttendance.isNotEmpty
-                ? Expanded(
-              child: ListView.builder(
-                itemCount: todayAttendance.length,
-                itemBuilder: (context, index) {
-                  final attendance = todayAttendance[index];
-                  return Card(
-                    margin: const EdgeInsets.symmetric(vertical: 5),
-                    child: ListTile(
-                      leading: Text("${attendance.id}"),
-                      title: Text("User: ${attendance.user.fullName}"),
-                      subtitle: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text("Date: ${attendance.date}"),
-                          Text("Check-in: ${attendance.clockInTime ?? 'N/A'}"),
-                          Text("Check-out: ${attendance.clockOutTime ?? 'N/A'}"),
-                        ],
-                      ),
-                    ),
-                  );
-                },
-              ),
+                : todayAttendance != null
+                ? Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  "Attendance Details",
+                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                ),
+                SizedBox(height: 10),
+                Text("Check-in Time: ${todayAttendance!.clockInTime ?? 'Not Checked In'}"),
+                Text("Check-out Time: ${todayAttendance!.clockOutTime ?? 'Not Checked Out'}"),
+                Text("Overtime Hours: ${calculateOvertime(todayAttendance!)}"),
+              ],
             )
-                : Center(child: Text("No attendance records for today")),
+                : Center(child: Text("No attendance record for today",
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+                color: Colors.cyan,
+              ),
+            )),
           ],
         ),
       ),
     );
+  }
+
+  // Calculate overtime based on attendance times
+  String calculateOvertime(Attendance attendance) {
+    if (attendance.clockInTime != null && attendance.clockOutTime != null) {
+      final checkIn = attendance.clockInTime!;
+      final checkOut = attendance.clockOutTime!;
+      final duration = checkOut.difference(checkIn);
+      final overtimeHours = duration.inHours - 8; // Assuming an 8-hour workday
+      return overtimeHours > 0 ? "$overtimeHours hours" : "No overtime";
+    }
+    return "N/A";
+  }
+
+  // Check if the user can check in
+  bool canCheckIn() {
+    return todayAttendance?.clockInTime == null;
+  }
+
+  // Check if the user can check out
+  bool canCheckOut() {
+    return todayAttendance?.clockInTime != null && todayAttendance?.clockOutTime == null;
   }
 }

@@ -1,5 +1,5 @@
 
-import 'package:hr_and_pms/features/attendance/AttendanceModel.dart';
+import 'package:hr_and_pms/features/attendance/model/AttendanceModel.dart';
 import 'package:hr_and_pms/features/user/model/Role.dart';
 
 class User {

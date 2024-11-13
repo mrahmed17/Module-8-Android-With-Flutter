@@ -1,160 +1,187 @@
 import 'package:flutter/material.dart';
-import 'package:hr_and_pms/features/administration/authentication/LoginScreen.dart';
+import 'package:hr_and_pms/features/attendance/screens/AttendanceScreen.dart';
+// import 'package:hr_and_pms/features/salary/SalaryScreen.dart';
+// import 'package:hr_and_pms/features/profile/ProfileScreen.dart';
+// import 'package:hr_and_pms/features/feedback/FeedbackScreen.dart';
 
-class DashboardScreen extends StatelessWidget {
-  const DashboardScreen({super.key});
+class DashboardScreen extends StatefulWidget {
+  const DashboardScreen({Key? key}) : super(key: key);
 
-  /*           children: [
-          Text(
-          'Welcome, Dear User!',
-          style: TextStyle(
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
-            color: Colors.teal,
-          ),
-          textAlign: TextAlign.center,
-        ),],
-  */
+  @override
+  _DashboardScreenState createState() => _DashboardScreenState();
+}
+
+class _DashboardScreenState extends State<DashboardScreen> {
+  int _selectedIndex = 0;
+  final List<Widget> _screens = [
+    // ProfileScreen(),
+    AttendanceScreen(),
+    // SalaryScreen(),
+    // FeedbackScreen(),
+  ];
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Dashboard'),
-        automaticallyImplyLeading: false, // Hides the back button
-        backgroundColor: Colors.teal,
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: GridView.builder(
-          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 3,
-            crossAxisSpacing: 16,
-            mainAxisSpacing: 16,
-            childAspectRatio: 1,
+        title: const Text(
+          'Employee Dashboard',
+          style: TextStyle(
+            fontSize: 24,
+            fontWeight: FontWeight.w600,
+            color: Colors.white,
           ),
-          itemCount: 6, // Total number of items
-          itemBuilder: (context, index) {
-            return GestureDetector(
-              onTap: () {
-                // Implement navigation logic for each button
-                switch (index) {
-                  case 0:
-                    print('View Employees Clicked');
-                    break;
-                  case 1:
-                    print('View Departments Clicked');
-                    break;
-                  case 2:
-                    print('Add Department Clicked');
-                    break;
-                  case 3:
-                    print('Settings Clicked');
-                    break;
-                  case 4:
-                    print('Logout Clicked');
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(builder: (context) => LoginScreen()),
-                    );
-                    break;
-                  default:
-                    break;
-                }
-              },
-              child: Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(12),
-                  gradient: LinearGradient(
-                    colors: [
-                      _getGradientColor(index)[0],
-                      _getGradientColor(index)[1],
-                    ],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
-                ),
-                child: Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        _getIcon(index),
-                        size: 40,
-                        color: Colors.white,
-                      ),
-                      SizedBox(height: 8),
-                      Text(
-                        _getLabel(index),
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            );
-          },
         ),
+        backgroundColor: Colors.teal,
+        centerTitle: true,
+      ),
+      body: _selectedIndex == 0
+          ? _buildDashboardGrid(context)
+          : _screens[_selectedIndex],
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: _selectedIndex,
+        onTap: _onItemTapped,
+        backgroundColor: Colors.teal, // Teal background color for navigation
+        selectedItemColor: Colors.white, // White for selected item text and icon
+        unselectedItemColor: Colors.teal.shade100, // Lighter teal for unselected items
+        selectedFontSize: 14,
+        unselectedFontSize: 14,
+        showSelectedLabels: true,
+        showUnselectedLabels: true,
+        type: BottomNavigationBarType.fixed,
+        items: const [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person),
+            label: 'Profile',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.access_time),
+            label: 'Attendance',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.attach_money),
+            label: 'Salary',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.feedback),
+            label: 'Feedback',
+          ),
+        ],
       ),
     );
   }
 
-  // Get the label for each item based on index
+  Widget _buildDashboardGrid(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: GridView.builder(
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 2,
+          crossAxisSpacing: 16,
+          mainAxisSpacing: 16,
+          childAspectRatio: 1,
+        ),
+        itemCount: 6,
+        itemBuilder: (context, index) {
+          return GestureDetector(
+            onTap: () {
+              // Navigate to respective feature screens
+              // switch (index) {
+              //   case 0:
+              //     Navigator.push(context, MaterialPageRoute(builder: (context) => AdvanceSalaryScreen()));
+              //     break;
+              //   case 1:
+              //     Navigator.push(context, MaterialPageRoute(builder: (context) => LeaveApplicationScreen()));
+              //     break;
+              //   case 2:
+              //     Navigator.push(context, MaterialPageRoute(builder: (context) => PayslipScreen()));
+              //     break;
+              //   default:
+              //     break;
+              // }
+            },
+            child: Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(12),
+                gradient: LinearGradient(
+                  colors: _getGradientColor(index),
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+              ),
+              child: Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      _getIcon(index),
+                      size: 40,
+                      color: Colors.white,
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      _getLabel(index),
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
   String _getLabel(int index) {
     switch (index) {
       case 0:
-        return 'View Employees';
+        return 'Advance Salary';
       case 1:
-        return 'View Departments';
+        return 'Leave Application';
       case 2:
-        return 'Add Department';
-      case 3:
-        return 'Settings';
-      case 4:
-        return 'Logout';
+        return 'Payslip';
       default:
-        return '';
+        return 'Feature';
     }
   }
 
-  // Get the icon for each item based on index
   IconData _getIcon(int index) {
     switch (index) {
       case 0:
-        return Icons.people;
+        return Icons.money;
       case 1:
-        return Icons.house;
+        return Icons.work_off;
       case 2:
-        return Icons.add;
-      case 3:
-        return Icons.settings;
-      case 4:
-        return Icons.exit_to_app;
+        return Icons.receipt_long;
       default:
         return Icons.help;
     }
   }
 
-  // Get the gradient colors for each grid item based on index
   List<Color> _getGradientColor(int index) {
     switch (index) {
       case 0:
-        return [Colors.blueAccent, Colors.lightBlue];
+        return [Colors.teal, Colors.teal];
       case 1:
-        return [Colors.orangeAccent, Colors.orange];
+        return [Colors.teal, Colors.teal];
       case 2:
-        return [Colors.greenAccent, Colors.green];
+        return [Colors.teal, Colors.teal];
       case 3:
-        return [Colors.purpleAccent, Colors.purple];
-      case 4:
-        return [Colors.redAccent, Colors.red];
+        return [Colors.teal, Colors.teal];
       default:
-        return [Colors.grey, Colors.grey];
+        return [Colors.teal, Colors.teal];
     }
   }
 }

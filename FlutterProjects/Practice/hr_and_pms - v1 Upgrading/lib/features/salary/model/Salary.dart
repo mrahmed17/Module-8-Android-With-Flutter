@@ -1,7 +1,7 @@
 
 
-import 'package:hr_and_pms/features/attendance/AttendanceModel.dart';
-import 'package:hr_and_pms/features/bonus/Bonus.dart';
+import 'package:hr_and_pms/features/attendance/model/AttendanceModel.dart';
+import 'package:hr_and_pms/features/bonus/model/Bonus.dart';
 import 'package:hr_and_pms/features/leave/model/Leave.dart';
 
 class Salary {

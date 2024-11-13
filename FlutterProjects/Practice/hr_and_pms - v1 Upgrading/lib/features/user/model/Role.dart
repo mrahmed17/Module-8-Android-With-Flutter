@@ -1,7 +1,6 @@
 enum Role { ADMIN, MANAGER, EMPLOYEE }
 
 extension RoleExtension on Role {
-  // Convert a string to Role enum
   static Role fromString(String roleString) {
     return Role.values.firstWhere(
             (role) => role.toString().split('.').last.toLowerCase()
