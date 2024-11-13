@@ -86,7 +86,7 @@ class AuthService{
       if (expiryDate != null) {
         return DateTime.now().isAfter(expiryDate);
       } else {
-        return true; // Handle case where expiry date is missing
+        return true;
       }
     }
     return true;

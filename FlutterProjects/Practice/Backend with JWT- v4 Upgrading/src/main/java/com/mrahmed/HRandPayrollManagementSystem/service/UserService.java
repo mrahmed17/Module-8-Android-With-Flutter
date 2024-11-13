@@ -50,9 +50,8 @@ public class UserService implements UserDetailsService {
         Path targetPath = path.resolve(fileName);
         Files.copy(file.getInputStream(), targetPath, StandardCopyOption.REPLACE_EXISTING);
 
-        return fileName; // Return the saved filename to store in the User entity
+        return fileName;
     }
-
 
     // Fetch all managers with pagination
     public Page<User> getAllManagers(Pageable pageable) {

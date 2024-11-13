@@ -22,24 +22,24 @@ public class JwtService {
 
     private final String SECREAT_KEY = "d169552a202ace4ed9b31a326df08atamim3e197a10213030f7c4be596ba99b6";
 
-//    private Claims extractAllClaims(String token) {
-//        return Jwts
-//                .parser()
-//                .verifyWith(getSigninKey())
-//                .build()
-//                .parseSignedClaims(token)
-//                .getPayload();
-//
-//    }
-
     private Claims extractAllClaims(String token) {
         return Jwts
                 .parser()
-                .setSigningKey(getSigninKey())
+                .verifyWith(getSigninKey())
                 .build()
-                .parseClaimsJws(token)
-                .getBody();
+                .parseSignedClaims(token)
+                .getPayload();
+
     }
+
+//    private Claims extractAllClaims(String token) {
+//        return Jwts
+//                .parser()
+//                .setSigningKey(getSigninKey())
+//                .build()
+//                .parseClaimsJws(token)
+//                .getBody();
+//    }
 
 
     // Gets the signing key for HMAC SHA encryption
@@ -53,10 +53,8 @@ public class JwtService {
     public String generateToken(User user) {
         return Jwts
                 .builder()
-                .setSubject(user.getEmail())  // Sets the email as the subject
-                .claim("role", user.getRole())  // Adds the user's role to the token payload
-                .setIssuedAt(new Date(System.currentTimeMillis()))  // Sets the issue time
-                .setExpiration(new Date(System.currentTimeMillis() + 24 * 60 * 60 * 1000))  // Sets expiration to 24 hours
+                .claim("sub", user.getEmail())  // Sets the email as the subject
+                .claim("role", user.getRole()).issuedAt(new Date(System.currentTimeMillis())).expiration(new Date(System.currentTimeMillis() + 24 * 60 * 60 * 1000))  // Sets expiration to 24 hours
                 .signWith(getSigninKey())  // Signs the token with the secret key
                 .compact();  // Builds and compacts the token into a string
     }

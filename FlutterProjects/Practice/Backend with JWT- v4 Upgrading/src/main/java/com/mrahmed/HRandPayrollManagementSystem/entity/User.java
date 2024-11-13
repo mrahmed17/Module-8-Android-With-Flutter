@@ -71,23 +71,6 @@ public class User implements UserDetails, Serializable {
     private Role role;
 
 
-    public User(String name, String email, String password, String cell, String address, String gender, LocalDate dateOfBirth, double basicSalary, LocalDate joinedDate, boolean active, boolean isLock, String profilePhoto, Role role) {
-        this.name = name;
-        this.email = email;
-        this.password = password;
-        this.cell = cell;
-        this.address = address;
-        this.gender = gender;
-        this.dateOfBirth = dateOfBirth;
-        this.basicSalary = basicSalary;
-        this.joinedDate = joinedDate;
-        this.active = active;
-        this.isLock = isLock;
-        this.profilePhoto = profilePhoto;
-        this.role = role;
-    }
-
-
 //    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 //    @JsonIgnore
 //    private List<Attendance> attendances;

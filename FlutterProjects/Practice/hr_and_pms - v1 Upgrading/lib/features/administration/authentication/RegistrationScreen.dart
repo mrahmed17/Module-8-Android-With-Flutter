@@ -18,18 +18,14 @@ class RegistrationScreen extends StatefulWidget {
 
 class _RegistrationScreenState extends State<RegistrationScreen> {
   final TextEditingController name = TextEditingController()..text = 'TEST';
-  final TextEditingController email = TextEditingController()
-    ..text = 'test@test.com';
-  final TextEditingController password = TextEditingController()
-    ..text = '123456';
-  final TextEditingController confirmPassword = TextEditingController()
-    ..text = '123456';
-  final TextEditingController cell = TextEditingController()
-    ..text = '01700000000';
+  final TextEditingController email = TextEditingController()..text = 'test@test.com';
+  final TextEditingController password = TextEditingController()..text = '123456';
+  final TextEditingController confirmPassword = TextEditingController()..text = '123456';
+  final TextEditingController cell = TextEditingController()..text = '01700000000';
   final TextEditingController address = TextEditingController()..text = 'OMG';
-  final TextEditingController basicSalary = TextEditingController()
-    ..text = '5000';
+  final TextEditingController basicSalary = TextEditingController()..text = '5000';
   DateTime? selectedDOB;
+  DateTime? joinedDate = DateTime.now(); // Automatically set joining date
   String? selectedGender;
   String? selectedRole = "EMPLOYEE";
   bool isLoading = false;
@@ -40,17 +36,15 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
 
   Future<void> pickImage() async {
     if (kIsWeb) {
-      // For Web: Use image_picker_web to pick image and store as bytes
       var pickedImage = await ImagePickerWeb.getImageAsBytes();
       if (pickedImage != null) {
         setState(() {
-          webPhoto = pickedImage; // Store the picked image as Uint8List
+          webPhoto = pickedImage;
         });
       }
     } else {
-      // For Mobile: Use image_picker to pick image
       final XFile? pickedImage =
-          await ImagePicker().pickImage(source: ImageSource.gallery);
+      await ImagePicker().pickImage(source: ImageSource.gallery);
       if (pickedImage != null) {
         setState(() {
           mobilePhoto = pickedImage;
@@ -69,9 +63,11 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
         'cell': cell.text,
         'address': address.text,
         'dateOfBirth':
-            selectedDOB != null ? selectedDOB!.toIso8601String() : '',
-        'role': selectedRole ?? "EMPLOYEE",
+        selectedDOB != null ? selectedDOB!.toIso8601String() : '',
         'gender': selectedGender ?? "Other",
+        'basicSalary': basicSalary.text,
+        'joinedDate': joinedDate!.toIso8601String(), // Set the joining date to current date
+        'role': selectedRole ?? "EMPLOYEE",
       };
 
       setState(() {
@@ -95,7 +91,6 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     }
   }
 
-  // HTTP post request to send data to backend
   Future<http.Response> _sendDataToBackend(Map<String, String> user) async {
     const String url = 'http://localhost:8080/register';
     var request = http.MultipartRequest('POST', Uri.parse(url));
@@ -130,8 +125,9 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Registration'),
-        backgroundColor: Colors.green,
+        title: Text('Registration', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white,),),
+        backgroundColor: Colors.teal,
+        centerTitle: true,
       ),
       body: Padding(
         padding: const EdgeInsets.all(16),
@@ -141,99 +137,23 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                TextFormField(
-                  controller: name,
-                  decoration: const InputDecoration(
-                      labelText: "Full name",
-                      border: OutlineInputBorder(),
-                      prefixIcon: Icon(Icons.person)),
-                  validator: (value) => value == null || value.isEmpty
-                      ? "Full name is required"
-                      : null,
-                ),
+                _buildTextField(name, 'Full name', Icons.person),
                 const SizedBox(height: 20),
-                TextFormField(
-                  controller: email,
-                  decoration: const InputDecoration(
-                      labelText: "Enter email address",
-                      border: OutlineInputBorder(),
-                      prefixIcon: Icon(Icons.email)),
-                  validator: (value) => value == null || value.isEmpty
-                      ? "Email is required"
-                      : null,
-                ),
+                _buildTextField(email, 'Email', Icons.email),
                 const SizedBox(height: 20),
-                TextFormField(
-                  controller: password,
-                  obscureText: true,
-                  decoration: const InputDecoration(
-                      labelText: "Enter your password",
-                      border: OutlineInputBorder(),
-                      prefixIcon: Icon(Icons.lock)),
-                  validator: (value) => value == null || value.isEmpty
-                      ? "Password is required"
-                      : null,
-                ),
+                _buildTextField(password, 'Password', Icons.lock, obscureText: true),
                 const SizedBox(height: 20),
-                TextFormField(
-                  controller: confirmPassword,
-                  obscureText: true,
-                  decoration: const InputDecoration(
-                      labelText: "Confirm password",
-                      border: OutlineInputBorder(),
-                      prefixIcon: Icon(Icons.lock)),
-                  validator: (value) =>
-                      value != password.text ? "Passwords do not match" : null,
-                ),
+                _buildTextField(confirmPassword, 'Confirm password', Icons.lock, obscureText: true),
                 const SizedBox(height: 20),
-                TextFormField(
-                  controller: cell,
-                  decoration: const InputDecoration(
-                      labelText: "Enter your cell number",
-                      border: OutlineInputBorder(),
-                      prefixIcon: Icon(Icons.phone)),
-                  validator: (value) => value == null || value.isEmpty
-                      ? "Cell number is required"
-                      : null,
-                ),
+                _buildTextField(cell, 'Cell number', Icons.phone),
                 const SizedBox(height: 20),
-                TextFormField(
-                  controller: address,
-                  decoration: const InputDecoration(
-                      labelText: "Enter your address",
-                      border: OutlineInputBorder(),
-                      prefixIcon: Icon(Icons.maps_home_work_rounded)),
-                  validator: (value) => value == null || value.isEmpty
-                      ? "Address is required"
-                      : null,
-                ),
-                const SizedBox(height: 20),
-                GestureDetector(
-                  onTap: pickImage,
-                  child: Container(
-                    color: Colors.grey[200],
-                    height: 150,
-                    width: double.infinity,
-                    child: webPhoto != null
-                        ? kIsWeb
-                            // Display `webPhoto` on web using `Image.memory`
-                            ? Image.memory(webPhoto!, fit: BoxFit.cover)
-                            // Display `mobilePhoto` on mobile using `Image.file`
-                            : Image.file(File(mobilePhoto!.path),
-                                fit: BoxFit.cover)
-                        : Icon(
-                            Icons.add_photo_alternate_outlined,
-                            color: Colors.grey[700],
-                            size: 50,
-                          ),
-                  ),
-                ),
+                _buildTextField(address, 'Address', Icons.home),
                 const SizedBox(height: 20),
                 DateTimeFormField(
                   decoration: const InputDecoration(
                     labelText: "Select Date of Birth",
                     border: OutlineInputBorder(),
-                    prefixIcon: Icon(Icons.calendar_today),
+                    prefixIcon: Icon(Icons.calendar_today, color: Colors.teal,),
                   ),
                   mode: DateTimeFieldPickerMode.date,
                   firstDate: DateTime(1900),
@@ -248,10 +168,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                 DropdownButtonFormField<String>(
                   value: selectedGender,
                   items: ['Male', 'Female', 'Other']
-                      .map((gender) => DropdownMenuItem(
-                            value: gender,
-                            child: Text(gender),
-                          ))
+                      .map((gender) => DropdownMenuItem(value: gender, child: Text(gender)))
                       .toList(),
                   onChanged: (String? value) {
                     setState(() {
@@ -261,22 +178,38 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                   decoration: const InputDecoration(
                     labelText: "Gender",
                     border: OutlineInputBorder(),
+                    prefixIcon: Icon(Icons.people, color: Colors.teal,),
+                  ),
+                ),
+                const SizedBox(height: 20),
+                _buildTextField(basicSalary, 'basicSalary', Icons.currency_exchange),
+                const SizedBox(height: 20),
+                GestureDetector(
+                  onTap: pickImage,
+                  child: Container(
+                    color: Colors.grey[200],
+                    height: 150,
+                    width: double.infinity,
+                    child: webPhoto != null
+                        ? Image.memory(webPhoto!, fit: BoxFit.cover)
+                        : mobilePhoto != null
+                        ? Image.file(File(mobilePhoto!.path), fit: BoxFit.cover)
+                        : Icon(Icons.add_photo_alternate_outlined, color: Colors.grey[700], size: 50),
                   ),
                 ),
                 const SizedBox(height: 30),
                 isLoading
                     ? CircularProgressIndicator()
                     : ElevatedButton(
-                        onPressed: _register,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.teal,
-                          foregroundColor: Colors.white,
-                        ),
-                        child: const Text(
-                          "Register",
-                          style: TextStyle(fontWeight: FontWeight.w900),
-                        ),
-                      ),
+                  onPressed: _register,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.teal,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                    padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 40),
+                  ),
+                  child: const Text("Register", style: TextStyle(fontWeight: FontWeight.bold)),
+                ),
                 const SizedBox(height: 20),
                 TextButton(
                   onPressed: () {
@@ -295,6 +228,24 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
           ),
         ),
       ),
+    );
+  }
+
+  // Helper method to create TextFormField with consistent styling
+  Widget _buildTextField(TextEditingController controller, String label, IconData icon,
+      {bool obscureText = false}) {
+    return TextFormField(
+      controller: controller,
+      obscureText: obscureText,
+      decoration: InputDecoration(
+        labelText: label,
+        prefixIcon: Icon(icon, color: Colors.teal),
+        border: OutlineInputBorder(),
+        focusedBorder: OutlineInputBorder(
+          borderSide: BorderSide(color: Colors.teal),
+        ),
+      ),
+      validator: (value) => value == null || value.isEmpty ? "$label is required" : null,
     );
   }
 }

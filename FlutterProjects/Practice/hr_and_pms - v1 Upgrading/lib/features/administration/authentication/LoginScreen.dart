@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:hr_and_pms/features/administration/authentication/ForgetPasswordScreen.dart';
 import 'package:hr_and_pms/features/administration/authentication/RegistrationScreen.dart';
-import 'package:hr_and_pms/features/administration/screen/AdminDashboardScreen.dart';
-import 'package:hr_and_pms/features/administration/screen/DashboardScreen.dart';
-import 'package:hr_and_pms/features/administration/screen/ManagerDashboardScreen.dart';
+import 'package:hr_and_pms/features/administration/dashboard/AdminDashboardScreen.dart';
+import 'package:hr_and_pms/features/administration/dashboard/ManagerDashboardScreen.dart';
+import 'package:hr_and_pms/features/dashboard/DashboardScreen.dart';
 import 'package:hr_and_pms/features/administration/service/AuthService.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -13,8 +14,10 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  final TextEditingController email = TextEditingController()..text = 'mrahmed1796@gmail.com';
-  final TextEditingController password = TextEditingController()..text = '123456';
+  final TextEditingController email = TextEditingController()
+    ..text = 'mrahmed1796@gmail.com';
+  final TextEditingController password = TextEditingController()
+    ..text = '123456';
   final storage = FlutterSecureStorage();
   bool _isPasswordVisible = false;
 
@@ -51,13 +54,13 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [Colors.indigo, Colors.teal],
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-          ),
-        ),
+        // decoration: BoxDecoration(
+        //   gradient: LinearGradient(
+        //     colors: [Colors.indigo, Colors.teal],
+        //     begin: Alignment.topCenter,
+        //     end: Alignment.bottomCenter,
+        //   ),
+        // ),
         child: Center(
           child: Padding(
             padding: EdgeInsets.all(20.0),
@@ -78,7 +81,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       style: GoogleFonts.poppins(
                         fontSize: 28,
                         fontWeight: FontWeight.w700,
-                        color: Colors.indigoAccent,
+                        color: Colors.teal,
                       ),
                     ),
                     SizedBox(height: 25),
@@ -91,8 +94,9 @@ class _LoginScreenState extends State<LoginScreen> {
                         loginUser(context);
                       },
                       style: ElevatedButton.styleFrom(
-                        padding: EdgeInsets.symmetric(horizontal: 50, vertical: 15),
-                        backgroundColor: Colors.indigo,
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 50, vertical: 15),
+                        backgroundColor: Colors.teal,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(30),
                         ),
@@ -112,15 +116,27 @@ class _LoginScreenState extends State<LoginScreen> {
                       onPressed: () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) => RegistrationScreen()),
+                          MaterialPageRoute(
+                              builder: (context) => RegistrationScreen()),
                         );
                       },
                       child: const Text(
-                        'Register Here',
-                        style: TextStyle(
-                          color: Colors.indigo,
-                          decoration: TextDecoration.underline,
-                        ),
+                        "Already have an account? Login here",
+                        style: TextStyle(color: Colors.teal),
+                      ),
+                    ),
+                    SizedBox(height: 20),
+                    TextButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => ForgotPasswordScreen()),
+                        );
+                      },
+                      child: const Text(
+                        "Forget Password? Reset here",
+                        style: TextStyle(color: Colors.deepOrange),
                       ),
                     ),
                   ],
@@ -133,17 +149,18 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  Widget _buildTextField(TextEditingController controller, String labelText, IconData icon) {
+  Widget _buildTextField(
+      TextEditingController controller, String labelText, IconData icon) {
     return TextField(
       controller: controller,
       decoration: InputDecoration(
         labelText: labelText,
-        labelStyle: TextStyle(color: Colors.indigoAccent),
+        labelStyle: TextStyle(color: Colors.teal),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(25),
-          borderSide: BorderSide(color: Colors.indigoAccent),
+          borderSide: BorderSide(color: Colors.teal),
         ),
-        prefixIcon: Icon(icon, color: Colors.indigoAccent),
+        prefixIcon: Icon(icon, color: Colors.teal),
         contentPadding: EdgeInsets.symmetric(vertical: 12),
         isDense: true,
       ),
@@ -156,16 +173,16 @@ class _LoginScreenState extends State<LoginScreen> {
       controller: password,
       decoration: InputDecoration(
         labelText: "Password",
-        labelStyle: TextStyle(color: Colors.indigoAccent),
+        labelStyle: TextStyle(color: Colors.teal),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(25),
-          borderSide: BorderSide(color: Colors.indigoAccent),
+          borderSide: BorderSide(color: Colors.teal),
         ),
-        prefixIcon: Icon(Icons.lock, color: Colors.indigoAccent),
+        prefixIcon: Icon(Icons.lock, color: Colors.teal),
         suffixIcon: IconButton(
           icon: Icon(
             _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
-            color: Colors.indigoAccent,
+            color: Colors.teal,
           ),
           onPressed: () {
             setState(() {
