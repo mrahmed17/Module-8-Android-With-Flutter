@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:hr_and_payroll_management/features/authentication/AuthService.dart';
 
 class LoginScreen extends StatefulWidget {
+  const LoginScreen({super.key});
+
   @override
   _LoginScreenState createState() => _LoginScreenState();
 }

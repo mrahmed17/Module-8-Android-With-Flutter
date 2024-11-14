@@ -10,7 +10,7 @@ class UserService {
   final String baseUrl = 'http://localhost:8080/api/users';
 
   // Helper method for error handling
-  String _handleError(DioError e) {
+  String _handleError(DioException e) {
     return e.response?.data?['message'] ?? 'Error: ${e.message}';
   }
 
@@ -40,7 +40,7 @@ class UserService {
       return response.statusCode == 201
           ? 'User created successfully.'
           : 'Failed to create user: ${response.statusMessage}';
-    } on DioError catch (e) {
+    } on DioException catch (e) {
       return _handleError(e);
     }
   }
@@ -54,7 +54,7 @@ class UserService {
       return response.statusCode == 200
           ? 'User updated successfully.'
           : 'Failed to update user: ${response.statusMessage}';
-    } on DioError catch (e) {
+    } on DioException catch (e) {
       return _handleError(e);
     }
   }
@@ -70,7 +70,7 @@ class UserService {
       } else {
         return Future.error('Failed to load users: ${response.statusMessage}');
       }
-    } on DioError catch (e) {
+    } on DioException catch (e) {
       return Future.error(_handleError(e));
     }
   }
@@ -80,7 +80,7 @@ class UserService {
     try {
       final response = await _dio.get('$baseUrl/find/$id');
       return response.statusCode == 200 ? User.fromJson(response.data) : null;
-    } on DioError catch (e) {
+    } on DioException catch (e) {
       throw Exception(_handleError(e));
     }
   }
@@ -107,7 +107,7 @@ class UserService {
     try {
       final response = await _dio.get('$baseUrl/email/$email');
       return response.statusCode == 200 ? User.fromJson(response.data) : null;
-    } on DioError catch (e) {
+    } on DioException catch (e) {
       throw Exception(_handleError(e));
     }
   }
@@ -122,7 +122,7 @@ class UserService {
       return (response.data['content'] as List)
           .map((userJson) => User.fromJson(userJson))
           .toList();
-    } on DioError catch (e) {
+    } on DioException catch (e) {
       throw Exception(_handleError(e));
     }
   }
@@ -136,7 +136,7 @@ class UserService {
       return (response.data['content'] as List)
           .map((userJson) => User.fromJson(userJson))
           .toList();
-    } on DioError catch (e) {
+    } on DioException catch (e) {
       throw Exception(_handleError(e));
     }
   }
@@ -150,7 +150,7 @@ class UserService {
       return (response.data['content'] as List)
           .map((userJson) => User.fromJson(userJson))
           .toList();
-    } on DioError catch (e) {
+    } on DioException catch (e) {
       throw Exception(_handleError(e));
     }
   }
@@ -164,7 +164,7 @@ class UserService {
       return (response.data['content'] as List)
           .map((userJson) => User.fromJson(userJson))
           .toList();
-    } on DioError catch (e) {
+    } on DioException catch (e) {
       throw Exception(_handleError(e));
     }
   }
@@ -178,7 +178,7 @@ class UserService {
       return (response.data['content'] as List)
           .map((userJson) => User.fromJson(userJson))
           .toList();
-    } on DioError catch (e) {
+    } on DioException catch (e) {
       throw Exception(_handleError(e));
     }
   }
@@ -192,7 +192,7 @@ class UserService {
       return (response.data['content'] as List)
           .map((userJson) => User.fromJson(userJson))
           .toList();
-    } on DioError catch (e) {
+    } on DioException catch (e) {
       throw Exception(_handleError(e));
     }
   }

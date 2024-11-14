@@ -3,6 +3,8 @@ import 'package:hr_and_payroll_management/features/authentication/LoginPage.dart
 import 'package:hr_and_payroll_management/features/user/screens/UserFormScreen.dart';
 
 class AdminPage extends StatelessWidget {
+  const AdminPage({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -89,10 +91,10 @@ class AdminPage extends StatelessWidget {
                   MaterialPageRoute(builder: (context) => LoginScreen()),
                 ); // Example logout: navigate back to login
               },
-              child: Text('Logout'),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.redAccent,
               ),
+              child: Text('Logout'),
             ),
           ],
         ),

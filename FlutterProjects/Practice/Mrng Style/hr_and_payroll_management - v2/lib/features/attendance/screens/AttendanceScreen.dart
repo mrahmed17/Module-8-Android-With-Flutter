@@ -3,6 +3,8 @@ import 'package:hr_and_payroll_management/features/attendance/AttendanceModel.da
 import 'package:hr_and_payroll_management/features/attendance/AttendanceService.dart';
 
 class AttendanceScreen extends StatefulWidget {
+  const AttendanceScreen({super.key});
+
   @override
   _AttendanceScreenState createState() => _AttendanceScreenState();
 }

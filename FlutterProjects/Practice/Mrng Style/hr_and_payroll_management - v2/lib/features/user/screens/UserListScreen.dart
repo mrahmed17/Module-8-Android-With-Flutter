@@ -25,8 +25,8 @@ class _UserListScreenState extends State<UserListScreen> {
   double _maxSalary = 100000.0;
 
   // Dropdown items for role and gender
-  List<String> _roles = ['Admin', 'Manager', 'Employee']; // Example roles
-  List<String> _genders = ['Male', 'Female', 'Other'];   // Example genders
+  final List<String> _roles = ['Admin', 'Manager', 'Employee']; // Example roles
+  final List<String> _genders = ['Male', 'Female', 'Other'];   // Example genders
 
   @override
   void initState() {
