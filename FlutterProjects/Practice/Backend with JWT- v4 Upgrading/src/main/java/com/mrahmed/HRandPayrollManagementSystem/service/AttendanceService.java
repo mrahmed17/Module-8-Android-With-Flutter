@@ -9,6 +9,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
 import java.time.LocalDate;
@@ -24,21 +25,6 @@ public class AttendanceService {
     @Autowired
     private UserRepository userRepository;
 
-    // Method to get overtime for a user within a date range with pagination
-    public Page<Attendance> getOvertimeForUser(Long userId, LocalDate startDate, LocalDate endDate, Pageable pageable) {
-        Page<Attendance> attendances = attendanceRepository.findAttendancesByUserIdAndDateRange(userId, startDate, endDate, pageable);
-        return attendances.map(this::filterOvertime);
-    }
-
-    // Check if the attendance record contains overtime
-    private Attendance filterOvertime(Attendance attendance) {
-        if (attendance.getClockInTime() == null || attendance.getClockOutTime() == null) {
-            return null; // Skip records with missing times
-        }
-        Duration duration = Duration.between(attendance.getClockInTime(), attendance.getClockOutTime());
-        long hours = duration.toHours();
-        return hours > 8 ? attendance : null; // Return only overtime records
-    }
 
     // Check-in method
     public Attendance checkIn(long userId) {
@@ -73,6 +59,22 @@ public class AttendanceService {
         }
     }
 
+    // Method to get overtime for a user within a date range with pagination
+    public Page<Attendance> getOvertimeForUser(Long userId, LocalDate startDate, LocalDate endDate, Pageable pageable) {
+        Page<Attendance> attendances = attendanceRepository.findAttendancesByUserIdAndDateRange(userId, startDate, endDate, pageable);
+        return attendances.map(this::filterOvertime);
+    }
+
+    // Check if the attendance record contains overtime
+    private Attendance filterOvertime(Attendance attendance) {
+        if (attendance.getClockInTime() == null || attendance.getClockOutTime() == null) {
+            return null; // Skip records with missing times
+        }
+        Duration duration = Duration.between(attendance.getClockInTime(), attendance.getClockOutTime());
+        long hours = duration.toHours();
+        return hours > 8 ? attendance : null; // Return only overtime records
+    }
+
     // Fetch today's attendance with pagination
     public Page<Attendance> getTodayAttendances(Pageable pageable) {
         return attendanceRepository.findAttendancesForToday(LocalDate.now(), pageable);
@@ -96,6 +98,7 @@ public class AttendanceService {
                 .collect(Collectors.groupingBy(Attendance::getUser, Collectors.counting()));
     }
 
+    @Transactional
     // Get all attendance records for a specific user with pagination
     public Page<Attendance> getAttendanceByUserId(Long id, Pageable pageable) {
         return attendanceRepository.findAllByUserId(id, pageable);

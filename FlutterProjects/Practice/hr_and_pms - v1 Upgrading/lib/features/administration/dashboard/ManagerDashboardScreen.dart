@@ -23,7 +23,7 @@ class _ManagerDashboardScreenState extends State<ManagerDashboardScreen> {
       appBar: AppBar(
         title: const Text('Manager Dashboard'),
         automaticallyImplyLeading: false,
-        backgroundColor: Colors.teal,
+        backgroundColor: Colors.orange,
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -34,7 +34,7 @@ class _ManagerDashboardScreenState extends State<ManagerDashboardScreen> {
             mainAxisSpacing: 16,
             childAspectRatio: 1.2,
           ),
-          itemCount: 5,
+          itemCount: 6,
           itemBuilder: (context, index) {
             return GestureDetector(
               onTap: () {
@@ -68,10 +68,10 @@ class _ManagerDashboardScreenState extends State<ManagerDashboardScreen> {
               child: Container(
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(12),
-                  color: Colors.teal, // Consistent teal color for all items
+                  color: Colors.orange, // Consistent teal color for all items
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.teal.shade700.withOpacity(0.2),
+                      color: Colors.orange.shade700.withOpacity(0.2),
                       spreadRadius: 2,
                       blurRadius: 5,
                       offset: Offset(3, 3), // Subtle shadow effect
@@ -109,8 +109,8 @@ class _ManagerDashboardScreenState extends State<ManagerDashboardScreen> {
         currentIndex: _selectedIndex,
         onTap: _onBottomNavigationItemTapped,
         selectedItemColor: Colors.white,
-        unselectedItemColor: Colors.teal.shade100,
-        backgroundColor: Colors.teal,
+        unselectedItemColor: Colors.orange.shade100,
+        backgroundColor: Colors.orange,
         showSelectedLabels: true,
         showUnselectedLabels: true,
         type: BottomNavigationBarType.fixed,

@@ -1,22 +1,24 @@
+
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:hr_and_pms/features/administration/authentication/LoginScreen.dart';
 import 'package:hr_and_pms/features/administration/authentication/RegistrationScreen.dart';
-import 'package:hr_and_pms/features/administration/service/AuthService.dart';
+import 'package:hr_and_pms/features/home/ImageCarousel.dart';
 
 class HomeScreen extends StatefulWidget {
+  const HomeScreen({super.key});
+
   @override
   _HomeScreenState createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  final AuthService _authService = AuthService();
-  int _currentIndex = 0; // Bottom navigation index
+  int _currentIndex = 0;
 
-  // List of pages for bottom navigation
   final List<Widget> _pages = [
-    HomePage(), // Home Page
-    RegistrationScreen(), // Registration Page
-    LoginScreen(), // Login Page
+    HomePage(),
+    RegistrationScreen(),
+    LoginScreen(),
   ];
 
   @override
@@ -35,33 +37,39 @@ class _HomeScreenState extends State<HomeScreen> {
         centerTitle: true,
       ),
       body: _pages[_currentIndex],
-      // Bottom Navigation Bar
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
         onTap: (index) {
           setState(() {
             _currentIndex = index;
           });
-        },
+        },backgroundColor: Colors.teal,
+        // indigo background color for navigation
+        selectedItemColor: Colors.white,
+        // White for selected item text and icon
+        unselectedItemColor: Colors.teal.shade100,
+        // Lighter indigo for unselected items
+        selectedFontSize: 14,
+        unselectedFontSize: 14,
+        showSelectedLabels: true,
+        showUnselectedLabels: true,
+        type: BottomNavigationBarType.fixed,
         items: const [
           BottomNavigationBarItem(
             icon: Icon(
               Icons.home,
-              color: Colors.teal,
             ),
             label: 'Home',
           ),
           BottomNavigationBarItem(
             icon: Icon(
-              Icons.app_registration,
-              color: Colors.teal,
+              Icons.app_registration
             ),
             label: 'Registration',
           ),
           BottomNavigationBarItem(
             icon: Icon(
               Icons.login,
-              color: Colors.teal,
             ),
             label: 'Login',
           ),
@@ -71,7 +79,6 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 }
 
-// Home Page Widget (for the main page content)
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
 
@@ -105,27 +112,8 @@ class HomePage extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 30),
-              // Prospectus Section
-              const Text(
-                'Prospectus',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.teal,
-                ),
-              ),
-              const SizedBox(height: 10),
-              Text(
-                'Explore our platform’s features, including payroll management, employee attendance tracking, and more.',
-                style: TextStyle(fontSize: 16, color: Colors.black54),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 20),
-              Text(
-                'Join us and take your workforce management to the next level!',
-                style: TextStyle(fontSize: 16, color: Colors.black54),
-                textAlign: TextAlign.center,
-              ),
+              // Image Carousel
+              ImageCarousel(),
               const SizedBox(height: 40),
               // Call to Action for registration
               ElevatedButton(
@@ -144,25 +132,112 @@ class HomePage extends StatelessWidget {
                       borderRadius: BorderRadius.circular(10)),
                 ),
                 child: const Text(
-                  'Get Started',
+                  'Join Now',
                   style: TextStyle(fontSize: 16, color: Colors.white),
                 ),
               ),
               const SizedBox(height: 20),
               // Optional: Button to Login page (if needed)
-              // TextButton(
-              //   onPressed: () {
-              //     Navigator.push(
-              //       context,
-              //       MaterialPageRoute(builder: (context) => LoginScreen()),
-              //     );
-              //   },
-              //   child: const Text(
-              //     'Already have an account? Login here',
-              //     style: TextStyle(color: Colors.teal),
-              //   ),
-              // ),
+              TextButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => LoginScreen()),
+                  );
+                },
+                child: const Text(
+                  'Already have an account? Login here',
+                  style: TextStyle(color: Colors.deepOrange),
+                ),
+              ),
+              const SizedBox(height: 20),
+              // Carousel Text for HRM Features
+              CarouselSlider(
+                items: [
+                  FeatureText(
+                    text:
+                    'Payroll Management: Easy Salary Generator System with world class Payroll management.',
+                  ),
+                  FeatureText(
+                    text:
+                    'Attendance Management: Manage attendance with customized needs and automatic calculations.',
+                  ),
+                  FeatureText(
+                    text:
+                    'Performance Assessment: Track skills, compensation, and other relevant employee details.',
+                  ),
+                  FeatureText(
+                    text:
+                    'Benefits Management: Track insurance, pension, and other benefits for employees.',
+                  ),
+                  FeatureText(
+                    text:
+                    'Employee Self-Service: Empower employees to access and update personal information.',
+                  ),
+                  FeatureText(
+                    text:
+                    'Scheduling & Time-Table Management: Manage shifts, vacation, and leave requests seamlessly.',
+                  ),
+                ],
+                options: CarouselOptions(
+                  height: 100.0,
+                  enlargeCenterPage: true,
+                  enableInfiniteScroll: true,
+                  autoPlay: true,
+                  autoPlayInterval: Duration(seconds: 5),
+                  autoPlayAnimationDuration: Duration(milliseconds: 800),
+                  viewportFraction: 0.8,
+                ),
+              ),
+              const SizedBox(height: 40),
+              // Prospectus Section
+              const Text(
+                'Prospectus',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.teal,
+                ),
+              ),
+              const SizedBox(height: 20),
+              Text(
+                'Explore our platform’s features, including payroll management, employee attendance tracking, and more.',
+                style: TextStyle(fontSize: 16, color: Colors.black54),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 20),
+              Text(
+                'Join us and take your workforce management to the next level!',
+                style: TextStyle(fontSize: 16, color: Colors.black54),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 40),
             ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// FeatureText Widget for displaying each feature text in the carousel
+class FeatureText extends StatelessWidget {
+  final String text;
+
+  const FeatureText({super.key, required this.text});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10.0),
+      child: Center(
+        child: Text(
+          text,
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w500,
+            color: Colors.teal,
           ),
         ),
       ),

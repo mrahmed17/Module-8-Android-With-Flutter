@@ -9,15 +9,17 @@ import 'package:hr_and_pms/features/dashboard/DashboardScreen.dart';
 import 'package:hr_and_pms/features/administration/service/AuthService.dart';
 
 class LoginScreen extends StatefulWidget {
+  const LoginScreen({super.key});
+
   @override
   _LoginScreenState createState() => _LoginScreenState();
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  final TextEditingController email = TextEditingController();
-    // ..text = 'mrahmed1796@gmail.com';
-  final TextEditingController password = TextEditingController();
-    // ..text = '123456';
+  final TextEditingController email = TextEditingController()
+    ..text = 'raju@mail.com';
+  final TextEditingController password = TextEditingController()
+    ..text = '123456';
   final storage = FlutterSecureStorage();
   bool _isPasswordVisible = false;
 
@@ -52,9 +54,34 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    _checkForExistingToken();
+  }
+
+  Future<void> _checkForExistingToken() async {
+    bool loggedIn = await AuthService().isLoggedIn();
+    if (loggedIn) {
+      // Redirect to home or dashboard if already logged in
+      Navigator.pushReplacementNamed(context, '/dashboard');
+    }
+  }
+
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
+      // appBar: AppBar(
+      //   title: Text(
+      //     'Login',
+      //     style: TextStyle(fontSize: 24, fontWeight: FontWeight.w600, color: Colors.white),
+      //   ),
+      //   backgroundColor: Colors.teal,
+      //   centerTitle: true,
+      //   elevation: 4,
+      //   shadowColor: Colors.black54,
+      // ),
+      body: Padding(
         // decoration: BoxDecoration(
         //   gradient: LinearGradient(
         //     colors: [Colors.indigo, Colors.teal],
@@ -62,86 +89,101 @@ class _LoginScreenState extends State<LoginScreen> {
         //     end: Alignment.bottomCenter,
         //   ),
         // ),
-        child: Center(
-          child: Padding(
-            padding: EdgeInsets.all(20.0),
-            child: Card(
-              elevation: 10,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(25),
-              ),
-              color: Colors.white,
-              shadowColor: Colors.grey.withOpacity(0.4),
-              child: Padding(
-                padding: EdgeInsets.all(25.0),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      "Login",
-                      style: GoogleFonts.poppins(
-                        fontSize: 28,
-                        fontWeight: FontWeight.w700,
-                        color: Colors.teal,
+        padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
+        child: SingleChildScrollView(
+          child: Center(
+            child: Padding(
+              padding: EdgeInsets.all(20.0),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Image.asset(
+                    'assets/images/carousel/secretary.jpg',
+                    height: 200,
+                    width: 200,
+                    fit: BoxFit.cover,
+                  ),
+                  SizedBox(height: 20),
+                  Card(
+                    elevation: 10,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(25),
+                    ),
+                    color: Colors.white,
+                    shadowColor: Colors.grey.withOpacity(0.4),
+                    child: Padding(
+                      padding: EdgeInsets.all(25.0),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            "Login",
+                            style: GoogleFonts.poppins(
+                              fontSize: 28,
+                              fontWeight: FontWeight.w700,
+                              color: Colors.teal,
+                            ),
+                          ),
+                          SizedBox(height: 25),
+                          _buildTextField(email, "Email", Icons.email),
+                          SizedBox(height: 20),
+                          _buildPasswordField(),
+                          SizedBox(height: 30),
+                          ElevatedButton(
+                            onPressed: () {
+                              loginUser(context);
+                            },
+                            style: ElevatedButton.styleFrom(
+                              padding:
+                                  EdgeInsets.symmetric(horizontal: 50, vertical: 15),
+                              backgroundColor: Colors.teal,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(30),
+                              ),
+                              elevation: 5,
+                            ),
+                            child: Text(
+                              "Login",
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                          SizedBox(height: 20),
+                          TextButton(
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => RegistrationScreen()),
+                              );
+                            },
+                            child: const Text(
+                              "Already have an account? Login here",
+                              style: TextStyle(color: Colors.teal),
+                            ),
+                          ),
+                          SizedBox(height: 20),
+                          TextButton(
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => ForgotPasswordScreen()),
+                              );
+                            },
+                            child: const Text(
+                              "Forget Password? Reset here",
+                              style: TextStyle(color: Colors.deepOrange),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                    SizedBox(height: 25),
-                    _buildTextField(email, "Email", Icons.email),
-                    SizedBox(height: 20),
-                    _buildPasswordField(),
-                    SizedBox(height: 30),
-                    ElevatedButton(
-                      onPressed: () {
-                        loginUser(context);
-                      },
-                      style: ElevatedButton.styleFrom(
-                        padding:
-                            EdgeInsets.symmetric(horizontal: 50, vertical: 15),
-                        backgroundColor: Colors.teal,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(30),
-                        ),
-                        elevation: 5,
-                      ),
-                      child: Text(
-                        "Login",
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
-                    SizedBox(height: 20),
-                    TextButton(
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => RegistrationScreen()),
-                        );
-                      },
-                      child: const Text(
-                        "Already have an account? Login here",
-                        style: TextStyle(color: Colors.teal),
-                      ),
-                    ),
-                    SizedBox(height: 20),
-                    TextButton(
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => ForgotPasswordScreen()),
-                        );
-                      },
-                      child: const Text(
-                        "Forget Password? Reset here",
-                        style: TextStyle(color: Colors.deepOrange),
-                      ),
-                    ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
           ),

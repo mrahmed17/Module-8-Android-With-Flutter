@@ -4,7 +4,7 @@ import 'package:hr_and_pms/features/user/model/Role.dart';
 
 class User {
   final int id;
-  final String fullName;
+  final String name;
   final String email;
   final String password;
   final String address;
@@ -20,7 +20,7 @@ class User {
 
   User({
     required this.id,
-    required this.fullName,
+    required this.name,
     required this.email,
     required this.password,
     required this.address,
@@ -39,7 +39,7 @@ class User {
   factory User.fromJson(Map<String, dynamic> json) {
     return User(
       id: json['id'] ?? 0,
-      fullName: json['fullName'] ?? '',
+      name: json['fullName'] ?? '',
       email: json['email'] ?? '',
       password: json['password'] ?? '',
       address: json['address'] ?? '',
@@ -62,7 +62,7 @@ class User {
   Map<String, dynamic> toJson() {
     return {
       'id': id,
-      'fullName': fullName,
+      'fullName': name,
       'email': email,
       'password': password,
       'address': address,

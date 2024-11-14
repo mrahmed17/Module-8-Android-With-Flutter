@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:hr_and_pms/features/attendance/screens/AttendanceScreen.dart';
+
 // import 'package:hr_and_pms/features/salary/SalaryScreen.dart';
 // import 'package:hr_and_pms/features/profile/ProfileScreen.dart';
 // import 'package:hr_and_pms/features/feedback/FeedbackScreen.dart';
 
 class DashboardScreen extends StatefulWidget {
-  const DashboardScreen({Key? key}) : super(key: key);
+  const DashboardScreen({super.key});
 
   @override
   _DashboardScreenState createState() => _DashboardScreenState();
@@ -18,6 +19,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
     AttendanceScreen(),
     // SalaryScreen(),
     // FeedbackScreen(),
+    Container(), // Placeholder for Feedback
+    Container(), // Placeholder for Logout
+
   ];
 
   void _onItemTapped(int index) {
@@ -38,7 +42,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
             color: Colors.white,
           ),
         ),
-        backgroundColor: Colors.teal,
+        backgroundColor: Colors.indigo,
         centerTitle: true,
       ),
       body: _selectedIndex == 0
@@ -47,9 +51,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _selectedIndex,
         onTap: _onItemTapped,
-        backgroundColor: Colors.teal, // Teal background color for navigation
-        selectedItemColor: Colors.white, // White for selected item text and icon
-        unselectedItemColor: Colors.teal.shade100, // Lighter teal for unselected items
+        backgroundColor: Colors.indigo,
+        // indigo background color for navigation
+        selectedItemColor: Colors.white,
+        // White for selected item text and icon
+        unselectedItemColor: Colors.indigo.shade100,
+        // Lighter indigo for unselected items
         selectedFontSize: 14,
         unselectedFontSize: 14,
         showSelectedLabels: true,
@@ -57,20 +64,20 @@ class _DashboardScreenState extends State<DashboardScreen> {
         type: BottomNavigationBarType.fixed,
         items: const [
           BottomNavigationBarItem(
+            icon: Icon(Icons.dashboard),
+            label: 'Dashboard',
+          ),
+          BottomNavigationBarItem(
             icon: Icon(Icons.person),
             label: 'Profile',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.access_time),
-            label: 'Attendance',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.attach_money),
-            label: 'Salary',
-          ),
-          BottomNavigationBarItem(
             icon: Icon(Icons.feedback),
             label: 'Feedback',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.logout),
+            label: 'Logout',
           ),
         ],
       ),
@@ -91,24 +98,33 @@ class _DashboardScreenState extends State<DashboardScreen> {
         itemBuilder: (context, index) {
           return GestureDetector(
             onTap: () {
-              // Navigate to respective feature screens
-              // switch (index) {
-              //   case 0:
-              //     Navigator.push(context, MaterialPageRoute(builder: (context) => AdvanceSalaryScreen()));
-              //     break;
-              //   case 1:
-              //     Navigator.push(context, MaterialPageRoute(builder: (context) => LeaveApplicationScreen()));
-              //     break;
-              //   case 2:
-              //     Navigator.push(context, MaterialPageRoute(builder: (context) => PayslipScreen()));
-              //     break;
-              //   default:
-              //     break;
-              // }
+              // Navigator.push(context, MaterialPageRoute(
+              //     builder: (context) => AttendanceScreen()));
+              // Navigator to respective feature screens
+              switch (index) {
+                case 0:
+                  Navigator.push(context, MaterialPageRoute(
+                      builder: (context) => AttendanceScreen()));
+                  break;
+                case 1:
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => Container()));
+                  break;
+                case 2:
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => Container()));
+                  break;
+                case 3:
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => Container()));
+                  break;
+                case 4:
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => Container()));
+                  break;
+                default:
+                  break;
+              }
             },
             child: Container(
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(20),
                 gradient: LinearGradient(
                   colors: _getGradientColor(index),
                   begin: Alignment.topLeft,
@@ -147,23 +163,31 @@ class _DashboardScreenState extends State<DashboardScreen> {
   String _getLabel(int index) {
     switch (index) {
       case 0:
-        return 'Advance Salary';
+        return 'Attendance';
       case 1:
-        return 'Leave Application';
+        return 'Advance Salary';
       case 2:
+        return 'Leave Application';
+      case 3:
+        return 'Salary';
+      case 4:
         return 'Payslip';
       default:
-        return 'Feature';
+        return 'Coming soon';
     }
   }
 
   IconData _getIcon(int index) {
     switch (index) {
       case 0:
-        return Icons.money;
+        return Icons.access_time;
       case 1:
-        return Icons.work_off;
+        return Icons.money;
       case 2:
+        return Icons.work_off;
+      case 3:
+        return Icons.money;
+      case 4:
         return Icons.receipt_long;
       default:
         return Icons.help;
@@ -173,15 +197,17 @@ class _DashboardScreenState extends State<DashboardScreen> {
   List<Color> _getGradientColor(int index) {
     switch (index) {
       case 0:
-        return [Colors.teal, Colors.teal];
+        return [Colors.indigo, Colors.indigo];
       case 1:
-        return [Colors.teal, Colors.teal];
+        return [Colors.indigo, Colors.indigo];
       case 2:
-        return [Colors.teal, Colors.teal];
+        return [Colors.indigo, Colors.indigo];
       case 3:
-        return [Colors.teal, Colors.teal];
+        return [Colors.indigo, Colors.indigo];
+      case 4:
+        return [Colors.indigo, Colors.indigo];
       default:
-        return [Colors.teal, Colors.teal];
+        return [Colors.indigo, Colors.indigo];
     }
   }
 }

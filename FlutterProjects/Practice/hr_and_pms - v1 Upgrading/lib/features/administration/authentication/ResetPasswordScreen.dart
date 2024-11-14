@@ -52,7 +52,16 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Reset Password')),
+      appBar: AppBar(title: Text('Reset Password',
+        style: TextStyle(
+          fontSize: 24,
+          fontWeight: FontWeight.w600,
+          color: Colors.white,
+        ),
+      ),
+        backgroundColor: Colors.teal,
+        centerTitle: true,
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -69,7 +78,13 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                 ? CircularProgressIndicator()
                 : ElevatedButton(
               onPressed: _resetPassword,
-              child: Text('Submit'),
+              child: Text('Submit',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.white,
+                ),
+              ),
             ),
             if (_message != null) ...[
               SizedBox(height: 20),

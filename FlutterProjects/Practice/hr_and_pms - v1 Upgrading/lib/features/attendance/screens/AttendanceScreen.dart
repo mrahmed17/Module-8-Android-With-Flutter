@@ -3,6 +3,8 @@ import 'package:hr_and_pms/features/attendance/model/AttendanceModel.dart';
 import 'package:hr_and_pms/features/attendance/service/AttendanceService.dart';
 
 class AttendanceScreen extends StatefulWidget {
+  const AttendanceScreen({super.key});
+
   @override
   _AttendanceScreenState createState() => _AttendanceScreenState();
 }
@@ -11,29 +13,12 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
   final AttendanceService attendanceService = AttendanceService();
   Attendance? todayAttendance;
   bool isLoading = false;
-  int selectedUserId = 1; // Default user ID; adjust as needed
+  int selectedUserId = 1;
 
   @override
   void initState() {
     super.initState();
     fetchTodayAttendance();
-  }
-
-  // Fetch today's attendance records
-  Future<void> fetchTodayAttendance() async {
-    setState(() => isLoading = true);
-    try {
-      List<Attendance> attendanceRecords = await attendanceService.getTodayAttendanceByUserId(selectedUserId);
-      setState(() {
-        todayAttendance = attendanceRecords.isNotEmpty ? attendanceRecords.first : null;
-      });
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Failed to load attendance records. Error: $e")),
-      );
-    } finally {
-      setState(() => isLoading = false);
-    }
   }
 
   // Handle check-in action
@@ -63,6 +48,24 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Failed to check out. Error: $e")),
       );
+    }
+  }
+
+
+  // Fetch today's attendance records
+  Future<void> fetchTodayAttendance() async {
+    setState(() => isLoading = true);
+    try {
+      List<Attendance> attendanceRecords = await attendanceService.getTodayAttendanceByUserId(selectedUserId);
+      setState(() {
+        todayAttendance = attendanceRecords.isNotEmpty ? attendanceRecords.first : null;
+      });
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Failed to load attendance records. Error: $e")),
+      );
+    } finally {
+      setState(() => isLoading = false);
     }
   }
 
@@ -137,14 +140,12 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
 
   // Calculate overtime based on attendance times
   String calculateOvertime(Attendance attendance) {
-    if (attendance.clockInTime != null && attendance.clockOutTime != null) {
-      final checkIn = attendance.clockInTime!;
-      final checkOut = attendance.clockOutTime!;
-      final duration = checkOut.difference(checkIn);
-      final overtimeHours = duration.inHours - 8; // Assuming an 8-hour workday
-      return overtimeHours > 0 ? "$overtimeHours hours" : "No overtime";
-    }
-    return "N/A";
+    final checkIn = attendance.clockInTime;
+    final checkOut = attendance.clockOutTime;
+    final duration = checkOut.difference(checkIn);
+    final overtimeHours = duration.inHours - 8; // Assuming an 8-hour workday
+    return overtimeHours > 0 ? "$overtimeHours hours" : "No overtime";
+      return "N/A";
   }
 
   // Check if the user can check in

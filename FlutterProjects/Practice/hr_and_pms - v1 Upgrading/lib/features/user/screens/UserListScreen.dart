@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hr_and_pms/features/administration/authentication/RegistrationScreen.dart';
 import 'package:hr_and_pms/features/user/service/UserService.dart';
 import 'package:hr_and_pms/features/user/model/User.dart';
 import 'package:hr_and_pms/features/user/screens/UserProfileScreen.dart';
@@ -25,8 +26,8 @@ class _UserListScreenState extends State<UserListScreen> {
   double _maxSalary = 100000.0;
 
   // Dropdown items for role and gender
-  List<String> _roles = ['Admin', 'Manager', 'Employee']; // Example roles
-  List<String> _genders = ['Male', 'Female', 'Other'];   // Example genders
+  final List<String> _roles = ['Manager', 'Employee'];
+  final List<String> _genders = ['Male', 'Female', 'Other'];
 
   @override
   void initState() {
@@ -45,7 +46,7 @@ class _UserListScreenState extends State<UserListScreen> {
     } catch (e) {
       setState(() => _isLoading = false);
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error fetching users: $e')),
+        SnackBar(content: Text('Error fetching users: $e', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.teal),)),
       );
     }
   }
@@ -56,7 +57,7 @@ class _UserListScreenState extends State<UserListScreen> {
         // Convert the role and gender to lowercase to make the comparison case-insensitive
         final roleString = user.role.toString().toLowerCase();
         final genderString = user.gender.toLowerCase(); // Make sure it's in lowercase
-        final matchesName = user.fullName.toLowerCase().contains(_nameFilter.toLowerCase());
+        final matchesName = user.name.toLowerCase().contains(_nameFilter.toLowerCase());
         final matchesRole = roleString.contains(_roleFilter.toLowerCase());
         final matchesGender = _genderFilter.isEmpty || genderString == _genderFilter.toLowerCase();  // Strict match for gender
         final matchesSalary = user.basicSalary >= _minSalary && user.basicSalary <= _maxSalary;
@@ -105,13 +106,13 @@ class _UserListScreenState extends State<UserListScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('User List')),
+      appBar: AppBar(title: const Text('User List', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.teal),)),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          // Navigator.push(
-          //   context,
-          //   MaterialPageRoute(builder: (context) => const UserFormScreen()),
-          // ).then((value) => _fetchUsers());
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const RegistrationScreen()),
+          ).then((value) => _fetchUsers());
         },
         child: const Icon(Icons.add),
       ),
@@ -125,7 +126,8 @@ class _UserListScreenState extends State<UserListScreen> {
               children: [
                 // Name filter
                 TextField(
-                  decoration: const InputDecoration(labelText: 'Filter by Name'),
+                  decoration: const InputDecoration(labelText: 'Filter by Name',
+                      labelStyle: TextStyle(color: Colors.teal)),
                   onChanged: (value) {
                     _nameFilter = value;
                     _applyFilters();
@@ -138,7 +140,8 @@ class _UserListScreenState extends State<UserListScreen> {
                     Expanded(
                       child: DropdownButtonFormField<String>(
                         value: _roleFilter.isEmpty ? null : _roleFilter,
-                        decoration: const InputDecoration(labelText: 'Filter by Role'),
+                        decoration: const InputDecoration(labelText: 'Filter by Role',
+    labelStyle: TextStyle(color: Colors.teal),),
                         onChanged: (value) {
                           setState(() {
                             _roleFilter = value!;
@@ -158,7 +161,8 @@ class _UserListScreenState extends State<UserListScreen> {
                     Expanded(
                       child: DropdownButtonFormField<String>(
                         value: _genderFilter.isEmpty ? null : _genderFilter,
-                        decoration: const InputDecoration(labelText: 'Filter by Gender'),
+                        decoration: const InputDecoration(labelText: 'Filter by Gender',
+                          labelStyle: TextStyle(color: Colors.teal),),
                         onChanged: (value) {
                           setState(() {
                             _genderFilter = value!;
@@ -180,7 +184,7 @@ class _UserListScreenState extends State<UserListScreen> {
                   padding: const EdgeInsets.symmetric(vertical: 8.0),
                   child: Row(
                     children: [
-                      const Text('Salary Range: ', style: TextStyle(fontWeight: FontWeight.bold)),
+                      const Text('Salary Range: ', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.teal)),
                       Expanded(
                         child: RangeSlider(
                           min: 0.0,
@@ -203,7 +207,7 @@ class _UserListScreenState extends State<UserListScreen> {
                 // Reset filter button
                 TextButton(
                   onPressed: _resetFilters,
-                  child: const Text('Reset Filters'),
+                  child: const Text('Reset Filters', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.teal),),
                 ),
               ],
             ),
@@ -215,7 +219,7 @@ class _UserListScreenState extends State<UserListScreen> {
                 User user = _filteredUsers[index];
                 return ListTile(
                   leading: _buildUserImage(user.profilePhoto),
-                  title: Text(user.fullName),
+                  title: Text(user.name),
                   subtitle: Text(user.email),
                   onTap: () {
                     Navigator.push(

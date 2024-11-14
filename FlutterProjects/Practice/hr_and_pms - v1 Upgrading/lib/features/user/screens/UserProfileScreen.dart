@@ -67,7 +67,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
 
   Widget _buildUserImage(String? profilePhoto) {
     final imageUrl = profilePhoto != null
-        ? "http://localhost:8080/uploadDirectory/profilePhotos/$profilePhoto"
+        ? "http://localhost:8080/uploadDir/images/$profilePhoto"
         : null;
     return imageUrl != null
         ? Image.network(
@@ -90,7 +90,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const SizedBox(height: 10),
-        Text('Name: ${_user!.fullName}', style: const TextStyle(fontSize: 18)),
+        Text('Name: ${_user!.name}', style: const TextStyle(fontSize: 18)),
         Text('Email: ${_user!.email}'),
         Text('Address: ${_user!.address}'),
         Text('Contact: ${_user!.contact}'),
@@ -193,7 +193,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
             children: [
               Center(child: _buildUserImage(_user!.profilePhoto)),
               const SizedBox(height: 20),
-              Text('${_user!.fullName}', style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+              Text(_user!.name, style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
               Text('Role: ${widget.role}', style: TextStyle(fontSize: 16, color: Colors.grey[600])),
               const Divider(),
               _buildPersonalInfo(),

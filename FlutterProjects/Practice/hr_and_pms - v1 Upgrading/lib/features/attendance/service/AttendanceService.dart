@@ -8,19 +8,6 @@ class AttendanceService {
   final String baseUrl = 'localhost:8080';
   final String apiPath = '/api/attendance';
 
-  // Method to retrieve all attendances with pagination
-  Future<PaginatedAttendance> getAllAttendances({int page = 0, int size = 10}) async {
-    final response = await http.get(
-      Uri.http(baseUrl, '$apiPath/', {'page': '$page', 'size': '$size'}),
-    );
-
-    if (response.statusCode == 200) {
-      return PaginatedAttendance.fromJson(json.decode(response.body));
-    } else {
-      throw Exception('Failed to load all attendances: ${response.body}');
-    }
-  }
-
   // Method for checking in
   Future<Attendance> checkIn(int userId) async {
     final response = await http.post(
@@ -82,6 +69,21 @@ class AttendanceService {
       throw Exception('Failed to load today’s attendance: ${response.body}');
     }
   }
+
+
+  // Method to retrieve all attendances with pagination
+  Future<PaginatedAttendance> getAllAttendances({int page = 0, int size = 10}) async {
+    final response = await http.get(
+      Uri.http(baseUrl, '$apiPath/', {'page': '$page', 'size': '$size'}),
+    );
+
+    if (response.statusCode == 200) {
+      return PaginatedAttendance.fromJson(json.decode(response.body));
+    } else {
+      throw Exception('Failed to load all attendances: ${response.body}');
+    }
+  }
+
 
   // Method to find attendance by ID
   Future<Attendance> findAttendanceById(int id) async {
