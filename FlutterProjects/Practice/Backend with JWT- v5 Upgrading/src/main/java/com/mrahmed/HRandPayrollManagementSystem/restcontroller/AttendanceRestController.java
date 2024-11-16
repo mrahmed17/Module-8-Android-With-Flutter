@@ -1,5 +1,7 @@
 package com.mrahmed.HRandPayrollManagementSystem.restcontroller;
 
+import com.mrahmed.HRandPayrollManagementSystem.entity.Attendance;
+import com.mrahmed.HRandPayrollManagementSystem.entity.User;
 import com.mrahmed.HRandPayrollManagementSystem.service.AttendanceService;
 import com.mrahmed.HRandPayrollManagementSystem.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -28,7 +31,7 @@ public class AttendanceRestController {
     public ResponseEntity<?> checkIn(@RequestBody Map<String, Object> request) {
         try {
             long userId = Long.parseLong(request.get("userId").toString());
-            AttendanceDTO attendance = attendanceService.checkIn(userId);
+            Attendance attendance = attendanceService.checkIn(userId);
             return ResponseEntity.status(HttpStatus.CREATED).body(attendance);
         } catch (NumberFormatException e) {
             return ResponseEntity.badRequest().body("Invalid user ID format");
@@ -42,7 +45,7 @@ public class AttendanceRestController {
     public ResponseEntity<?> checkOut(@RequestBody Map<String, Object> request) {
         try {
             long userId = Long.parseLong(request.get("userId").toString());
-            AttendanceDTO attendance = attendanceService.checkOut(userId);
+            Attendance attendance = attendanceService.checkOut(userId);
             return ResponseEntity.ok(attendance);
         } catch (NumberFormatException e) {
             return ResponseEntity.badRequest().body("Invalid user ID format");
@@ -53,25 +56,24 @@ public class AttendanceRestController {
     }
 
     @GetMapping("/overtime/{userId}")
-    public ResponseEntity<List<AttendanceDTO>> getOvertimeByUser(
+    public ResponseEntity<List<Attendance>> getOvertimeByUser(
             @PathVariable Long userId,
             @RequestParam("startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
             @RequestParam("endDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
-        try {
-            List<AttendanceDTO> overtimeRecords = attendanceService.getOvertimeForUser(userId, startDate, endDate);
-            return overtimeRecords.isEmpty()
-                    ? ResponseEntity.noContent().build()
-                    : ResponseEntity.ok(overtimeRecords);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Collections.emptyList());
+
+        List<Attendance> overtimeRecords = attendanceService.getOvertimeForUser(userId, startDate, endDate);
+
+        if (overtimeRecords.isEmpty()) {
+            return ResponseEntity.noContent().build(); // Return 204 if no overtime found
         }
+
+        return ResponseEntity.ok(overtimeRecords); // Return the list of overtime records
     }
 
     @GetMapping("/today")
-    public ResponseEntity<List<AttendanceDTO>> getTodayAttendance() {
+    public ResponseEntity<List<Attendance>> getTodayAttendance() {
         try {
-            List<AttendanceDTO> attendances = attendanceService.getTodayAttendances();
+            List<Attendance> attendances = attendanceService.getTodayAttendances();
             return attendances.isEmpty()
                     ? ResponseEntity.noContent().build()
                     : ResponseEntity.ok(attendances);
@@ -82,9 +84,9 @@ public class AttendanceRestController {
     }
 
     @GetMapping("/")
-    public ResponseEntity<List<AttendanceDTO>> getAllAttendances() {
+    public ResponseEntity<List<Attendance>> getAllAttendances() {
         try {
-            List<AttendanceDTO> attendances = attendanceService.getAllAttendances();
+            List<Attendance> attendances = attendanceService.getAllAttendances();
             return attendances.isEmpty()
                     ? ResponseEntity.noContent().build()
                     : ResponseEntity.ok(attendances);
@@ -95,9 +97,9 @@ public class AttendanceRestController {
     }
 
     @GetMapping("/find/{id}")
-    public ResponseEntity<AttendanceDTO> findAttendanceById(@PathVariable("id") long id) {
+    public ResponseEntity<Attendance> findAttendanceById(@PathVariable("id") long id) {
         try {
-            AttendanceDTO attendance = attendanceService.findAttendanceById(id);
+            Attendance attendance = attendanceService.findAttendanceById(id);
             return attendance == null
                     ? ResponseEntity.status(HttpStatus.NOT_FOUND).build()
                     : ResponseEntity.ok(attendance);
@@ -108,9 +110,9 @@ public class AttendanceRestController {
     }
 
     @GetMapping("/user/{id}/attendances")
-    public ResponseEntity<List<AttendanceDTO>> getAttendancesByUserId(@PathVariable Long id) {
+    public ResponseEntity<List<Attendance>> getAttendancesByUserId(@PathVariable Long id) {
         try {
-            List<AttendanceDTO> attendances = attendanceService.getAttendanceByUserId(id);
+            List<Attendance> attendances = attendanceService.getAttendanceByUserId(id);
             return attendances.isEmpty()
                     ? ResponseEntity.noContent().build()
                     : ResponseEntity.ok(attendances);
@@ -121,25 +123,26 @@ public class AttendanceRestController {
     }
 
     @GetMapping("/attendanceRange")
-    public ResponseEntity<Map<UserDTO, Long>> getUsersWithAttendanceInRange(
+    public ResponseEntity<Map<User, Long>> getUsersWithAttendanceInRange(
             @RequestParam("startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
             @RequestParam("endDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
         try {
-            Map<UserDTO, Long> userAttendance = attendanceService.getUsersAttendanceInRange(startDate, endDate);
-            return userAttendance.isEmpty()
-                    ? ResponseEntity.noContent().build()
-                    : ResponseEntity.ok(userAttendance);
+            Map<User, Long> userAttendance = attendanceService.getUsersAttendanceInRange(startDate, endDate);
+
+            if (userAttendance == null || userAttendance.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NO_CONTENT).build(); // 204 No Content
+            }
+
+            return ResponseEntity.ok(userAttendance); // Return the attendance map
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Collections.emptyMap());
+            return ResponseEntity.ok(Collections.emptyMap()); // Return an empty map on error
         }
     }
 
-
     @GetMapping("/usersWithoutAttendanceToday")
-    public ResponseEntity<List<UserDTO>> getUsersWithoutAttendanceToday() {
+    public ResponseEntity<List<User>> getUsersWithoutAttendanceToday() {
         try {
-            List<UserDTO> usersWithoutAttendanceToday = attendanceService.findUsersWithoutAttendanceToday();
+            List<User> usersWithoutAttendanceToday = attendanceService.findUsersWithoutAttendanceToday();
             return ResponseEntity.ok(usersWithoutAttendanceToday);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -174,12 +177,12 @@ public class AttendanceRestController {
     }
 
     @GetMapping("/lateCheckIns")
-    public ResponseEntity<List<AttendanceDTO>> getLateCheckIns(
-            @RequestParam("lateTime") String lateTime,
-            @RequestParam("startDate") LocalDate startDate,
-            @RequestParam("endDate") LocalDate endDate) {
+    public ResponseEntity<List<Attendance>> getLateCheckIns(
+            @RequestParam("lateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime lateTime,
+            @RequestParam("startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+            @RequestParam("endDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
         try {
-            List<AttendanceDTO> lateCheckIns = attendanceService.getLateCheckIns(lateTime, startDate, endDate);
+            List<Attendance> lateCheckIns = attendanceService.getLateCheckIns(startDate, endDate, lateTime);
             return lateCheckIns.isEmpty()
                     ? ResponseEntity.noContent().build()
                     : ResponseEntity.ok(lateCheckIns);
@@ -190,9 +193,9 @@ public class AttendanceRestController {
     }
 
     @GetMapping("/searchByName")
-    public ResponseEntity<List<AttendanceDTO>> getAttendancesByUserNamePart(@RequestParam("name") String name) {
+    public ResponseEntity<List<Attendance>> getAttendancesByUserNamePart(@RequestParam("name") String name) {
         try {
-            List<AttendanceDTO> attendances = attendanceService.getAttendancesByUserNamePart(name);
+            List<Attendance> attendances = attendanceService.getAttendancesByUserNamePart(name);
             return attendances.isEmpty()
                     ? ResponseEntity.noContent().build()
                     : ResponseEntity.ok(attendances);
@@ -203,10 +206,10 @@ public class AttendanceRestController {
     }
 
     @GetMapping("/roleAttendance")
-    public ResponseEntity<List<AttendanceDTO>> getAttendanceByRole(
+    public ResponseEntity<List<Attendance>> getAttendanceByRole(
             @RequestParam("role") String role) {
         try {
-            List<AttendanceDTO> attendances = attendanceService.getAttendanceByRole(role);
+            List<Attendance> attendances = attendanceService.getAttendanceByRole(role);
             return attendances.isEmpty()
                     ? ResponseEntity.noContent().build()
                     : ResponseEntity.ok(attendances);
@@ -217,9 +220,9 @@ public class AttendanceRestController {
     }
 
     @GetMapping("/todayAttendance/{userId}")
-    public ResponseEntity<List<AttendanceDTO>> getTodayAttendanceByUserId(@PathVariable("userId") long userId) {
+    public ResponseEntity<List<Attendance>> getTodayAttendanceByUserId(@PathVariable("userId") long userId) {
         try {
-            List<AttendanceDTO> todayAttendance = attendanceService.getTodayAttendanceByUserId(userId);
+            List<Attendance> todayAttendance = attendanceService.getTodayAttendanceByUserId(userId);
             return todayAttendance.isEmpty()
                     ? ResponseEntity.noContent().build()
                     : ResponseEntity.ok(todayAttendance);

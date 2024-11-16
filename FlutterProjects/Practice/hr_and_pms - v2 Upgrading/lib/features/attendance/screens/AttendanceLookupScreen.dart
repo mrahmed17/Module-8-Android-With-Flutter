@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:hr_and_pms/features/attendance/service/AttendanceService.dart';
 import 'package:hr_and_pms/features/attendance/model/AttendanceModel.dart';
@@ -12,48 +13,54 @@ class AttendanceLookupScreen extends StatefulWidget {
 class _AttendanceLookupScreenState extends State<AttendanceLookupScreen> {
   final AttendanceService attendanceService = AttendanceService();
   List<Attendance> attendanceResults = [];
-  bool isLoading = false;
+  bool isLoadingSearch = false;
+  bool isLoadingFilter = false;
+  bool isLoadingTodayAttendance = false;
   String searchQuery = "";
   String selectedRole = "EMPLOYEE";
   int? userIdForTodayAttendance;
+  Timer? _debounce;
 
   final List<String> roles = ["EMPLOYEE", "MANAGER"];
 
+  // Debounce for Search Input
+  void onSearchChanged(String query) {
+    if (_debounce?.isActive ?? false) _debounce!.cancel();
+    _debounce = Timer(const Duration(milliseconds: 500), () {
+      setState(() {
+        searchQuery = query;
+        searchAttendanceByUserName();
+      });
+    });
+  }
+
   // Search attendance by user name
   void searchAttendanceByUserName() async {
-    setState(() => isLoading = true);
+    setState(() => isLoadingSearch = true);
     try {
       var results = await attendanceService.getAttendancesByUserNamePart(searchQuery);
-      setState(() {
-        attendanceResults = results;
-      });
+      setState(() => attendanceResults = results);
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text("Failed to load attendance records: $e",
-          style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: Colors.teal),
-        ),
-      ));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Failed to load attendance records. Please try again later.")),
+      );
     } finally {
-      setState(() => isLoading = false);
+      setState(() => isLoadingSearch = false);
     }
   }
 
   // Filter attendance by role
   void filterAttendanceByRole() async {
-    setState(() => isLoading = true);
+    setState(() => isLoadingFilter = true);
     try {
       var results = await attendanceService.getAttendanceByRole(selectedRole);
-      setState(() {
-        attendanceResults = results;
-      });
+      setState(() => attendanceResults = results);
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text("Failed to load attendance by role: $e",
-          style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: Colors.teal),
-        ),
-      ));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Failed to load attendance by role. Please try again later.")),
+      );
     } finally {
-      setState(() => isLoading = false);
+      setState(() => isLoadingFilter = false);
     }
   }
 
@@ -61,54 +68,50 @@ class _AttendanceLookupScreenState extends State<AttendanceLookupScreen> {
   void getTodayAttendanceByUserId() async {
     if (userIdForTodayAttendance == null) return;
 
-    setState(() => isLoading = true);
+    setState(() => isLoadingTodayAttendance = true);
     try {
       var results = await attendanceService.getTodayAttendanceByUserId(userIdForTodayAttendance!);
-      setState(() {
-        attendanceResults = results;
-      });
+      setState(() => attendanceResults = results);
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text("Failed to load today's attendance: $e",
-          style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: Colors.teal),
-        ),
-      ));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Failed to load today's attendance. Please try again later.")),
+      );
     } finally {
-      setState(() => isLoading = false);
+      setState(() => isLoadingTodayAttendance = false);
     }
+  }
+
+  @override
+  void dispose() {
+    _debounce?.cancel();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Attendance Lookup",
-          style: TextStyle(fontSize: 24, fontWeight: FontWeight.w600, color: Colors.white),
-        ),
+        title: Text("Attendance Lookup"),
         backgroundColor: Colors.teal,
         centerTitle: true,
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Search by user name
             TextField(
               decoration: InputDecoration(
                 labelText: "Search by User Name",
-                labelStyle: TextStyle(color: Colors.teal),
-                suffixIcon: IconButton(
-                  icon: Icon(Icons.search, color: Colors.teal),
-                  onPressed: searchAttendanceByUserName,
-                ),
+                suffixIcon: isLoadingSearch
+                    ? CircularProgressIndicator()
+                    : IconButton(icon: Icon(Icons.search), onPressed: searchAttendanceByUserName),
               ),
-              onChanged: (value) => searchQuery = value,
+              onChanged: onSearchChanged,
             ),
             SizedBox(height: 20),
 
             // Filter by Role
-            Text("Filter by Role", style: TextStyle(fontWeight: FontWeight.bold, color: Colors.teal)),
             DropdownButton<String>(
               value: selectedRole,
               items: roles.map((role) {
@@ -121,13 +124,12 @@ class _AttendanceLookupScreenState extends State<AttendanceLookupScreen> {
             ),
             SizedBox(height: 20),
 
-            // User ID for Today's Attendance
+            // Today's Attendance
             TextField(
               decoration: InputDecoration(
                 labelText: "User ID for Today's Attendance",
-                labelStyle: TextStyle(color: Colors.teal),
                 suffixIcon: IconButton(
-                  icon: Icon(Icons.calendar_today, color: Colors.teal),
+                  icon: Icon(Icons.calendar_today),
                   onPressed: getTodayAttendanceByUserId,
                 ),
               ),
@@ -136,28 +138,20 @@ class _AttendanceLookupScreenState extends State<AttendanceLookupScreen> {
             ),
             SizedBox(height: 20),
 
-            // Loading Indicator or Results
-            isLoading
-                ? Center(child: CircularProgressIndicator())
-                : Expanded(
-              child: attendanceResults.isNotEmpty
-                  ? ListView.builder(
+            // Attendance Results
+            Expanded(
+              child: isLoadingFilter || isLoadingTodayAttendance
+                  ? Center(child: CircularProgressIndicator())
+                  : ListView.builder(
                 itemCount: attendanceResults.length,
                 itemBuilder: (context, index) {
                   final attendance = attendanceResults[index];
                   return ListTile(
-                    title: Text("User: ${attendance.user?.name ?? 'N/A'}",
-                        style: TextStyle(fontWeight: FontWeight.bold, color: Colors.teal)),
-                    subtitle: Text("Check-in Time: ${attendance.clockInTime ?? 'N/A'}",
-                      style: TextStyle(color: Colors.teal),
-                    ),
+                    leading: CircleAvatar(child: Text(attendance.user?.name?.substring(0, 1) ?? "?")),
+                    title: Text("User: ${attendance.user?.name ?? 'N/A'}"),
+                    subtitle: Text("Check-in Time: ${attendance.clockInTime ?? 'N/A'}"),
                   );
                 },
-              )
-                  : Center(
-                child: Text("No records found",
-                  style: TextStyle(fontWeight: FontWeight.bold, color: Colors.teal),
-                ),
               ),
             ),
           ],

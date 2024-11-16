@@ -1,5 +1,4 @@
 
-import 'package:hr_and_pms/features/attendance/dto/AttendanceDTO.dart';
 import 'package:hr_and_pms/features/attendance/model/AttendanceModel.dart';
 import 'package:hr_and_pms/features/user/model/Role.dart';
 
@@ -56,24 +55,6 @@ class User {
           ?.map((attendance) => Attendance.fromJson(attendance))
           .toList() ??
           [],
-    );
-  }
-
-  // Convert User object to UserDTO
-  UserDTO toDTO() {
-    return UserDTO(
-      id: this.id,
-      name: this.name,
-      email: this.email,
-      cell: this.contact,
-      address: this.address,
-      dateOfBirth: this.dateOfBirth,
-      gender: this.gender,
-      basicSalary: this.basicSalary,
-      joinedDate: this.joinedDate,
-      active: true, // Adjust this value based on your logic
-      profilePhoto: this.profilePhoto,
-      role: this.role,
     );
   }
 

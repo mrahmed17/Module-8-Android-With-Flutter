@@ -15,7 +15,7 @@ class _AttendanceOverviewScreenState extends State<AttendanceOverviewScreen> {
   final AttendanceService attendanceService = AttendanceService();
   List<Attendance> recentAttendances = [];
   List<User> usersWithoutAttendanceToday = [];
-  Map<String, dynamic>? attendanceCountsInRange;
+  Map<String, int>? attendanceCounts; // Adjusted type for clarity
   bool isLoading = false;
 
   @override
@@ -30,14 +30,17 @@ class _AttendanceOverviewScreenState extends State<AttendanceOverviewScreen> {
       await fetchRecentAttendances();
       await fetchUsersWithoutAttendanceToday();
       await fetchAttendanceCountsInRange(
-          DateTime.now().subtract(Duration(days: 30)), DateTime.now());
+        DateTime.now().subtract(Duration(days: 30)),
+        DateTime.now(),
+      );
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-            content: Text(
-              "Failed to load overview data",
-              style: TextStyle(fontWeight: FontWeight.bold, color: Colors.teal),
-            )),
+          content: Text(
+            "Failed to load overview data: $e",
+            style: TextStyle(fontWeight: FontWeight.bold, color: Colors.red),
+          ),
+        ),
       );
     } finally {
       setState(() => isLoading = false);
@@ -55,14 +58,12 @@ class _AttendanceOverviewScreenState extends State<AttendanceOverviewScreen> {
 
   Future<void> fetchAttendanceCountsInRange(
       DateTime startDate, DateTime endDate) async {
-    Map<User, int> response = await attendanceService.getUsersAttendanceInRange(startDate, endDate);
-
-    // Convert Map<User, int> to Map<String, dynamic>
-    attendanceCountsInRange = {
-      for (var entry in response.entries) entry.key.name: entry.value,
-    };
+    Map<String, int> response =
+    await attendanceService.getAttendanceCountsInRange(startDate, endDate);
+    setState(() {
+      attendanceCounts = response;
+    });
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -101,38 +102,42 @@ class _AttendanceOverviewScreenState extends State<AttendanceOverviewScreen> {
 
   // Builds the title for each section
   Widget _buildSectionTitle(String title) {
-    return Center(
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8.0),
       child: Text(
         title,
-        style: TextStyle(fontWeight: FontWeight.bold, color: Colors.teal),
+        style: TextStyle(
+          fontWeight: FontWeight.bold,
+          color: Colors.teal,
+          fontSize: 18,
+        ),
       ),
     );
   }
 
-  // Displays the list of recent attendances or a message if no data is available
+  // Displays the list of recent attendances
   Widget _buildRecentAttendancesList() {
     if (recentAttendances.isEmpty) {
-      return Center(
-        child: Text(
-          "No recent attendances",
-          style: TextStyle(fontSize: 16, color: Colors.red),
-        ),
+      return Text(
+        "No recent attendances found.",
+        style: TextStyle(fontSize: 16, color: Colors.red),
       );
     }
     return ListView.builder(
-      shrinkWrap: true, // Ensures the list doesn't take up too much space
-      physics: NeverScrollableScrollPhysics(), // Prevents scrolling conflicts
+      shrinkWrap: true,
+      physics: NeverScrollableScrollPhysics(),
       itemCount: recentAttendances.length,
       itemBuilder: (context, index) {
+        final attendance = recentAttendances[index];
         return ListTile(
           title: Text(
-            "User: ${recentAttendances[index].user.name}",
+            "User: ${attendance.user?.name ?? 'N/A'}",
             style: TextStyle(fontWeight: FontWeight.bold, color: Colors.teal),
           ),
           subtitle: Text(
-            "Check-in: ${recentAttendances[index].clockInTime ?? 'N/A'}, "
-                "Check-out: ${recentAttendances[index].clockOutTime ?? 'N/A'}",
-            style: TextStyle(fontWeight: FontWeight.bold, color: Colors.teal),
+            "Check-in: ${attendance.clockInTime ?? 'N/A'}, "
+                "Check-out: ${attendance.clockOutTime ?? 'N/A'}",
+            style: TextStyle(fontSize: 14, color: Colors.grey[600]),
           ),
         );
       },
@@ -142,11 +147,9 @@ class _AttendanceOverviewScreenState extends State<AttendanceOverviewScreen> {
   // Displays the list of users without attendance today
   Widget _buildUsersWithoutAttendanceList() {
     if (usersWithoutAttendanceToday.isEmpty) {
-      return Center(
-        child: Text(
-          "All users have checked in today",
-          style: TextStyle(fontSize: 16, color: Colors.red),
-        ),
+      return Text(
+        "All users have checked in today.",
+        style: TextStyle(fontSize: 16, color: Colors.green),
       );
     }
     return ListView.builder(
@@ -154,28 +157,29 @@ class _AttendanceOverviewScreenState extends State<AttendanceOverviewScreen> {
       physics: NeverScrollableScrollPhysics(),
       itemCount: usersWithoutAttendanceToday.length,
       itemBuilder: (context, index) {
+        final user = usersWithoutAttendanceToday[index];
         return ListTile(
           title: Text(
-            "User: ${usersWithoutAttendanceToday[index].name}",
+            user.name,
+            style: TextStyle(fontWeight: FontWeight.bold, color: Colors.teal),
           ),
         );
       },
     );
   }
 
-  // Displays the attendance counts or a message if no data is available
+  // Displays the attendance counts
   Widget _buildAttendanceCounts() {
-    if (attendanceCountsInRange == null) {
-      return Center(
-        child: Text(
-          "No data available for the specified range",
-          style: TextStyle(fontSize: 16, color: Colors.red),
-        ),
+    if (attendanceCounts == null) {
+      return Text(
+        "No data available for the specified range.",
+        style: TextStyle(fontSize: 16, color: Colors.red),
       );
     }
     return Text(
-      "Total: ${attendanceCountsInRange!['total']} | Present: ${attendanceCountsInRange!['present']} "
-          "| Absent: ${attendanceCountsInRange!['absent']}",
+      "Total: ${attendanceCounts!['total'] ?? 0} | "
+          "Present: ${attendanceCounts!['present'] ?? 0} | "
+          "Absent: ${attendanceCounts!['absent'] ?? 0}",
       style: TextStyle(fontSize: 16, color: Colors.teal),
     );
   }

@@ -150,23 +150,23 @@ class AttendanceService {
     }
   }
 
-  // Get peak attendance day
-  Future<List<Object>> getPeakAttendanceDay() async {
+  Future<String> getPeakAttendanceDay() async {
     final response = await _makeRequest('GET', '$apiPath/peakAttendanceDay');
 
     if (response.statusCode == 200) {
-      return json.decode(response.body);
+      final List<dynamic> responseBody = json.decode(response.body);
+      return responseBody.isNotEmpty ? responseBody.first.toString() : "No data";
     } else {
       throw Exception('Failed to load peak attendance day: ${response.body}');
     }
   }
 
-  // Get peak attendance month
-  Future<List<Object>> getPeakAttendanceMonth() async {
+  Future<String> getPeakAttendanceMonth() async {
     final response = await _makeRequest('GET', '$apiPath/peakAttendanceMonth');
 
     if (response.statusCode == 200) {
-      return json.decode(response.body);
+      final List<dynamic> responseBody = json.decode(response.body);
+      return responseBody.isNotEmpty ? responseBody.first.toString() : "No data";
     } else {
       throw Exception('Failed to load peak attendance month: ${response.body}');
     }
@@ -229,8 +229,7 @@ class AttendanceService {
     }
   }
 
-  // Get users with attendance in a specific range
-  Future<Map<User, int>> getUsersAttendanceInRange(DateTime startDate, DateTime endDate) async {
+  Future<Map<String, int>> getAttendanceCountsInRange(DateTime startDate, DateTime endDate) async {
     final response = await _makeRequest(
       'GET',
       '$apiPath/attendanceRange?startDate=${startDate.toIso8601String()}&endDate=${endDate.toIso8601String()}',
@@ -238,13 +237,14 @@ class AttendanceService {
 
     if (response.statusCode == 200) {
       Map<String, dynamic> data = json.decode(response.body);
-      Map<User, int> userAttendance = {};
+      Map<String, int> attendanceCounts = {}; // Changed from Map<User, int> to Map<String, int>
       data.forEach((key, value) {
-        userAttendance[User.fromJson(json.decode(key))] = value;
+        attendanceCounts[key] = value;  // Assuming the key is a string, e.g., user ID or name
       });
-      return userAttendance;
+      return attendanceCounts;
     } else {
-      throw Exception('Failed to load users with attendance in range: ${response.body}');
+      throw Exception('Failed to load attendance counts in range: ${response.body}');
     }
   }
+
 }

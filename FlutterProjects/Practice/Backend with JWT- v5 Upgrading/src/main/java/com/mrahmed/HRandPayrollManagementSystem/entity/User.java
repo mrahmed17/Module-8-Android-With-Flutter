@@ -118,22 +118,4 @@ public class User implements UserDetails, Serializable {
     }
 
 
-    public UserDTO toDTO() {
-        return new UserDTO(
-                this.id,
-                this.name,
-                this.email,
-                this.cell,
-                this.address,
-                this.dateOfBirth,
-                this.gender,
-                this.basicSalary,
-                this.joinedDate,
-                this.active,
-                this.profilePhoto,
-                this.role
-        );
-    }
-
-
 }

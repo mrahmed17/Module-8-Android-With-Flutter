@@ -17,18 +17,13 @@ import java.util.stream.Collectors;
 @Service
 public class AttendanceService {
 
-
     @Autowired
     private AttendanceRepository attendanceRepository;
 
     @Autowired
     private UserRepository userRepository;
 
-    private final AttendanceMapper attendanceMapper = AttendanceMapper.INSTANCE;
-
-    private final UserMapper userMapper = UserMapper.INSTANCE;
-
-    public AttendanceDTO checkIn(long userId) {
+    public Attendance checkIn(long userId) {
         try {
             User user = userRepository.findById(userId)
                     .orElseThrow(() -> new RuntimeException("User not found with ID: " + userId));
@@ -39,14 +34,13 @@ public class AttendanceService {
             attendance.setDate(LocalDate.now());
             attendance.setClockInTime(LocalDateTime.now());
             attendance.setUser(user);
-            Attendance savedAttendance = attendanceRepository.save(attendance);
-            return attendanceMapper.toDTO(savedAttendance); // Map to DTO
+            return attendanceRepository.save(attendance);
         } catch (Exception e) {
             throw new RuntimeException("Error occurred while checking in: " + e.getMessage(), e);
         }
     }
 
-    public AttendanceDTO checkOut(long userId) {
+    public Attendance checkOut(long userId) {
         try {
             Attendance attendance = attendanceRepository.findLastAttendanceForUser(userId, LocalDate.now())
                     .orElseThrow(() -> new RuntimeException("No check-in found for today's check-out"));
@@ -54,68 +48,53 @@ public class AttendanceService {
                 throw new RuntimeException("User has already checked out today.");
             }
             attendance.setClockOutTime(LocalDateTime.now());
-            Attendance updatedAttendance = attendanceRepository.save(attendance);
-            return attendanceMapper.toDTO(updatedAttendance); // Map to DTO
+            return attendanceRepository.save(attendance);
         } catch (Exception e) {
             throw new RuntimeException("Error occurred while checking out: " + e.getMessage(), e);
         }
     }
 
-    public List<AttendanceDTO> getOvertimeForUser(Long userId, LocalDate startDate, LocalDate endDate) {
+    public List<Attendance> getOvertimeForUser(Long userId, LocalDate startDate, LocalDate endDate) {
         List<Attendance> attendances = attendanceRepository.findAttendancesByUserIdAndDateRange(userId, startDate, endDate);
         return attendances.stream()
                 .filter(this::isOvertime)
-                .map(attendanceMapper::toDTO) // Map each entity to DTO
                 .collect(Collectors.toList());
     }
 
     private boolean isOvertime(Attendance attendance) {
         if (attendance.getClockInTime() == null || attendance.getClockOutTime() == null) {
-            return false;
+            return false; // Skip records with missing times
         }
         Duration duration = Duration.between(attendance.getClockInTime(), attendance.getClockOutTime());
         long hours = duration.toHours();
-        return hours > 8;
+        return hours > 8; // Assuming a workday is 8 hours
     }
 
-    public List<AttendanceDTO> getTodayAttendances() {
-        LocalDate today = LocalDate.now();
-        List<Attendance> attendances = attendanceRepository.findAttendancesForToday(today);
-        return attendanceMapper.toDTOList(attendances); // Use the mapper
+    public List<Attendance> getTodayAttendances() {
+        return attendanceRepository.findAttendancesForToday(LocalDate.now());
     }
 
-    public List<AttendanceDTO> getAllAttendances() {
-        List<Attendance> attendances = attendanceRepository.findAll(); // Or however you're fetching attendances
-
-        // Use mapToDTOList to convert the list of attendances
-        return mapToDTOList(attendances);
+    public List<Attendance> getAllAttendances() {
+        return attendanceRepository.findAll();
     }
 
-    public AttendanceDTO findAttendanceById(long id) {
-        Attendance attendance = attendanceRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Attendance not found with id: " + id));
-        return attendanceMapper.toDTO(attendance); // Map to DTO
+    public Attendance findAttendanceById(long id) {
+        return attendanceRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Attendance not found with ID: " + id));
     }
 
-    public Map<UserDTO, Long> getUsersAttendanceInRange(LocalDate startDate, LocalDate endDate) {
+    public Map<User, Long> getUsersAttendanceInRange(LocalDate startDate, LocalDate endDate) {
         List<Attendance> attendances = attendanceRepository.findAttendancesInRange(startDate, endDate);
-
-        // Convert User entities to UserDTOs and count attendances for each user
         return attendances.stream()
-                .collect(Collectors.groupingBy(
-                        attendance -> userMapper.toDTO(attendance.getUser()),
-                        Collectors.counting()));
+                .collect(Collectors.groupingBy(Attendance::getUser, Collectors.counting()));
     }
 
-
-    public List<AttendanceDTO> getAttendanceByUserId(Long id) {
-        List<Attendance> attendances = attendanceRepository.findAllByUserId(id);
-        return attendanceMapper.toDTOList(attendances); // Use the mapper
+    public List<Attendance> getAttendanceByUserId(Long userId) {
+        return attendanceRepository.findAllByUserId(userId);
     }
 
-    public List<UserDTO> findUsersWithoutAttendanceToday() {
-        List<User> users = attendanceRepository.findUsersWithoutAttendanceForToday(LocalDate.now());
-        return userMapper.toDTOList(users); // Use the MapStruct-generated mapper
+    public List<User> findUsersWithoutAttendanceToday() {
+        return attendanceRepository.findUsersWithoutAttendanceForToday(LocalDate.now());
     }
 
     public List<Object[]> getPeakAttendanceDay() {
@@ -126,27 +105,19 @@ public class AttendanceService {
         return attendanceRepository.findPeakAttendanceMonth();
     }
 
-    public List<AttendanceDTO> getLateCheckIns(String lateTime, LocalDate startDate, LocalDate endDate) {
-        List<Attendance> attendances = attendanceRepository.findLateCheckIns(lateTime, startDate, endDate);
-        return attendanceMapper.toDTOList(attendances); // Use the mapper
+    public List<Attendance> getLateCheckIns(LocalDate startDate, LocalDate endDate, LocalDateTime lateTime) {
+        return attendanceRepository.findLateCheckIns(lateTime.toString(), startDate, endDate);
     }
 
-    public List<AttendanceDTO> getAttendancesByUserNamePart(String name) {
-        List<Attendance> attendances = attendanceRepository.findAttendancesByUserNamePart(name);
-        return attendanceMapper.toDTOList(attendances); // Use the mapper
+    public List<Attendance> getAttendancesByUserNamePart(String name) {
+        return attendanceRepository.findAttendancesByUserNamePart(name);
     }
 
-    public List<AttendanceDTO> getAttendanceByRole(String role) {
-        List<Attendance> attendances = attendanceRepository.findAttendanceByRole(role);
-        return attendanceMapper.toDTOList(attendances); // Use the mapper
+    public List<Attendance> getAttendanceByRole(String role) {
+        return attendanceRepository.findAttendanceByRole(role);
     }
 
-    public List<AttendanceDTO> getTodayAttendanceByUserId(long userId) {
-        List<Attendance> attendances = attendanceRepository.findTodayAttendanceByUserId(userId);
-        return attendanceMapper.toDTOList(attendances); // Use the mapper
-    }
-
-    private List<AttendanceDTO> mapToDTOList(List<Attendance> attendances) {
-        return attendanceMapper.toDTOList(attendances);
+    public List<Attendance> getTodayAttendanceByUserId(long userId) {
+        return attendanceRepository.findTodayAttendanceByUserId(userId);
     }
 }

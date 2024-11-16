@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hr_and_pms/features/attendance/service/AttendanceService.dart';
 import 'package:hr_and_pms/features/attendance/model/AttendanceModel.dart';
+import 'package:intl/intl.dart'; // For date formatting
 
 class AttendanceAnalyticsScreen extends StatefulWidget {
   const AttendanceAnalyticsScreen({super.key});
@@ -15,8 +16,8 @@ class _AttendanceAnalyticsScreenState extends State<AttendanceAnalyticsScreen> {
   List<Attendance> lateCheckIns = [];
   bool isLoading = false;
   DateTimeRange? selectedDateRange;
-  String? peakAttendanceDay = '';
-  String? peakAttendanceMonth = '';
+  String? peakAttendanceDay;
+  String? peakAttendanceMonth;
 
   @override
   void initState() {
@@ -33,32 +34,47 @@ class _AttendanceAnalyticsScreenState extends State<AttendanceAnalyticsScreen> {
         await fetchLateCheckIns(selectedDateRange!);
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Failed to load analytics data")),
-      );
+      showSnackBar("Failed to load analytics data. Please try again.");
     } finally {
       setState(() => isLoading = false);
     }
   }
 
   Future<void> fetchPeakAttendanceDay() async {
-    peakAttendanceDay = (await attendanceService.getPeakAttendanceDay()) as String?;
+    try {
+      final day = await attendanceService.getPeakAttendanceDay();
+      setState(() => peakAttendanceDay = day);
+    } catch (e) {
+      setState(() => peakAttendanceDay = "No data available");
+    }
   }
 
   Future<void> fetchPeakAttendanceMonth() async {
-    peakAttendanceMonth = (await attendanceService.getPeakAttendanceMonth()) as String?;
+    try {
+      final month = await attendanceService.getPeakAttendanceMonth();
+      setState(() => peakAttendanceMonth = month);
+    } catch (e) {
+      setState(() => peakAttendanceMonth = "No data available");
+    }
   }
 
+
+
   Future<void> fetchLateCheckIns(DateTimeRange range) async {
-    lateCheckIns = await attendanceService.getLateCheckIns(
-      "09:00", // Assuming 9 AM is the late check-in threshold
-      range.start,
-      range.end,
-    );
+    try {
+      final checkIns = await attendanceService.getLateCheckIns(
+        "09:00", // Late check-in threshold
+        range.start,
+        range.end,
+      );
+      setState(() => lateCheckIns = checkIns);
+    } catch (e) {
+      setState(() => lateCheckIns = []);
+    }
   }
 
   void selectDateRange() async {
-    DateTimeRange? range = await showDateRangePicker(
+    final range = await showDateRangePicker(
       context: context,
       firstDate: DateTime(2022),
       lastDate: DateTime.now(),
@@ -72,62 +88,90 @@ class _AttendanceAnalyticsScreenState extends State<AttendanceAnalyticsScreen> {
     }
   }
 
+  void showSnackBar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(message)),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Attendance Analytics"),
+        title: const Text("Attendance Analytics"),
         backgroundColor: Colors.teal,
         centerTitle: true,
       ),
       body: isLoading
-          ? Center(child: CircularProgressIndicator())
+          ? const Center(child: CircularProgressIndicator())
           : Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Center(
+        child: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text("Peak Attendance Day",
-                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
-              SizedBox(height: 10),
-              peakAttendanceDay?.isNotEmpty ?? false
+              const Text(
+                "Peak Attendance Day",
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 8),
+              peakAttendanceDay != null && peakAttendanceDay!.isNotEmpty
                   ? Text("Peak Day: $peakAttendanceDay")
-                  : Text("No data available for peak day",
-                  style: TextStyle(color: Colors.red)),
-              SizedBox(height: 20),
-              Text("Peak Attendance Month",
-                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
-              SizedBox(height: 10),
-              peakAttendanceMonth?.isNotEmpty ?? false
+                  : const Text(
+                "No data available for peak day",
+                style: TextStyle(color: Colors.red),
+              ),
+              const SizedBox(height: 20),
+              const Text(
+                "Peak Attendance Month",
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 8),
+              peakAttendanceMonth != null && peakAttendanceMonth!.isNotEmpty
                   ? Text("Peak Month: $peakAttendanceMonth")
-                  : Text("No data available for peak month",
-                  style: TextStyle(color: Colors.red)),
-              SizedBox(height: 20),
-              Text("Late Check-ins",
-                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
-              SizedBox(height: 10),
+                  : const Text(
+                "No data available for peak month",
+                style: TextStyle(color: Colors.red),
+              ),
+              const SizedBox(height: 20),
+              const Text(
+                "Late Check-ins",
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 8),
               ElevatedButton(
                 onPressed: selectDateRange,
-                child: Text("Select Date Range"),
+                child: const Text("Select Date Range"),
               ),
+              const SizedBox(height: 10),
               selectedDateRange != null
-                  ? Text("Selected Range: ${selectedDateRange!.start.toLocal()} - ${selectedDateRange!.end.toLocal()}")
-                  : Text("No date range selected", style: TextStyle(color: Colors.red)),
-              SizedBox(height: 10),
+                  ? Text(
+                "Selected Range: ${DateFormat('MMM dd, yyyy').format(selectedDateRange!.start)} - ${DateFormat('MMM dd, yyyy').format(selectedDateRange!.end)}",
+              )
+                  : const Text(
+                "No date range selected",
+                style: TextStyle(color: Colors.red),
+              ),
+              const SizedBox(height: 10),
               lateCheckIns.isNotEmpty
                   ? ListView.builder(
                 shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
                 itemCount: lateCheckIns.length,
                 itemBuilder: (context, index) {
                   final attendance = lateCheckIns[index];
                   return ListTile(
                     title: Text("User ID: ${attendance.user}"),
-                    subtitle: Text("Check-in Time: ${attendance.clockInTime ?? 'N/A'}"),
+                    subtitle: Text(
+                      "Check-in Time: ${attendance.clockInTime != null ? DateFormat('hh:mm a').format(attendance.clockInTime!) : 'N/A'}",
+                    ),
                   );
                 },
               )
-                  : Text("No late check-ins for the selected range", style: TextStyle(color: Colors.red)),
+                  : const Text(
+                "No late check-ins for the selected range",
+                style: TextStyle(color: Colors.red),
+              ),
             ],
           ),
         ),
