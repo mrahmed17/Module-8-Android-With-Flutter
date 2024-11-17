@@ -1,12 +1,12 @@
-
 import 'package:hr_and_pms/administration/model/User.dart';
 
 class Bonus {
   final int id;
   final double bonusAmount;
   final DateTime bonusDate;
-  final User user;  // Referencing User object directly
+  final User user;
 
+  // Constructor with required fields
   Bonus({
     required this.id,
     required this.bonusAmount,
@@ -20,7 +20,7 @@ class Bonus {
       id: json['id'] ?? 0,
       bonusAmount: json['bonusAmount']?.toDouble() ?? 0.0,
       bonusDate: DateTime.parse(json['bonusDate'] ?? DateTime.now().toString()),
-      user: User.fromJson(json['user'] ?? {}),  // Deserializing the User object
+      user: json['user'] != null ? User.fromJson(json['user']) : User.empty(),  // Ensure safe deserialization of User
     );
   }
 

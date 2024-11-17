@@ -59,6 +59,26 @@ class User {
   }
 
 
+  factory User.empty() {
+    return User(
+      id: 0,
+      name: '',
+      email: '',
+      password: '',
+      address: '',
+      gender: '',
+      dateOfBirth: DateTime(1900, 1, 1),
+      nationalId: '',
+      contact: '',
+      basicSalary: 0.0,
+      joinedDate: DateTime(1900, 1, 1),
+      profilePhoto: '',
+      role: Role.employee,
+      attendances: [],
+    );
+  }
+
+
   // Method to convert User instance to JSON
   Map<String, dynamic> toJson() {
     return {
@@ -78,4 +98,7 @@ class User {
       'attendances': attendances.map((attendance) => attendance.toJson()).toList(),
     };
   }
+
+
 }
+

@@ -1,5 +1,3 @@
-
-
 import 'package:hr_and_pms/features/attendance/model/AttendanceModel.dart';
 import 'package:hr_and_pms/features/bonus/model/Bonus.dart';
 import 'package:hr_and_pms/features/leave/model/Leave.dart';
@@ -17,8 +15,8 @@ class Salary {
   final double lunchAllowance;
   final double netSalary;
   final double tax;
-  final List<Attendance> overTime;
-  final int userId; // Reference to User ID only
+  final List<Attendance> overtime; // Updated naming for clarity
+  final int userId; // Reference to User ID
   final int? advanceSalaryId; // Reference to Advance Salary ID
   final List<Bonus> bonuses;
   final List<Leave> leaves;
@@ -36,18 +34,18 @@ class Salary {
     required this.lunchAllowance,
     required this.netSalary,
     required this.tax,
-    required this.overTime,
+    required this.overtime,
     required this.userId,
     this.advanceSalaryId,
     required this.bonuses,
     required this.leaves,
   });
 
-  // Factory constructor to create a Salary instance from JSON
+  /// Factory constructor to create a `Salary` instance from JSON
   factory Salary.fromJson(Map<String, dynamic> json) {
     return Salary(
       id: json['id'] ?? 0,
-      paymentDate: DateTime.parse(json['paymentDate'] ?? DateTime.now().toString()),
+      paymentDate: DateTime.parse(json['paymentDate']),
       medicare: json['medicare']?.toDouble() ?? 0.0,
       providentFund: json['providentFund']?.toDouble() ?? 0.0,
       insurance: json['insurance']?.toDouble() ?? 0.0,
@@ -58,12 +56,12 @@ class Salary {
       lunchAllowance: json['lunchAllowance']?.toDouble() ?? 0.0,
       netSalary: json['netSalary']?.toDouble() ?? 0.0,
       tax: json['tax']?.toDouble() ?? 0.0,
-      overTime: (json['overTime'] as List<dynamic>?)
+      overtime: (json['overtime'] as List<dynamic>?)
           ?.map((item) => Attendance.fromJson(item))
           .toList() ??
           [],
-      userId: json['user']['id'] ?? 0, // Assuming `user` is an object with `id`
-      advanceSalaryId: json['advanceSalary']?['id'],
+      userId: json['userId'] ?? 0, // Direct userId mapping for consistency
+      advanceSalaryId: json['advanceSalaryId'], // Mapped directly as an ID
       bonuses: (json['bonuses'] as List<dynamic>?)
           ?.map((item) => Bonus.fromJson(item))
           .toList() ??
@@ -75,7 +73,7 @@ class Salary {
     );
   }
 
-  // Method to convert a Salary instance to JSON
+  /// Method to convert a `Salary` instance to JSON
   Map<String, dynamic> toJson() {
     return {
       'id': id,
@@ -90,9 +88,9 @@ class Salary {
       'lunchAllowance': lunchAllowance,
       'netSalary': netSalary,
       'tax': tax,
-      'overTime': overTime.map((item) => item.toJson()).toList(),
-      'user': {'id': userId}, // Only userId is serialized here
-      'advanceSalary': advanceSalaryId != null ? {'id': advanceSalaryId} : null,
+      'overtime': overtime.map((item) => item.toJson()).toList(),
+      'userId': userId, // User ID directly serialized
+      'advanceSalaryId': advanceSalaryId, // Serialized as ID directly
       'bonuses': bonuses.map((item) => item.toJson()).toList(),
       'leaves': leaves.map((item) => item.toJson()).toList(),
     };

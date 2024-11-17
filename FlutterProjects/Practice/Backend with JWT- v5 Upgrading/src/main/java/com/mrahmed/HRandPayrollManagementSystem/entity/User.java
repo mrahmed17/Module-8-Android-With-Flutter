@@ -71,7 +71,7 @@ public class User implements UserDetails, Serializable {
     @NotNull(message = "Role is required")
     private Role role;
 
-    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
     @JsonIgnore
     private List<Attendance> attendances;
 
@@ -101,8 +101,9 @@ public class User implements UserDetails, Serializable {
     @Override
     public boolean isAccountNonLocked() {
 //        return UserDetails.super.isAccountNonLocked();
-        return true;  // Nirjash
+//        return true;  // NirjashBro
 //        return isLock;  // Sir
+        return !isLock;  // bigBro
     }
 
     @Override

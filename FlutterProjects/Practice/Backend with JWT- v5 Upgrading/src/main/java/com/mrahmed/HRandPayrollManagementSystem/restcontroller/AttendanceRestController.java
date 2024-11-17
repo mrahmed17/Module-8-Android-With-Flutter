@@ -24,8 +24,6 @@ public class AttendanceRestController {
     @Autowired
     private AttendanceService attendanceService;
 
-    @Autowired
-    private UserService userService;
 
     @PostMapping("/checkin")
     public ResponseEntity<?> checkIn(@RequestBody Map<String, Object> request) {
@@ -220,7 +218,7 @@ public class AttendanceRestController {
     }
 
     @GetMapping("/todayAttendance/{userId}")
-    public ResponseEntity<List<Attendance>> getTodayAttendanceByUserId(@PathVariable("userId") long userId) {
+    public ResponseEntity<List<Attendance>> getTodayAttendanceByUserId(@PathVariable long userId) {
         try {
             List<Attendance> todayAttendance = attendanceService.getTodayAttendanceByUserId(userId);
             return todayAttendance.isEmpty()
@@ -231,4 +229,5 @@ public class AttendanceRestController {
                     .body(Collections.emptyList());
         }
     }
+
 }

@@ -3,7 +3,6 @@ package com.mrahmed.HRandPayrollManagementSystem.repository;
 import com.mrahmed.HRandPayrollManagementSystem.entity.Attendance;
 import com.mrahmed.HRandPayrollManagementSystem.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -14,6 +13,11 @@ import java.util.Optional;
 
 @Repository
 public interface AttendanceRepository extends JpaRepository<Attendance, Long> {
+
+    //findOvertimeForUser
+    @Query("SELECT a FROM Attendance a WHERE a.user.id = :userId AND a.clockInTime > :lateTime")
+    List<Attendance> findOvertimeForUser(
+            @Param("userId") long userId);
 
     @Query("SELECT a FROM Attendance a WHERE a.user.id = :userId AND a.date BETWEEN :startDate AND :endDate")
     List<Attendance> findAttendancesByUserIdAndDateRange(

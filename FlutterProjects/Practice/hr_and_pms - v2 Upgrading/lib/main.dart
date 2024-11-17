@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hr_and_pms/features/attendance/screens/AttendanceLookupScreen.dart';
 import 'package:hr_and_pms/features/home/HomeScreen.dart';
 import 'package:hr_and_pms/widget/SplashScreen.dart';
 
@@ -16,16 +17,15 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.teal,
       ),
       // home: AllDepartmentViewScreen(),
-      home: SplashScreen(),
+      // home: SplashScreen(),
       // home: HomeScreen(),
       // home: AttendanceAnalyticsScreen(),
       // home: AttendanceOverviewScreen(),
-      // home: AttendanceLookupScreen(),
+      home: AttendanceLookupScreen(),
       // home: DashboardScreen(),
       // home: AttendanceScreen(),
       // home: ManagerDashboardScreen(),
       // home: AdminDashboardScreen(),
-      // home: UserProfileScreen(userId: 7, role: "EMPLOYEE"),
       // home: UserListScreen(),
       // home: RegistrationScreen(),
       // home: LoginScreen(),

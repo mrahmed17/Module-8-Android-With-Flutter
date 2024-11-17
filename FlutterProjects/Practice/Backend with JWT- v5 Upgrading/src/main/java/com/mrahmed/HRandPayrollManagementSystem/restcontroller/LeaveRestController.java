@@ -61,14 +61,12 @@ public class LeaveRestController {
         return ResponseEntity.ok(rejectedLeave);
     }
 
-
     // Get all pending leave requests
     @GetMapping("/pending")
     public ResponseEntity<List<Leave>> getPendingLeaveRequests() {
         List<Leave> pendingLeaves = leaveService.getPendingLeaveRequests();
         return ResponseEntity.ok(pendingLeaves);
     }
-
 
     // Get all leaves by leave type
     @GetMapping("/type/{leaveType}")
@@ -77,7 +75,7 @@ public class LeaveRestController {
         return ResponseEntity.ok(leaves);
     }
 
-    // getRejectedLeaveRequests
+    // Get rejected leave requests
     @GetMapping("/rejected")
     public ResponseEntity<List<Leave>> getRejectedLeaveRequests() {
         List<Leave> rejectedLeaves = leaveService.getRejectedLeaveRequests();
@@ -101,13 +99,11 @@ public class LeaveRestController {
         return ResponseEntity.ok(leaves);
     }
 
-    // getLeavesByReason
+    // Get leaves by reason
     @GetMapping("/reason/{reason}")
     public ResponseEntity<List<Leave>> getLeavesByReason(@PathVariable String reason) {
         List<Leave> leaves = leaveService.getLeavesByReason(reason);
         return ResponseEntity.ok(leaves);
     }
 
-
 }
-

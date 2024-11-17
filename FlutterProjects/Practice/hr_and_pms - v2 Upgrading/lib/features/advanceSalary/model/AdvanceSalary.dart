@@ -1,4 +1,3 @@
-
 import 'package:hr_and_pms/administration/model/User.dart';
 
 class AdvanceSalary {

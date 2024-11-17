@@ -66,6 +66,9 @@ class AuthService {
         await preferences.setString('authToken', token);
         await preferences.setString('userRole', role);
 
+        //for getting login usr profile data
+        // await preferences.setString('user', jsonEncode(data['user']));
+
         return true;
       } else {
         print('Failed to login: ${response.body}');
@@ -110,6 +113,19 @@ class AuthService {
     SharedPreferences preferences = await SharedPreferences.getInstance();
     return preferences.getString('authToken');
   }
+
+  // For getting login user full information
+
+  // Future<Map<String, dynamic>?> getUser() async {
+  //   SharedPreferences prefs = await SharedPreferences.getInstance();
+  //   String? userJson = prefs.getString('user');
+  //
+  //   if (userJson != null) {
+  //     return jsonDecode(userJson);
+  //   } else {
+  //     return null;
+  //   }
+  // }
 
   Future<String?> getUserRole() async {
     SharedPreferences preferences = await SharedPreferences.getInstance();

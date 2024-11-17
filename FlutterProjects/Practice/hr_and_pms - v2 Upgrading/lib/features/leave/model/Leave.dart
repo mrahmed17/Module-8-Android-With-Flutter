@@ -12,7 +12,7 @@ class Leave {
   final int remainingLeave;
   final LeaveType leaveType;
   final RequestStatus requestStatus;
-  final User user;  // Referencing User object directly
+  final User user;
 
   Leave({
     required this.id,
@@ -23,25 +23,31 @@ class Leave {
     required this.remainingLeave,
     required this.leaveType,
     required this.requestStatus,
-    required this.user,  // Using User object instead of userId
+    required this.user,
   });
 
   // Method to convert JSON to Leave instance
   factory Leave.fromJson(Map<String, dynamic> json) {
     return Leave(
       id: json['id'] ?? 0,
-      startDate: DateTime.parse(json['startDate'] ?? DateTime.now().toString()),
-      endDate: DateTime.parse(json['endDate'] ?? DateTime.now().toString()),
-      requestDate: DateTime.parse(json['requestDate'] ?? DateTime.now().toString()),
+      startDate: json['startDate'] != null
+          ? DateTime.parse(json['startDate'])
+          : DateTime.now(),
+      endDate: json['endDate'] != null
+          ? DateTime.parse(json['endDate'])
+          : DateTime.now(),
+      requestDate: json['requestDate'] != null
+          ? DateTime.parse(json['requestDate'])
+          : DateTime.now(),
       reason: json['reason'] ?? '',
       remainingLeave: json['remainingLeave'] ?? 0,
-      leaveType: LeaveType.values.firstWhere((e) => e.toString().split('.').last == json['leaveType']),
-      requestStatus: RequestStatus.values.firstWhere((e) => e.toString().split('.').last == json['requestStatus']),
-      user: User.fromJson(json['user'] ?? {}),  // Deserializing the User object
+      leaveType: LeaveTypeExtension.fromString(json['leaveType'] ?? ''),
+      requestStatus:
+      RequestStatusExtension.fromString(json['requestStatus'] ?? ''),
+      user: json['user'] != null ? User.fromJson(json['user']) : User.empty(),
     );
   }
 
-  // Method to convert Leave instance to JSON
   Map<String, dynamic> toJson() {
     return {
       'id': id,
@@ -50,9 +56,10 @@ class Leave {
       'requestDate': requestDate.toIso8601String(),
       'reason': reason,
       'remainingLeave': remainingLeave,
-      'leaveType': leaveType.toString().split('.').last,
-      'requestStatus': requestStatus.toString().split('.').last,
-      'user': user.toJson(),  // Serializing the User object
+      'leaveType': leaveType.toShortString().toUpperCase(),
+      'requestStatus': requestStatus.toShortString().toUpperCase(),
+      'user': user.toJson(),
     };
   }
+
 }
