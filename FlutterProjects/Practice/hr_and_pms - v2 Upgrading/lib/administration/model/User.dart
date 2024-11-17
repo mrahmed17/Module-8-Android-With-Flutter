@@ -1,6 +1,6 @@
 
 import 'package:hr_and_pms/features/attendance/model/AttendanceModel.dart';
-import 'package:hr_and_pms/features/user/model/Role.dart';
+import 'package:hr_and_pms/administration/model/Role.dart';
 
 class User {
   final int id;

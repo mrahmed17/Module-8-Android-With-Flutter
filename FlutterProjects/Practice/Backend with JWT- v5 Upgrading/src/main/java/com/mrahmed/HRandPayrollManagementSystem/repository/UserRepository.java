@@ -15,8 +15,8 @@ import java.util.Optional;
 @Repository
 public interface UserRepository extends JpaRepository <User, Long> {
 
-    // Finding Users by Role for JWT
-//    Optional<List<User>> findAllByRole(Role role);
+    // Finding Users by id for profiles
+    Optional<User> findById(long id);
 
     // Find a single user by email for authentication
     Optional<User> findByEmail(String email);
@@ -44,7 +44,5 @@ public interface UserRepository extends JpaRepository <User, Long> {
     // Search user records by joined date with pagination
     @Query("SELECT u FROM User u WHERE u.joinedDate = :joinedDate")
     Page<User> findByJoinedDate(@Param("joinedDate") LocalDate joinedDate, Pageable pageable);
-
-
 
 }

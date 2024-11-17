@@ -10,9 +10,10 @@ import jakarta.mail.MessagingException;
 import lombok.AllArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -44,107 +45,57 @@ public class AuthService {
 
     private void revokeAllTokenByUser(User user) {
         List<Token> validTokens = tokenRepository.findAllTokensByUser(user.getId());
-        if (!validTokens.isEmpty()) {
-            validTokens.forEach(t -> t.setLoggedOut(true));
-            tokenRepository.saveAll(validTokens);
+        if (validTokens.isEmpty()) {
+            return;
         }
+        // Set all valid tokens for the user to logged out
+        validTokens.forEach(t -> {
+            t.setLoggedOut(true);
+        });
+
+        // Save the changes to the tokens in the token repository
+        tokenRepository.saveAll(validTokens);
     }
 
-//    private void revokeAllTokenByUser(User user) {
-//        List<Token> validTokens = tokenRepository.findAllTokensByUser(user.getId());
-//        if (validTokens.isEmpty()) {
-//            return;
-//        }
-//        // Set all valid tokens for the user to logged out
-//        validTokens.forEach(t -> {
-//            t.setLoggedOut(true);
-//        });
-//
-//        // Save the changes to the tokens in the token repository
-//        tokenRepository.saveAll(validTokens);
-//    }
-
-
-    @Transactional
-    public AuthenticationResponse register(User user, MultipartFile profilePhoto) throws IOException {
-
-        // Check if the user already exists
+    // One method for all roles registration
+    public AuthenticationResponse registerUser(User user, Role role, MultipartFile profilePhoto) throws IOException {
         if (userRepository.findByEmail(user.getUsername()).isPresent()) {
-            return new AuthenticationResponse(null, "Employee already exists");
+            return new AuthenticationResponse(null, role + " already exists");
         }
 
-        if (profilePhoto != null) {
-            String profilePhotoPath = userService.saveProfileImage(profilePhoto);
+        if (profilePhoto != null && !profilePhoto.isEmpty()) {
+            String profilePhotoPath = userService.saveProfileImage(profilePhoto, user.getName());
             user.setProfilePhoto(profilePhotoPath);
         }
 
-        // Create a new user entity and save it to the database
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        user.setRole(Role.EMPLOYEE);
-//        user.setLock(true);
+        user.setRole(role);
         user.setActive(false);
-
         userRepository.save(user);
 
-        // Generate JWT token for the newly registered user
         String jwt = jwtService.generateToken(user);
-
-        // Save the token to the token repository
         saveUserToken(jwt, user);
         sendActivationEmail(user);
 
-        return new AuthenticationResponse(jwt, "Employee registration was successful");
+        return new AuthenticationResponse(jwt, role + " registration was successful");
     }
 
-    public AuthenticationResponse registerAdmin(User user) {
 
-        // Check if the user already exists
-        if (userRepository.findByEmail(user.getUsername()).isPresent()) {
-            return new AuthenticationResponse(null, "Admin already exists");
+    public User getLoggedInUser() {
+        String username = getLoggedInUsername();
+        if (username == null) {
+            throw new RuntimeException("No authenticated user found");
         }
-
-        // Create a new user entity and save it to the database
-
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        user.setRole(Role.valueOf("ADMIN"));
-//        user.setLock(true);
-        user.setActive(false);
-
-        userRepository.save(user);
-
-        // Generate JWT token for the newly registered user
-        String jwt = jwtService.generateToken(user);
-
-        // Save the token to the token repository
-        saveUserToken(jwt, user);
-        sendActivationEmail(user);
-
-        return new AuthenticationResponse(jwt, "ADMIN registration was successful");
+        return userRepository.findByEmail(username)
+                .orElseThrow(() -> new RuntimeException("User not found with email: " + username));
     }
 
-    public AuthenticationResponse registerManager(User user) {
-
-        // Check if the user already exists
-        if (userRepository.findByEmail(user.getUsername()).isPresent()) {
-            return new AuthenticationResponse(null, "MANAGER already exists");
+    private String getLoggedInUsername() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.isAuthenticated()) {
+            return authentication.getName(); // Usually email
         }
-
-        // Create a new user entity and save it to the database
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        user.setRole(Role.valueOf("MANAGER"));
-//        user.setLock(false);
-        user.setActive(false);
-
-        userRepository.save(user);
-
-        // Generate JWT token for the newly registered user
-        String jwt = jwtService.generateToken(user);
-
-        // Save the token to the token repository
-        saveUserToken(jwt, user);
-        sendActivationEmail(user);
-
-        return new AuthenticationResponse(jwt, "MANAGER registration was successful");
+        return null; // No user logged in
     }
 
 
@@ -182,74 +133,18 @@ public class AuthService {
         }
     }
 
-// My Style mail text
-
-//    private void sendActivationEmail(User user) {
-//        String activationLink = "http://localhost:8080/activate/"
-//                + user.getId();
-//
-//        String mailText = "<html>"
-//                + "<body style=\"font-family: Arial, sans-serif; "
-//                + "color: #333; line-height: 1.6;\">"
-//                + "<h3 style=\"color: #2a7ae2;\">Dear "
-//                + user.getName()
-//                + ",</h3>"
-//                + "<p>Thank you for registering with the IsDB Scholarship Program.</p>"
-//                + "<p>Please click the link below to activate your account and complete your registration:</p>"
-//                + "<p><a href=\""
-//                + activationLink
-//                + "\" style=\"color: #2a7ae2;\">Activate Account</a></p>"
-//                + "<p>If you did not initiate this request, please ignore this email.</p>"
-//                + "<br>"
-//                + "<p>Best regards,</p>"
-//                + "<p><strong>IsDB Scholarship Program</strong></p>"
-//                + "<p>HR and Payroll Management Team</p>"
-//                + "</body>"
-//                + "</html>";
-//
-//        String subject = "Activate Your Account – IsDB Scholarship Program";
-//
-//        try {
-//            emailService.sendSimpleEmail(user.getEmail(), subject, mailText);
-//        } catch (MessagingException e) {
-//            throw new RuntimeException(e);
-//        }
-//    }
-
-// Our trainer style mail text
-
-//    private void sendActivationEmail(User user) {
-//        String activationLink = "http://localhost:8080/activate/" + user.getId();
-//
-//        String mailText = "<h3>Dear " + user.getName()
-//                + ",</h3>"
-//                + "<p>Please click on the following link to confirm your account:</p>"
-//                + "<a href=\"" + activationLink + "\">Activate Account</a>"
-//                + "<br><br>Regards,<br> From, IsDB Scholarship Program"
-//                + "<br><br>HR and Payroll Management";
-//
-//        String subject = "Please, Confirm Your User Account!!";
-//
-//        try {
-//
-//            emailService.sendSimpleEmail(user.getEmail(), subject, mailText);
-//
-//        } catch (MessagingException e) {
-//            throw new RuntimeException(e);
-//        }
-//    }
 
     // Activate user based on the token
     public String activateUser(long id) {
 
-        User user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("Employee not Found with this ID"));
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Employee not Found with this ID" + id));
 
         if (user != null) {
-
             user.setActive(true);
             //  user.setActivationToken(null); // Clear token after activation
             userRepository.save(user);
-            return "Employee activation successfully!";
+            return "Activation successfully!";
         } else {
             return "Invalid activation token!";
         }

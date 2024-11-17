@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:hr_and_pms/features/attendance/model/AttendanceModel.dart';
-import 'package:hr_and_pms/features/user/model/User.dart';
+import 'package:hr_and_pms/administration/model/User.dart';
 
 const String baseUrl = 'localhost:8080';  // Ensure this matches your backend server's address
 const String apiPath = '/api/attendance';

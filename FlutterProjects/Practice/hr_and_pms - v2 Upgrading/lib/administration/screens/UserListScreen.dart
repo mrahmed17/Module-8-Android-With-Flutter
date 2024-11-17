@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:hr_and_pms/administration/authScreen/RegistrationScreen.dart';
-import 'package:hr_and_pms/features/user/service/UserService.dart';
-import 'package:hr_and_pms/features/user/model/User.dart';
-import 'package:hr_and_pms/features/user/screens/UserProfileScreen.dart';
+import 'package:hr_and_pms/administration/model/User.dart';
+import 'package:hr_and_pms/administration/screens/UserProfileScreen.dart';
+import 'package:hr_and_pms/administration/service/AuthService.dart';
+
 
 
 class UserListScreen extends StatefulWidget {
@@ -13,7 +14,7 @@ class UserListScreen extends StatefulWidget {
 }
 
 class _UserListScreenState extends State<UserListScreen> {
-  final UserService _userService = UserService();
+  final AuthService _authService = AuthService();
   List<User> _users = [];
   List<User> _filteredUsers = [];
   bool _isLoading = true;
@@ -37,7 +38,7 @@ class _UserListScreenState extends State<UserListScreen> {
 
   Future<void> _fetchUsers() async {
     try {
-      List<User> users = await _userService.getAllUsers();
+      List<User> users = await _authService.getAllUsers();
       setState(() {
         _users = users;
         _filteredUsers = users;

@@ -31,20 +31,6 @@ class UserService {
     return formData;
   }
 
-  // Create user with optional profile_demo photo
-  Future<String> createUser(User user, XFile? profilePhoto) async {
-    try {
-      final formData = await _prepareUserDataForm(user, profilePhoto);
-      final response = await _dio.post('$baseUrl/create', data: formData);
-
-      return response.statusCode == 201
-          ? 'User created successfully.'
-          : 'Failed to create user: ${response.statusMessage}';
-    } on DioException catch (e) {
-      return _handleError(e);
-    }
-  }
-
   // Update an existing user
   Future<String> updateUser(int id, User user, XFile? profilePhoto) async {
     try {

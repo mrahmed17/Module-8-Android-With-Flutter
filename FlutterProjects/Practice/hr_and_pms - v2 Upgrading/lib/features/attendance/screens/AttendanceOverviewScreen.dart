@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hr_and_pms/features/attendance/service/AttendanceService.dart';
 import 'package:hr_and_pms/features/attendance/model/AttendanceModel.dart';
-import 'package:hr_and_pms/features/user/model/User.dart';
+import 'package:hr_and_pms/administration/model/User.dart';
 
 class AttendanceOverviewScreen extends StatefulWidget {
   const AttendanceOverviewScreen({super.key});

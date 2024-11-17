@@ -1,7 +1,7 @@
 
 import 'package:hr_and_pms/features/leave/model/LeaveType.dart';
 import 'package:hr_and_pms/features/leave/model/RequestStatus.dart';
-import 'package:hr_and_pms/features/user/model/User.dart';
+import 'package:hr_and_pms/administration/model/User.dart';
 
 class Leave {
   final int id;

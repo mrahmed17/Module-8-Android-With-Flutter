@@ -123,6 +123,7 @@
             <version>7.0.1.Final</version>
         </dependency>
 
+        <!-- Java 8 Date and Time API types and need to serialize or deserialize these types to and from JSON-->
         <dependency>
             <groupId>com.fasterxml.jackson.datatype</groupId>
             <artifactId>jackson-datatype-jsr310</artifactId>
@@ -131,18 +132,18 @@
 
 
         <!-- for DTO mapping-->
-        <dependency>
-            <groupId>org.mapstruct</groupId>
-            <artifactId>mapstruct</artifactId>
-            <version>1.5.5.Final</version>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>org.mapstruct</groupId>-->
+<!--            <artifactId>mapstruct</artifactId>-->
+<!--            <version>1.5.5.Final</version>-->
+<!--        </dependency>-->
 
-        <dependency>
-            <groupId>org.mapstruct</groupId>
-            <artifactId>mapstruct-processor</artifactId>
-            <version>1.5.5.Final</version>
-            <scope>provided</scope>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>org.mapstruct</groupId>-->
+<!--            <artifactId>mapstruct-processor</artifactId>-->
+<!--            <version>1.5.5.Final</version>-->
+<!--            <scope>provided</scope>-->
+<!--        </dependency>-->
 
 
     </dependencies>

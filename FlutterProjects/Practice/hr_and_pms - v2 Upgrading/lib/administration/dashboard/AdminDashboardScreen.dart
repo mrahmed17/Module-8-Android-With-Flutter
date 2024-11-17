@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:hr_and_pms/administration/authScreen/LoginScreen.dart';
-import 'package:hr_and_pms/features/attendance/screens/AttendanceLookupScreen.dart'; // Import AttendanceLookupScreen
-import 'package:hr_and_pms/features/attendance/screens/AttendanceOverviewScreen.dart'; // Import AttendanceOverviewScreen
+import 'package:hr_and_pms/administration/model/User.dart';
+import 'package:hr_and_pms/administration/service/AuthService.dart';
+import 'package:hr_and_pms/features/attendance/screens/AttendanceLookupScreen.dart';
+import 'package:hr_and_pms/features/attendance/screens/AttendanceOverviewScreen.dart';
 import 'package:hr_and_pms/features/attendance/screens/AttendanceAnalyticsScreen.dart';
-import 'package:hr_and_pms/features/user/model/User.dart';
-import 'package:hr_and_pms/features/user/service/UserService.dart'; // Import AttendanceAnalyticsScreen
-import 'package:hr_and_pms/features/user/screens/UserProfileScreen.dart'; // Import UserProfileScreen
+import 'package:hr_and_pms/administration/screens/UserProfileScreen.dart';
 
 class AdminDashboardScreen extends StatefulWidget {
   const AdminDashboardScreen({super.key});
@@ -16,32 +16,32 @@ class AdminDashboardScreen extends StatefulWidget {
 
 class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
   int _selectedIndex = 0;
-  List<User> _users = [];
   User? _currentUser;
+  bool _isLoading = true;
 
-  @override
-  void initState() {
-    super.initState();
-    _fetchUsers();
-  }
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   _fetchCurrentUser();
+  // }
 
-  Future<void> _fetchUsers() async {
-    try {
-      // Assuming UserService has a method to fetch users
-      UserService userService = UserService();
-      List<User> users = await userService.getAllUsers();  // Fetch all users
-      setState(() {
-        _users = users;
-        // Assuming the first user is the current admin for demo purposes
-        _currentUser = users.isNotEmpty ? users[0] : null;
-      });
-    } catch (e) {
-      // Handle error, maybe show a message to the admin
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error fetching users: $e')),
-      );
-    }
-  }
+  // Future<void> _fetchCurrentUser() async {
+  //   try {
+  //     AuthService authService = AuthService();
+  //     User user = await authService.getCurrentUser(); // Fetch the logged-in user's details
+  //     setState(() {
+  //       _currentUser = user;
+  //       _isLoading = false;
+  //     });
+  //   } catch (e) {
+  //     ScaffoldMessenger.of(context).showSnackBar(
+  //       SnackBar(content: Text('Error fetching user details: $e')),
+  //     );
+  //     setState(() {
+  //       _isLoading = false;
+  //     });
+  //   }
+  // }
 
   void _onBottomNavigationItemTapped(int index) {
     setState(() {
@@ -57,141 +57,123 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
         automaticallyImplyLeading: false,
         backgroundColor: Colors.teal,
         actions: [
-          PopupMenuButton<int>(
-            onSelected: (int index) {
-              _onDropdownItemSelected(index);
-            },
-            itemBuilder: (BuildContext context) => [
-              const PopupMenuItem<int>(value: 0, child: Text('Attendance Lookup')),
-              const PopupMenuItem<int>(value: 1, child: Text('Attendance Overview')),
-              const PopupMenuItem<int>(value: 2, child: Text('Attendance Analytics')),
-            ],
-          ),
+          if (_currentUser != null)
+            GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => UserProfileScreen(
+                      // user: _currentUser!,
+                      userId: _currentUser!.id,
+                      role: _currentUser!.role.name,
+                    ),
+                  ),
+                );
+              },
+              child: Row(
+                children: [
+                  Text(
+                    _currentUser!.name,
+                    style: const TextStyle(fontSize: 16, color: Colors.white),
+                  ),
+                  const SizedBox(width: 8),
+                  CircleAvatar(
+                    radius: 18,
+                    backgroundImage: NetworkImage(
+                      _currentUser!.profilePhoto ??
+                          'https://via.placeholder.com/150',
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                ],
+              ),
+            ),
         ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
-            // Profile Section
-            _currentUser != null
-                ? GestureDetector(
-              onTap: () {
-                // Navigate to User Profile Screen
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => UserProfileScreen(user: _currentUser!)),
-                );
-              },
-              child: Row(
-                children: [
-                  CircleAvatar(
-                    radius: 30,
-                    backgroundImage: NetworkImage(_currentUser!.profilePhoto ?? 'https://via.placeholder.com/150'), // Use a placeholder or actual URL
+            if (_isLoading)
+              const Center(child: CircularProgressIndicator())
+            else
+              Expanded(
+                child: GridView.builder(
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    crossAxisSpacing: 16,
+                    mainAxisSpacing: 16,
+                    childAspectRatio: 1.1,
                   ),
-                  const SizedBox(width: 12),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        _currentUser!.name,
-                        style: const TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black,
-                        ),
-                      ),
-                      Text(
-                        _currentUser!.role.name, // Assuming `role` is a `Role` object
-                        style: const TextStyle(
-                          fontSize: 14,
+                  itemCount: 5,
+                  itemBuilder: (context, index) {
+                    return GestureDetector(
+                      onTap: () {
+                        switch (index) {
+                          case 0:
+                            print('View Employees Clicked');
+                            break;
+                          case 1:
+                            print('View Departments Clicked');
+                            break;
+                          case 2:
+                            print('Add Department Clicked');
+                            break;
+                          case 3:
+                            print('Settings Clicked');
+                            break;
+                          case 4:
+                            print('Logout Clicked');
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(builder: (context) => LoginScreen()),
+                            );
+                            break;
+                          default:
+                            break;
+                        }
+                      },
+                      child: Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(12),
                           color: Colors.teal,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            )
-                : const SizedBox(),
-
-            // Main Dashboard Grid
-            Expanded(
-              child: GridView.builder(
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  crossAxisSpacing: 16,
-                  mainAxisSpacing: 16,
-                  childAspectRatio: 1.1,
-                ),
-                itemCount: 5,
-                itemBuilder: (context, index) {
-                  return GestureDetector(
-                    onTap: () {
-                      switch (index) {
-                        case 0:
-                          print('View Employees Clicked');
-                          break;
-                        case 1:
-                          print('View Departments Clicked');
-                          break;
-                        case 2:
-                          print('Add Department Clicked');
-                          break;
-                        case 3:
-                          print('Settings Clicked');
-                          break;
-                        case 4:
-                          print('Logout Clicked');
-                          Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(builder: (context) => LoginScreen()),
-                          );
-                          break;
-                        default:
-                          break;
-                      }
-                    },
-                    child: Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(12),
-                        color: Colors.teal, // Single color theme
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.teal.shade700.withOpacity(0.2),
-                            spreadRadius: 2,
-                            blurRadius: 5,
-                            offset: const Offset(3, 3),
-                          ),
-                        ],
-                      ),
-                      child: Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(
-                              _getIcon(index),
-                              size: 40,
-                              color: Colors.white,
-                            ),
-                            const SizedBox(height: 8),
-                            Text(
-                              _getLabel(index),
-                              textAlign: TextAlign.center,
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 16,
-                              ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.teal.shade700.withOpacity(0.2),
+                              spreadRadius: 2,
+                              blurRadius: 5,
+                              offset: const Offset(3, 3),
                             ),
                           ],
                         ),
+                        child: Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                _getIcon(index),
+                                size: 40,
+                                color: Colors.white,
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                _getLabel(index),
+                                textAlign: TextAlign.center,
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 16,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
                       ),
-                    ),
-                  );
-                },
+                    );
+                  },
+                ),
               ),
-            ),
           ],
         ),
       ),
@@ -211,31 +193,6 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
         ],
       ),
     );
-  }
-
-  void _onDropdownItemSelected(int index) {
-    switch (index) {
-      case 0:
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => AttendanceLookupScreen()),
-        );
-        break;
-      case 1:
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => AttendanceOverviewScreen()),
-        );
-        break;
-      case 2:
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => AttendanceAnalyticsScreen()),
-        );
-        break;
-      default:
-        break;
-    }
   }
 
   String _getLabel(int index) {

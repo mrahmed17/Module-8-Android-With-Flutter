@@ -64,10 +64,10 @@ public class AttendanceRestController {
         List<Attendance> overtimeRecords = attendanceService.getOvertimeForUser(userId, startDate, endDate);
 
         if (overtimeRecords.isEmpty()) {
-            return ResponseEntity.noContent().build(); // Return 204 if no overtime found
+            return ResponseEntity.noContent().build();
         }
 
-        return ResponseEntity.ok(overtimeRecords); // Return the list of overtime records
+        return ResponseEntity.ok(overtimeRecords);
     }
 
     @GetMapping("/today")

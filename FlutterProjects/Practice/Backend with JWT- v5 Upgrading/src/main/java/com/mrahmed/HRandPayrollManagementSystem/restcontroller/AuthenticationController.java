@@ -1,6 +1,7 @@
 package com.mrahmed.HRandPayrollManagementSystem.restcontroller;
 
 import com.mrahmed.HRandPayrollManagementSystem.entity.AuthenticationResponse;
+import com.mrahmed.HRandPayrollManagementSystem.entity.Role;
 import com.mrahmed.HRandPayrollManagementSystem.entity.User;
 import com.mrahmed.HRandPayrollManagementSystem.service.AuthService;
 import com.mrahmed.HRandPayrollManagementSystem.service.UserService;
@@ -8,10 +9,12 @@ import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.time.LocalDate;
 
 @RestController
@@ -22,36 +25,45 @@ public class AuthenticationController {
     private final AuthService authService;
     private final UserService userService;
 
-    @PostMapping("/register")
-    public ResponseEntity<AuthenticationResponse> register(@RequestPart User user,
-                                                           @RequestParam(required = false) MultipartFile profilePhoto) {
+    @PostMapping("/register/admin")
+    public ResponseEntity<AuthenticationResponse> registerAdmin(
+            @RequestPart User user,
+            @RequestPart(required = false) MultipartFile profilePhoto) {
         try {
-            AuthenticationResponse response = authService.register(user, profilePhoto);
+            AuthenticationResponse response = authService.registerUser(user, Role.ADMIN, profilePhoto);
             return ResponseEntity.ok(response);
         } catch (Exception e) {
-            return ResponseEntity.status(500).body(new AuthenticationResponse("Error during registration: " + e.getMessage()));
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new AuthenticationResponse("Error during admin registration: " + e.getMessage()));
         }
     }
 
-//    @PostMapping("/register")
-//    public ResponseEntity<AuthenticationResponse> register(@RequestBody User request) {
-//        return ResponseEntity.ok(authService.register(request));
-//    }
-
-    @PostMapping("/register/admin")
-    public ResponseEntity<AuthenticationResponse> registerAdmin(@RequestBody User request) {
-        return ResponseEntity.ok(authService.registerAdmin(request));
-    }
-
     @PostMapping("/register/manager")
-    public ResponseEntity<AuthenticationResponse> registerManager(@RequestBody User request) {
-        return ResponseEntity.ok(authService.registerManager(request));
+    public ResponseEntity<AuthenticationResponse> registerManager(
+            @RequestPart User user,
+            @RequestPart(required = false) MultipartFile profilePhoto) {
+        try {
+            AuthenticationResponse response = authService.registerUser(user, Role.MANAGER, profilePhoto);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new AuthenticationResponse("Error during manager registration: " + e.getMessage()));
+        }
     }
 
-//    @PostMapping("/login")
-//    public ResponseEntity<AuthenticationResponse> login(@RequestBody User request) {
-//        return ResponseEntity.ok(authService.authenticate(request));
-//    }
+    @PostMapping("/register/employee")
+    public ResponseEntity<AuthenticationResponse> registerEmployee(
+            @RequestPart User user,
+            @RequestPart(required = false) MultipartFile profilePhoto) {
+        try {
+            AuthenticationResponse response = authService.registerUser(user, Role.EMPLOYEE, profilePhoto);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new AuthenticationResponse("Error during employee registration: " + e.getMessage()));
+        }
+    }
+
 
     @PostMapping("/login")
     public ResponseEntity<AuthenticationResponse> login(@RequestBody User request) {
@@ -63,6 +75,41 @@ public class AuthenticationController {
     public ResponseEntity<String> activateUser(@PathVariable("id") long id) {
         String response = authService.activateUser(id);
         return ResponseEntity.ok(response);
+    }
+
+
+    @GetMapping("/me")
+    public ResponseEntity<User> getLoggedInUserDetails() {
+        try {
+            User user = authService.getLoggedInUser();
+            return ResponseEntity.ok(user);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+        }
+    }
+
+    @GetMapping("/find/{id}")
+    public ResponseEntity<User> findUserById(@PathVariable Long id) {
+        try {
+            User user = userService.findUserById(id);
+            return ResponseEntity.ok(user);
+        } catch (RuntimeException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @PutMapping("/update/{id}")
+    public ResponseEntity<String> updateUser(
+            @PathVariable Long id,
+            @RequestPart("user") User user,
+            @RequestPart(value = "profilePhoto", required = false) MultipartFile profilePhoto
+    ) {
+        try {
+            userService.updateUser(id, user, profilePhoto);
+            return new ResponseEntity<>("User updated successfully.", HttpStatus.OK);
+        } catch (IOException e) {
+            return new ResponseEntity<>("Failed to update user: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @GetMapping("/getAllManagers")
