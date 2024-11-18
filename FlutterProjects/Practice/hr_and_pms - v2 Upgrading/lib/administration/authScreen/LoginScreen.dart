@@ -17,7 +17,7 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController email = TextEditingController()
-    ..text = 'raju@mail.com';
+    ..text = 'admin@mail.com';
   final TextEditingController password = TextEditingController()
     ..text = '123456';
   final storage = FlutterSecureStorage();

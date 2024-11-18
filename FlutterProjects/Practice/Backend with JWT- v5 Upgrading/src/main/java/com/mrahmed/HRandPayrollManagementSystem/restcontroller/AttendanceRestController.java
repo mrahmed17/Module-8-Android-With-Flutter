@@ -3,7 +3,6 @@ package com.mrahmed.HRandPayrollManagementSystem.restcontroller;
 import com.mrahmed.HRandPayrollManagementSystem.entity.Attendance;
 import com.mrahmed.HRandPayrollManagementSystem.entity.User;
 import com.mrahmed.HRandPayrollManagementSystem.service.AttendanceService;
-import com.mrahmed.HRandPayrollManagementSystem.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,43 +23,32 @@ public class AttendanceRestController {
     @Autowired
     private AttendanceService attendanceService;
 
-    @PostMapping("/checkin")
-    public ResponseEntity<?> checkIn(@RequestBody Map<String, Object> request) {
-        try {
-            long userId = Long.parseLong(request.get("userId").toString());
-            boolean fingerprint = Boolean.parseBoolean(request.get("fingerprint").toString());
-            boolean faceScan = Boolean.parseBoolean(request.get("faceScan").toString());
-            Attendance attendance = attendanceService.checkIn(userId, fingerprint, faceScan);
-            return ResponseEntity.status(HttpStatus.CREATED).body(attendance);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Error occurred while checking in: " + e.getMessage());
-        }
-    }
-
 //    @PostMapping("/checkin")
 //    public ResponseEntity<?> checkIn(@RequestBody Map<String, Object> request) {
 //        try {
 //            long userId = Long.parseLong(request.get("userId").toString());
-//            Attendance attendance = attendanceService.checkIn(userId);
+//            String biometricData = request.get("biometricData").toString();
+//            AttendanceMethod method = AttendanceMethod.valueOf(request.get("method").toString());
+//
+//            Attendance attendance = attendanceService.checkIn(userId, biometricData, method);
 //            return ResponseEntity.status(HttpStatus.CREATED).body(attendance);
-//        } catch (NumberFormatException e) {
-//            return ResponseEntity.badRequest().body("Invalid user ID format");
 //        } catch (Exception e) {
-//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-//                    .body("Error occurred while checking in: " + e.getMessage());
+//            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+//                    .body("Error during check-in: " + e.getMessage());
 //        }
 //    }
 
-    @PutMapping("/checkout")
-    public ResponseEntity<?> checkOut(@RequestBody Map<String, Object> request) {
+    @PostMapping("/checkin")
+    public ResponseEntity<?> checkIn(@RequestBody Map<String, Object> request) {
         try {
             long userId = Long.parseLong(request.get("userId").toString());
-            Attendance attendance = attendanceService.checkOut(userId);
-            return ResponseEntity.ok(attendance);
+            Attendance attendance = attendanceService.checkIn(userId);
+            return ResponseEntity.status(HttpStatus.CREATED).body(attendance);
+        } catch (NumberFormatException e) {
+            return ResponseEntity.badRequest().body("Invalid user ID format");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Error occurred while checking out: " + e.getMessage());
+                    .body("Error occurred while checking in: " + e.getMessage());
         }
     }
 
@@ -70,13 +58,25 @@ public class AttendanceRestController {
 //            long userId = Long.parseLong(request.get("userId").toString());
 //            Attendance attendance = attendanceService.checkOut(userId);
 //            return ResponseEntity.ok(attendance);
-//        } catch (NumberFormatException e) {
-//            return ResponseEntity.badRequest().body("Invalid user ID format");
 //        } catch (Exception e) {
-//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-//                    .body("Error occurred while checking out: " + e.getMessage());
+//            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+//                    .body("Error during check-out: " + e.getMessage());
 //        }
 //    }
+
+    @PutMapping("/checkout")
+    public ResponseEntity<?> checkOut(@RequestBody Map<String, Object> request) {
+        try {
+            long userId = Long.parseLong(request.get("userId").toString());
+            Attendance attendance = attendanceService.checkOut(userId);
+            return ResponseEntity.ok(attendance);
+        } catch (NumberFormatException e) {
+            return ResponseEntity.badRequest().body("Invalid user ID format");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error occurred while checking out: " + e.getMessage());
+        }
+    }
 
     @GetMapping("/overtime/{userId}")
     public ResponseEntity<List<Attendance>> getOvertimeByUser(

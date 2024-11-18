@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:hr_and_pms/features/advanceSalary/screen/AdvanceSalaryApplyScreen.dart';
+import 'package:hr_and_pms/features/advanceSalary/screen/PendingApplicationsScreen.dart';
 import 'package:hr_and_pms/features/attendance/screens/AttendanceLookupScreen.dart';
+import 'package:hr_and_pms/features/attendance/screens/AttendanceOverviewScreen.dart';
 import 'package:hr_and_pms/features/home/HomeScreen.dart';
 import 'package:hr_and_pms/widget/SplashScreen.dart';
 
@@ -18,10 +21,12 @@ class MyApp extends StatelessWidget {
       ),
       // home: AllDepartmentViewScreen(),
       // home: SplashScreen(),
+      home: PendingApplicationsScreen(),
+      // home: AdvanceSalaryApplyScreen(),
       // home: HomeScreen(),
       // home: AttendanceAnalyticsScreen(),
       // home: AttendanceOverviewScreen(),
-      home: AttendanceLookupScreen(),
+      // home: AttendanceLookupScreen(),
       // home: DashboardScreen(),
       // home: AttendanceScreen(),
       // home: ManagerDashboardScreen(),

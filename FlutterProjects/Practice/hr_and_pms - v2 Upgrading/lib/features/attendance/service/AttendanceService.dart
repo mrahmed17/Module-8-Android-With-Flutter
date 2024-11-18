@@ -3,7 +3,7 @@ import 'package:http/http.dart' as http;
 import 'package:hr_and_pms/features/attendance/model/AttendanceModel.dart';
 import 'package:hr_and_pms/administration/model/User.dart';
 
-const String baseUrl = 'localhost:8080';  // Ensure this matches your backend server's address
+const String baseUrl = 'localhost:8080';
 const String apiPath = '/api/attendance';
 // const String baseUrl = 'http://10.0.2.2:8080';
 

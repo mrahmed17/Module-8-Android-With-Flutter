@@ -10,7 +10,6 @@ class User {
   final String address;
   final String gender;
   final DateTime dateOfBirth;
-  final String nationalId;
   final String contact;
   final double basicSalary;
   final DateTime joinedDate;
@@ -26,7 +25,6 @@ class User {
     required this.address,
     required this.gender,
     required this.dateOfBirth,
-    required this.nationalId,
     required this.contact,
     required this.basicSalary,
     required this.joinedDate,
@@ -45,7 +43,6 @@ class User {
       address: json['address'] ?? '',
       gender: json['gender'] ?? '',
       dateOfBirth: DateTime.tryParse(json['dateOfBirth'] ?? '') ?? DateTime.now(),
-      nationalId: json['nationalId'] ?? '',
       contact: json['contact'] ?? '',
       basicSalary: (json['basicSalary'] ?? 0).toDouble(),
       joinedDate: DateTime.tryParse(json['joinedDate'] ?? '') ?? DateTime.now(),
@@ -68,7 +65,6 @@ class User {
       address: '',
       gender: '',
       dateOfBirth: DateTime(1900, 1, 1),
-      nationalId: '',
       contact: '',
       basicSalary: 0.0,
       joinedDate: DateTime(1900, 1, 1),
@@ -89,7 +85,6 @@ class User {
       'address': address,
       'gender': gender,
       'dateOfBirth': dateOfBirth.toIso8601String(),
-      'nationalId': nationalId,
       'contact': contact,
       'basicSalary': basicSalary,
       'joinedDate': joinedDate.toIso8601String(),

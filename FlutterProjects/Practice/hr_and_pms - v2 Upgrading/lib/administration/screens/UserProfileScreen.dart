@@ -99,12 +99,11 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                     dateOfBirth: _user!.dateOfBirth,
                     gender: _user!.gender,
                     joinedDate: _user!.joinedDate,
-                    nationalId: _user!.nationalId,
                     password: _user!.password,
                     profilePhoto: _user!.profilePhoto,
                     role: _user!.role,
                   ),
-                  null, // Add profile photo if applicable
+                  null,
                 );
               },
               child: const Text('Update'),
