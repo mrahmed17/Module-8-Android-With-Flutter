@@ -66,7 +66,8 @@ class AuthService {
         await preferences.setString('authToken', token);
         await preferences.setString('userRole', role);
 
-        //for getting login usr profile data
+        // For getting login usr profile data
+        // Line from Nusrat
         // await preferences.setString('user', jsonEncode(data['user']));
 
         return true;
@@ -115,6 +116,7 @@ class AuthService {
   }
 
   // For getting login user full information
+  // Method from Nusrat
 
   // Future<Map<String, dynamic>?> getUser() async {
   //   SharedPreferences prefs = await SharedPreferences.getInstance();

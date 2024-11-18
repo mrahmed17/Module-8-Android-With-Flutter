@@ -13,11 +13,20 @@ import java.util.List;
  * @Author: M. R. Ahmed
  * @Created at: 11/10/2024
  */
+
 @Repository
 public interface BranchRepository  extends JpaRepository <Branch, Long> {
 
     @Query("SELECT b FROM Branch b WHERE b.name = :branchName")
     Branch findBranchByName(@Param("branchName") String branchName);
 
+    @Query("SELECT b FROM Branch b WHERE LOWER(b.address) LIKE LOWER(CONCAT('%', :keyword, '%'))")
+    List<Branch> findBranchesByAddressKeyword(@Param("keyword") String keyword);
+
+    @Query("SELECT b FROM Branch b WHERE b.email = :email")
+    Branch findBranchByEmail(@Param("email") String email);
+
+    @Query("SELECT COUNT(b) FROM Branch b")
+    Long countBranches();
 
 }

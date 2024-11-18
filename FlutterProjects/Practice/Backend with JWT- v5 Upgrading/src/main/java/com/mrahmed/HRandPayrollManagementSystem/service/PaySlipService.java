@@ -58,8 +58,8 @@ public class PaySlipService {
     }
 
     // Get Payslips by Billing Date Range
-    public List<PaySlip> getPayslipsByDateRange(LocalDateTime startDate, LocalDateTime endDate) {
-        return paySlipRepository.findByBillingDateRange(startDate, endDate);
+    public List<PaySlip> findByBillingDateBetween(LocalDateTime startDate, LocalDateTime endDate) {
+        return paySlipRepository.findByBillingDateBetween(startDate, endDate);
     }
 
     // Get Payslip by Salary ID

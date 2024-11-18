@@ -9,12 +9,13 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface BonusRepository extends JpaRepository<Bonus, Long> {
 
     // findByBonusId
-    List<Bonus> findByBonusId(Long bonusId);
+    Optional<Bonus> findById(Long id);
 
     @Query("SELECT SUM(b.bonusAmount) FROM Bonus b WHERE b.user.id = :userId")
     double getTotalBonusForUser(@Param("userId") Long userId);

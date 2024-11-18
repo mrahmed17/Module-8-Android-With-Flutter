@@ -19,7 +19,6 @@ public class BonusService {
         return bonusRepository.save(bonus);
     }
 
-
     public Bonus updateBonus(Long id, Bonus updatedBonus) {
         if (bonusRepository.existsById(id)) {
             updatedBonus.setId(id); // Ensure the ID is set for the update
@@ -34,7 +33,6 @@ public class BonusService {
         double deductionPerDay = 50.0;
         return deductionPerDay * totalUnpaidLeaveDays;
     }
-
 
     // Get bonuses between a date range
     public List<Bonus> getBonusesBetweenDates(LocalDateTime startDate, LocalDateTime endDate) {

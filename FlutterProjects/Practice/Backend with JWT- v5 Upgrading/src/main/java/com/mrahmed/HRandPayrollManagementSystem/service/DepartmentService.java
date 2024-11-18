@@ -1,27 +1,15 @@
 package com.mrahmed.HRandPayrollManagementSystem.service;
 
-import com.mrahmed.HRandPayrollManagementSystem.entity.Branch;
 import com.mrahmed.HRandPayrollManagementSystem.entity.Department;
-import com.mrahmed.HRandPayrollManagementSystem.repository.BranchRepository;
 import com.mrahmed.HRandPayrollManagementSystem.repository.DepartmentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.time.LocalDateTime;
 import java.util.List;
-import java.util.UUID;
-
-/**
- * @Project: Backend with JWT- v2 as Sir
- * @Author: M. R. Ahmed
- * @Created at: 11/10/2024
- */
 
 @Service
 public class DepartmentService {
@@ -30,98 +18,126 @@ public class DepartmentService {
     private DepartmentRepository departmentRepository;
 
     @Autowired
-    private BranchRepository branchRepository;
+    private PhotoService photoService;
 
-    @Value("src/main/resources/static/images")
-    private String uploadDirectory;
+    public String saveDepartmentImage(MultipartFile file, String fullName) throws IOException {
+        return photoService.savePhoto(file, fullName, "departmentPhotos");
+    }
 
+    // Create a department with an optional photo upload
+    @Transactional
+    public Department createDepartment(Department department, MultipartFile departmentPhotos) throws IOException {
+        if (departmentPhotos != null && !departmentPhotos.isEmpty()) {
+            String departmentPhotoPath = saveDepartmentImage(departmentPhotos, department.getName());
+            department.setDepImage(departmentPhotoPath);
+        }
+        return departmentRepository.save(department);
+    }
 
+//    @Value("${upload.directory}")
+//    private String uploadDir;
+
+//    // Save department image to disk and return the file path
+//    private String saveDepartmentImage(MultipartFile file, String fullName) throws IOException {
+//        Path uploadPath = Paths.get(uploadDir + "departmentPhotos").toAbsolutePath().normalize();
+//        if (!Files.exists(uploadPath)) {
+//            Files.createDirectories(uploadPath);
+//        }
+//        String originalFilename = file.getOriginalFilename();
+//        String fileExtension = (originalFilename != null && originalFilename.contains("."))
+//                ? originalFilename.substring(originalFilename.lastIndexOf("."))
+//                : "";
+//        String sanitizedFullName = fullName.replaceAll("[^a-zA-Z0-9]", "_");
+//        sanitizedFullName = sanitizedFullName.substring(0, Math.min(sanitizedFullName.length(), 25));
+//        String uniqueFilename = sanitizedFullName + "_" + UUID.randomUUID() + fileExtension;
+//        Path filePath = uploadPath.resolve(uniqueFilename).normalize();
+//        Files.copy(file.getInputStream(), filePath);
+//        return uniqueFilename;
+//    }
+
+    // Fetch all departments
     public List<Department> getAllDepartments() {
         return departmentRepository.findAll();
     }
 
-
-    @Transactional
-    public void saveDepartment(Department department, MultipartFile imageFile) throws IOException {
-
-        // Fetch Branch from repository based on the provided ID
-        Branch branch = branchRepository.findById((long) department.getBranch().getId())
-                .orElseThrow(() -> new RuntimeException("Branch with this ID not found"));
-        System.out.println(branch.toString());
-
-        // Check if the image file is provided and not empty
-        if (imageFile != null && !imageFile.isEmpty()) {
-            String imageFilename = saveImage(imageFile, department);
-            department.setDepImage(imageFilename); // Set the image filename in the department entity
-        }
-
-        // Set the fetched branch to the department
-        department.setBranch(branch);
-
-        // Save the department to the repository
-        departmentRepository.save(department);
-    }
-
-
-    public void deleteDepartmentById(long id) {
-        departmentRepository.deleteById(id);
-    }
-
+    // Find department by ID
     public Department findDepartmentById(long id) {
         return departmentRepository.findById(id)
-                .orElseThrow(
-                        () -> new RuntimeException("Department Not found With this ID")
-                );
+                .orElseThrow(() -> new RuntimeException("Department not found with this ID"));
     }
 
-
+    // Update an existing department, with optional photo update
     @Transactional
-    public Department updateDepartment(long id, Department updateDepartment, MultipartFile imageFile) throws IOException {
+    public void updateDepartment(long id, Department updateDepartment, MultipartFile departmentPhoto) throws IOException {
         Department existingDepartment = departmentRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Department not found with this ID"));
-        // Update department details
+                .orElseThrow(() -> new RuntimeException("Department not found with ID: " + id));
+
         existingDepartment.setName(updateDepartment.getName());
         existingDepartment.setCell(updateDepartment.getCell());
         existingDepartment.setEmail(updateDepartment.getEmail());
         existingDepartment.setEmployeeNum(updateDepartment.getEmployeeNum());
 
-        // Update department
-        Branch branch = branchRepository.findById((long) updateDepartment.getBranch().getId())
-                .orElseThrow(() -> new RuntimeException("Branch with this ID not found"));
-        existingDepartment.setBranch(branch);
-
-        // Update image if provided
-        if (imageFile != null && !imageFile.isEmpty()) {
-            String imageFilename = saveImage(imageFile, existingDepartment);
+        if (departmentPhoto != null && !departmentPhoto.isEmpty()) {
+            String imageFilename = saveDepartmentImage(departmentPhoto, updateDepartment.getName());
             existingDepartment.setDepImage(imageFilename);
         }
+
         departmentRepository.save(existingDepartment);
-        return existingDepartment;
     }
 
+    // Delete department by ID
+    public void deleteDepartmentById(long id) {
+        departmentRepository.deleteById(id);
+    }
 
+    // Find departments by name
     public List<Department> findDepartmentByName(String name) {
         return departmentRepository.findDepartmentByName(name);
     }
 
+    // Find departments by branch name
     public List<Department> findDepartmentByBranchName(String branchName) {
-        return departmentRepository.findDepartmentByBranchName(branchName);
+        return departmentRepository.findAllDepartmentByBranchName(branchName);
     }
 
-    private String saveImage(MultipartFile file, Department department) throws IOException {
-        Path uploadPath = Paths.get(uploadDirectory + "/department");
-        if (!Files.exists(uploadPath)) {
-            Files.createDirectories(uploadPath);
-        }
+    // Find departments by branch ID
+    public List<Department> findDepartmentsByBranchId(Long branchId) {
+        return departmentRepository.findDepartmentsByBranchId(branchId);
+    }
 
-        // Generate a unique filename
-        String filename = department.getName() + "_" + UUID.randomUUID().toString();
-        Path filePath = uploadPath.resolve(filename);
+    // Find departments by employee count greater than or equal to a certain value
+    public List<Department> findDepartmentsByMinEmployeeCount(int minEmployeeCount) {
+        return departmentRepository.findDepartmentsByMinEmployeeCount(minEmployeeCount);
+    }
 
-        // Save the file
-        Files.copy(file.getInputStream(), filePath);
+    // Find departments by employee count less than a certain value
+    public List<Department> findDepartmentsByMaxEmployeeCount(int maxEmployeeCount) {
+        return departmentRepository.findDepartmentsByMaxEmployeeCount(maxEmployeeCount);
+    }
 
-        return filename; // Return the filename for storing in the database
+    // Find a department by its email address
+    public Department findDepartmentByEmail(String email) {
+        return departmentRepository.findDepartmentByEmail(email);
+    }
+
+    // Find departments created within a specific date range
+    public List<Department> findDepartmentsByCreatedAtRange(LocalDateTime startDate, LocalDateTime endDate) {
+        return departmentRepository.findDepartmentsByCreatedAtRange(startDate, endDate);
+    }
+
+    // Count the number of departments in a given branch
+    public long countDepartmentsByBranchId(Long branchId) {
+        return departmentRepository.countDepartmentsByBranchId(branchId);
+    }
+
+    // Find departments with no employees
+    public List<Department> findDepartmentsWithNoEmployees() {
+        return departmentRepository.findDepartmentsWithNoEmployees();
+    }
+
+    // Find departments updated after a specific date
+    public List<Department> findDepartmentsUpdatedAfter(LocalDateTime updateDate) {
+        return departmentRepository.findDepartmentsUpdatedAfter(updateDate);
     }
 
 }

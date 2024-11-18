@@ -58,6 +58,12 @@ public class User implements UserDetails, Serializable {
     @PastOrPresent(message = "Joined date cannot be in the future")
     private LocalDate joinedDate;
 
+    @Lob
+    private String fingerprintTemplate; // Biometric template for fingerprint
+    @Lob
+    private String faceScanTemplate;    // Biometric template for face recognition
+
+
     @Column(nullable = false)
     private boolean active;
 

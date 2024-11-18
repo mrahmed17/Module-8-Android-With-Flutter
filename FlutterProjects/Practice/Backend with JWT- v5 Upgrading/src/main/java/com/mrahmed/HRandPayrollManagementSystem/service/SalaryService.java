@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class SalaryService {
@@ -88,7 +89,7 @@ public class SalaryService {
         totalSalary += calculateOvertimePay(overtimeAttendances, baseSalary);
 
         // 2. Bonus Calculation
-        List<Bonus> bonuses = bonusRepository.findByBonusId(salary.getId());
+        Optional<Bonus> bonuses = bonusRepository.findById(salary.getId());
         totalSalary += calculateBonusAmount(bonuses);
 
         // 3. Advance Salary Deduction
@@ -97,7 +98,7 @@ public class SalaryService {
         }
 
         // 4. Leave Deduction
-        List<Leave> leaves = leaveRepository.findByLeaveId(salary.getId());
+        Optional<Leave> leaves = leaveRepository.findById(salary.getId());
         totalSalary -= calculateLeaveDeductions(leaves, baseSalary);
 
         return totalSalary;
@@ -114,13 +115,13 @@ public class SalaryService {
         return totalOvertimeHours * overtimeRate;
     }
 
-    private double calculateBonusAmount(List<Bonus> bonuses) {
+    private double calculateBonusAmount(Optional<Bonus> bonuses) {
         return bonuses.stream()
                 .mapToDouble(Bonus::getBonusAmount)
                 .sum();
     }
 
-    private double calculateLeaveDeductions(List<Leave> leaves, double baseSalary) {
+    private double calculateLeaveDeductions(Optional<Leave> leaves, double baseSalary) {
         double dailySalary = baseSalary / 30; // Assuming 30 days in a month
         long totalLeaveDays = leaves.stream()
                 .mapToLong(leave -> Duration.between(leave.getStartDate().atStartOfDay(), leave.getEndDate().atStartOfDay()).toDays() + 1)

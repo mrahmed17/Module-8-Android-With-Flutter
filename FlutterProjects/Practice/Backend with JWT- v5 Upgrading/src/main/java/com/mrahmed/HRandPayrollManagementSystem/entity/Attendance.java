@@ -29,4 +29,10 @@ public class Attendance {
     private User user;
 
 
+    @Enumerated(EnumType.STRING)
+    private AttendanceMethod method; // ENUM: FINGERPRINT, FACE_SCAN, MANUAL
+
+    private String fingerprintHash; // Optional for fingerprint-based attendance
+    private String faceScanVector; // Optional for face-scan-based attendance
+
 }

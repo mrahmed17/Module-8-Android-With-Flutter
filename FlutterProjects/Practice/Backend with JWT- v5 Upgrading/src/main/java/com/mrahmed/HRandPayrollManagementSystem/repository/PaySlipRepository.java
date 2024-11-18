@@ -17,7 +17,7 @@ public interface PaySlipRepository extends JpaRepository<PaySlip, Long> {
 
     List<PaySlip> findByStatus(String status);
 
-    List<PaySlip> findByBillingDateRange(LocalDateTime startDate, LocalDateTime endDate);
+    List<PaySlip> findByBillingDateBetween(LocalDateTime startDate, LocalDateTime endDate);
 
     Optional<PaySlip> findBySalaryId(Long salaryId);
 

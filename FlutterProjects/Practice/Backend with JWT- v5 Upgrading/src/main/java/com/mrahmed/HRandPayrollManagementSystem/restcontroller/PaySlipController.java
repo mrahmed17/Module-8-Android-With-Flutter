@@ -61,7 +61,7 @@ public class PaySlipController {
     public ResponseEntity<List<PaySlip>> getPayslipsByDateRange(
             @RequestParam LocalDateTime startDate,
             @RequestParam LocalDateTime endDate) {
-        List<PaySlip> payslips = paySlipService.getPayslipsByDateRange(startDate, endDate);
+        List<PaySlip> payslips = paySlipService.findByBillingDateBetween(startDate, endDate);
         return ResponseEntity.ok(payslips);
     }
 
