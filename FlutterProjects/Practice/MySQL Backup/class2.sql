@@ -28,6 +28,8 @@ CREATE TABLE `advancesalaries` (
   `advance_salary` double NOT NULL,
   `reason` varchar(255) DEFAULT NULL,
   `user_id` bigint DEFAULT NULL,
+  `advance_amount` double NOT NULL,
+  `status` enum('APPROVED','PENDING','REJECTED') DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `FK406b69k38mx9uqob0iqh0dgo9` (`user_id`),
   CONSTRAINT `FK406b69k38mx9uqob0iqh0dgo9` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
@@ -40,7 +42,7 @@ CREATE TABLE `advancesalaries` (
 
 LOCK TABLES `advancesalaries` WRITE;
 /*!40000 ALTER TABLE `advancesalaries` DISABLE KEYS */;
-INSERT INTO `advancesalaries` VALUES (1,'2024-11-18 17:11:54.000000',50000,'SICK',3);
+INSERT INTO `advancesalaries` VALUES (1,'2024-11-18 17:11:54.000000',50000,'SICK',3,0,NULL);
 /*!40000 ALTER TABLE `advancesalaries` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -199,7 +201,7 @@ CREATE TABLE `leaves` (
   KEY `FKqwhp573r0inihx6o3x48gjujk` (`leave_id`),
   CONSTRAINT `FKa3vfaevh5a44ccfq2wodxoxig` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`),
   CONSTRAINT `FKqwhp573r0inihx6o3x48gjujk` FOREIGN KEY (`leave_id`) REFERENCES `salaries` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -208,7 +210,7 @@ CREATE TABLE `leaves` (
 
 LOCK TABLES `leaves` WRITE;
 /*!40000 ALTER TABLE `leaves` DISABLE KEYS */;
-INSERT INTO `leaves` VALUES (1,'2024-11-21','SICK','Fever',22,'2024-11-18 17:23:44.000000','PENDING','2024-11-18',3,NULL);
+INSERT INTO `leaves` VALUES (1,'2024-11-21','SICK','Fever',22,'2024-11-18 17:23:44.000000','PENDING','2024-11-18',3,NULL),(2,'2024-11-20','SICK','TEST',1,'2024-11-19 18:46:42.597000','PENDING','2024-11-19',3,NULL);
 /*!40000 ALTER TABLE `leaves` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -330,7 +332,7 @@ CREATE TABLE `token` (
   PRIMARY KEY (`id`),
   KEY `FKj8rfw4x0wjjyibfqq566j4qng` (`user_id`),
   CONSTRAINT `FKj8rfw4x0wjjyibfqq566j4qng` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -339,7 +341,7 @@ CREATE TABLE `token` (
 
 LOCK TABLES `token` WRITE;
 /*!40000 ALTER TABLE `token` DISABLE KEYS */;
-INSERT INTO `token` VALUES (1,_binary '','eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJtcmFobWVkMTc5NkBnbWFpbC5jb20iLCJyb2xlIjoiQURNSU4iLCJpYXQiOjE3MzEzNDQxMjUsImV4cCI6MTczMTQzMDUyNX0.xZZfPwtouejxDYiB93APj69aRugcxqd4ZI-J0Jfhzqe2vdv0eLtRamM7S1lJx8BE',2),(2,_binary '','eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJtcmFobWVkMTc5NkBnbWFpbC5jb20iLCJyb2xlIjoiQURNSU4iLCJpYXQiOjE3MzEzNDc2ODgsImV4cCI6MTczMTQzNDA4OH0.m0fIqYsiGyqdqkCS1p6s02F6yyQWRkkM_4W6_9MV76-QuYt6_UsDtizzhBBRNM1b',2),(3,_binary '','eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJtcmFobWVkMTc5NkBnbWFpbC5jb20iLCJyb2xlIjoiTUFOQUdFUiIsImlhdCI6MTczMTM0Nzk2MCwiZXhwIjoxNzMxNDM0MzYwfQ.uNPdZ26DmfB11xRgdPBI7OklpfTsKnCCxoXOXDLl9Km3yo-Obp9Ca2yiYQ6sOyAC',2),(4,_binary '','eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJtcmFobWVkMTc5NkBnbWFpbC5jb20iLCJyb2xlIjoiRU1QTE9ZRUUiLCJpYXQiOjE3MzEzNDgwMDYsImV4cCI6MTczMTQzNDQwNn0.4hdaDiuhAWB07bD8ZnkyzABeNzkwVAWT3BCWyrb09n4j0Xcz21MeYta-89I4yjZv',2);
+INSERT INTO `token` VALUES (1,_binary '','eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJtcmFobWVkMTc5NkBnbWFpbC5jb20iLCJyb2xlIjoiQURNSU4iLCJpYXQiOjE3MzEzNDQxMjUsImV4cCI6MTczMTQzMDUyNX0.xZZfPwtouejxDYiB93APj69aRugcxqd4ZI-J0Jfhzqe2vdv0eLtRamM7S1lJx8BE',2),(2,_binary '','eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJtcmFobWVkMTc5NkBnbWFpbC5jb20iLCJyb2xlIjoiQURNSU4iLCJpYXQiOjE3MzEzNDc2ODgsImV4cCI6MTczMTQzNDA4OH0.m0fIqYsiGyqdqkCS1p6s02F6yyQWRkkM_4W6_9MV76-QuYt6_UsDtizzhBBRNM1b',2),(3,_binary '','eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJtcmFobWVkMTc5NkBnbWFpbC5jb20iLCJyb2xlIjoiTUFOQUdFUiIsImlhdCI6MTczMTM0Nzk2MCwiZXhwIjoxNzMxNDM0MzYwfQ.uNPdZ26DmfB11xRgdPBI7OklpfTsKnCCxoXOXDLl9Km3yo-Obp9Ca2yiYQ6sOyAC',2),(4,_binary '','eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJtcmFobWVkMTc5NkBnbWFpbC5jb20iLCJyb2xlIjoiRU1QTE9ZRUUiLCJpYXQiOjE3MzEzNDgwMDYsImV4cCI6MTczMTQzNDQwNn0.4hdaDiuhAWB07bD8ZnkyzABeNzkwVAWT3BCWyrb09n4j0Xcz21MeYta-89I4yjZv',2),(5,_binary '','eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJlbXBAbWFpbC5jb20iLCJyb2xlIjoiRU1QTE9ZRUUiLCJpYXQiOjE3MzIwMTk2MDcsImV4cCI6MTczMjEwNjAwN30.mjJrEdZGR7F0NDPe9Bw2KVRX8awbXVGMshzlmAlI9zw03rjtZyNgT7glNOnN0vvG',3),(6,_binary '','eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJlbXBAbWFpbC5jb20iLCJyb2xlIjoiRU1QTE9ZRUUiLCJpYXQiOjE3MzIwMTk3NDYsImV4cCI6MTczMjEwNjE0Nn0.kuhJjqHXiGgt3_KVPoa6n3FCldW1Cg5NTZ2OH7TrJytdsu6tWZ_tNLBDX83qA58D',3),(7,_binary '','eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJlbXBAbWFpbC5jb20iLCJyb2xlIjoiRU1QTE9ZRUUiLCJpYXQiOjE3MzIwMTk5MjIsImV4cCI6MTczMjEwNjMyMn0.HpJQ-0GLK5BZ5eQwiEdgaXEMwz0xx7-k9TaefcdVKQuV7bI9BjSiTokJGRUfMuFU',3),(8,_binary '','eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJlbXBAbWFpbC5jb20iLCJyb2xlIjoiRU1QTE9ZRUUiLCJpYXQiOjE3MzIwMTk5OTYsImV4cCI6MTczMjEwNjM5Nn0.8CGre-MAnpMFawECOpEkYxerwjfdtpnQC2vjgl-DZSQyonSAeH-uPtd9nvnoLOAt',3),(9,_binary '','eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJlbXBAbWFpbC5jb20iLCJyb2xlIjoiRU1QTE9ZRUUiLCJpYXQiOjE3MzIwMjAwODYsImV4cCI6MTczMjEwNjQ4Nn0.lJ_Y2ItB_w87_vM1XdB-v0tH8U1CNi7MmRbSEn0de3N36pNR07WoDrASjP9b3mRC',3),(10,_binary '','eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJlbXBAbWFpbC5jb20iLCJyb2xlIjoiRU1QTE9ZRUUiLCJpYXQiOjE3MzIwMjAyMDMsImV4cCI6MTczMjEwNjYwM30.XnK96xAQofd_hwC1MUTIm81N7BVoO9JCMT2RDDe2C12Bt8GWg6GL2rHREp1dWG9s',3),(11,_binary '\0','eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJlbXBAbWFpbC5jb20iLCJyb2xlIjoiRU1QTE9ZRUUiLCJpYXQiOjE3MzIwMjAzNzcsImV4cCI6MTczMjEwNjc3N30.AeS_ZOoRQ51SohIK-Pt3qi3hjYE0sKsQQQBqJqvyQ2hNi5fdZZ8E_Dj046O5m97E',3);
 /*!40000 ALTER TABLE `token` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -377,7 +379,7 @@ CREATE TABLE `users` (
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES (1,_binary '','Lalbagh',50000,'123456789','2022-11-09','admin@mail.com','Male',_binary '','2024-11-11','Tamim','$2a$10$rClfwbBtWXOQt.eC89bD9OIXalKwl1e1k0gyZczVQzwHTqXVEWZpe','1731406440540_upload.jpg','ADMIN'),(2,_binary '','Lalbagh',50000,'01823456241','2000-02-02','manager@mail.com','Male',_binary '','2024-11-11','MRAhmed','$2a$10$rClfwbBtWXOQt.eC89bD9OIXalKwl1e1k0gyZczVQzwHTqXVEWZpe','1731406440540_upload.jpg','MANAGER'),(3,_binary '','Lalbagh',50000,'01912345678','1996-09-17','emp@mail.com','Male',_binary '','2024-11-12','Raju','$2a$10$rClfwbBtWXOQt.eC89bD9OIXalKwl1e1k0gyZczVQzwHTqXVEWZpe','1731406477345_upload.jpg','EMPLOYEE');
+INSERT INTO `users` VALUES (1,_binary '','Lalbagh',50000,'123456789','2022-11-09','admin@mail.com','Male',_binary '\0','2024-11-11','Tamim','$2a$10$rClfwbBtWXOQt.eC89bD9OIXalKwl1e1k0gyZczVQzwHTqXVEWZpe','1731406440540_upload.jpg','ADMIN'),(2,_binary '','Lalbagh',50000,'01823456241','2000-02-02','manager@mail.com','Male',_binary '\0','2024-11-11','MRAhmed','$2a$10$rClfwbBtWXOQt.eC89bD9OIXalKwl1e1k0gyZczVQzwHTqXVEWZpe','1731406440540_upload.jpg','MANAGER'),(3,_binary '','Lalbagh',50000,'01912345678','1996-09-17','emp@mail.com','Male',_binary '\0','2024-11-12','Raju','$2a$10$rClfwbBtWXOQt.eC89bD9OIXalKwl1e1k0gyZczVQzwHTqXVEWZpe','1731406477345_upload.jpg','EMPLOYEE');
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -390,4 +392,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-11-18 19:05:03
+-- Dump completed on 2024-11-19 19:01:19
