@@ -22,7 +22,7 @@ public class AttendanceService {
 
     @Autowired
     private UserRepository userRepository;
-//
+
 //    @Autowired
 //    private BiometricService biometricService;
 
@@ -58,7 +58,6 @@ public class AttendanceService {
 //
 //        return attendanceRepository.save(attendance);
 //    }
-
 
 
     public Attendance checkIn(long userId) {

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hr_and_pms/features/advanceSalary/model/AdvanceSalary.dart';
 import 'package:hr_and_pms/features/advanceSalary/service/AdvanceSalaryService.dart';
+import '../../leave/model/RequestStatus.dart';
 
 class AdvanceSalaryStatusScreen extends StatefulWidget {
   const AdvanceSalaryStatusScreen({Key? key}) : super(key: key);
@@ -14,6 +15,7 @@ class _AdvanceSalaryStatusScreenState
     extends State<AdvanceSalaryStatusScreen> {
   final AdvanceSalaryService _service = AdvanceSalaryService();
   late Future<List<AdvanceSalary>> _applications;
+  bool isEmployee = true; // Assume we have the role info (set true for employee)
 
   @override
   void initState() {
@@ -22,8 +24,8 @@ class _AdvanceSalaryStatusScreenState
   }
 
   Future<List<AdvanceSalary>> _fetchApplications() async {
-    // Replace with API call for fetching applications
-    return await _service.getAdvanceSalaries(); // Placeholder for all applications
+    // Fetch employee's applications or all applications depending on the role
+    return await _service.getAdvanceSalaries(id); // For employee, replace with relevant filter if needed
   }
 
   @override
@@ -85,13 +87,15 @@ class _AdvanceSalaryStatusScreenState
                     children: [
                       Text('Reason: ${application.reason}'),
                       Text(
-                          'Amount: \$${application.advanceSalary.toStringAsFixed(2)}'),
+                          'Amount: \$${application.advanceAmount.toStringAsFixed(2)}'),
                       Text(
                           'Date: ${application.advanceDate.toLocal().toString().split(' ')[0]}'),
                       Text('Status: ${application.status}'),
                     ],
                   ),
-                  trailing: _buildStatusButtons(application),
+                  trailing: isEmployee
+                      ? null // Employees cannot approve/reject
+                      : _buildStatusButtons(application),
                 ),
               );
             },
@@ -101,6 +105,7 @@ class _AdvanceSalaryStatusScreenState
     );
   }
 
+  // Status buttons for admin/manager (to approve/reject)
   Widget _buildStatusButtons(AdvanceSalary application) {
     return Row(
       mainAxisSize: MainAxisSize.min,
@@ -121,16 +126,17 @@ class _AdvanceSalaryStatusScreenState
   }
 
   void _approveApplication(AdvanceSalary application) async {
-    // Update the status in the backend (e.g., approve the application)
-    application.status = 'Approved'; // You can update this in the backend
-    await _updateApplicationStatus(application);
+    // Create a new instance with updated status using enum
+    final updatedApplication = application.copyWith(status: RequestStatus.approved);
+    await _updateApplicationStatus(updatedApplication);
   }
 
   void _rejectApplication(AdvanceSalary application) async {
-    // Update the status in the backend (e.g., reject the application)
-    application.status = 'Rejected'; // You can update this in the backend
-    await _updateApplicationStatus(application);
+    // Create a new instance with updated status using enum
+    final updatedApplication = application.copyWith(status: RequestStatus.rejected);
+    await _updateApplicationStatus(updatedApplication);
   }
+
 
   Future<void> _updateApplicationStatus(AdvanceSalary application) async {
     try {
@@ -140,7 +146,7 @@ class _AdvanceSalaryStatusScreenState
         _applications = _fetchApplications(); // Refresh the list after status change
       });
     } catch (e) {
-      // Handle any errors that occur during the status update
+      // Handle any errors during the status update
       showDialog(
         context: context,
         builder: (BuildContext context) {

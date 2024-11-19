@@ -17,13 +17,16 @@ public class AdvanceSalary {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    private double advanceSalary;
+    private double advanceAmount;
 
     private String reason;
 
     private LocalDateTime advanceDate;
 
-    @ManyToOne(fetch = FetchType.LAZY)  // Lazy loading to improve performance if it's not needed eagerly
+    @Enumerated(EnumType.STRING)
+    private RequestStatus status;
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
 }

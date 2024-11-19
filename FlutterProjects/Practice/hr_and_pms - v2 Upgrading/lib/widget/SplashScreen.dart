@@ -24,10 +24,10 @@ class _SplashScreenState extends State<SplashScreen> {
   Future<void> _checkLoginStatus() async {
     bool loggedIn = await AuthService().isLoggedIn();
     if (loggedIn) {
-      // Navigate to the home/dashboard screen
+      // Navigate to the home/dashboard employeeScreen
       Navigator.pushReplacementNamed(context, '/dashboard');
     } else {
-      // Stay on the login screen
+      // Stay on the login employeeScreen
       Navigator.pushReplacementNamed(context, '/home');
     }
   }
@@ -52,7 +52,7 @@ class _SplashScreenState extends State<SplashScreen> {
             const SizedBox(height: 20),
             // Use your splash-screen-image as the main image
             Image.asset(
-              'assets/images/splash_images/splash-screen-image.png',
+              'assets/images/splash_images/splash-employeeScreen-image.png',
               width: 200,
               height: 200,
               fit: BoxFit.cover,

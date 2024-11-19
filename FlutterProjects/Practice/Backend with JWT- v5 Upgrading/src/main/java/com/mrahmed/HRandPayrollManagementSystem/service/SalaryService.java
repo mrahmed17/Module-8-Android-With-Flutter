@@ -94,7 +94,7 @@ public class SalaryService {
 
         // 3. Advance Salary Deduction
         if (salary.getAdvanceSalary() != null) {
-            totalSalary -= salary.getAdvanceSalary().getAdvanceSalary();
+            totalSalary -= salary.getAdvanceSalary().getAdvanceAmount();
         }
 
         // 4. Leave Deduction

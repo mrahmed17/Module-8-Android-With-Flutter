@@ -85,7 +85,7 @@ class _PendingApplicationsScreenState
                     children: [
                       Text('Reason: ${application.reason}'),
                       Text(
-                          'Amount: \$${application.advanceSalary.toStringAsFixed(2)}'),
+                          'Amount: \$${application.advanceAmount.toStringAsFixed(2)}'),
                       Text(
                           'Date: ${application.advanceDate.toLocal().toString().split(' ')[0]}'),
                     ],
@@ -144,7 +144,7 @@ class ApplicationDetailsScreen extends StatelessWidget {
             const SizedBox(height: 8),
             Text('Reason: ${application.reason}'),
             const SizedBox(height: 8),
-            Text('Amount: \$${application.advanceSalary.toStringAsFixed(2)}'),
+            Text('Amount: \$${application.advanceAmount.toStringAsFixed(2)}'),
             const SizedBox(height: 8),
             Text(
                 'Date: ${application.advanceDate.toLocal().toString().split(' ')[0]}'),

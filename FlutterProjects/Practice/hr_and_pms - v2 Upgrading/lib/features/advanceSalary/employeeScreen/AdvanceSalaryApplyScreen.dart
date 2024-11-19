@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hr_and_pms/administration/model/User.dart';
 import 'package:hr_and_pms/features/advanceSalary/model/AdvanceSalary.dart';
+import 'package:hr_and_pms/features/leave/model/RequestStatus.dart';
 import 'package:intl/intl.dart';
 
 class AdvanceSalaryApplyScreen extends StatefulWidget {
@@ -15,28 +16,46 @@ class _AdvanceSalaryApplyScreenState extends State<AdvanceSalaryApplyScreen> {
   final TextEditingController _advanceSalaryController = TextEditingController();
   final TextEditingController _reasonController = TextEditingController();
   DateTime _selectedDate = DateTime.now();
+  bool _isSubmitting = false;
 
-  void _applyForAdvanceSalary() {
-    if (_formKey.currentState!.validate()) {
+  /// Handles the submission of the advance salary application.
+  Future<void> _applyForAdvanceSalary() async {
+    if (!_formKey.currentState!.validate()) return;
+
+    setState(() {
+      _isSubmitting = true;
+    });
+
+    try {
       // Mock user object. Replace with the actual logged-in user.
       final user = User.empty();
+
       final advanceSalary = AdvanceSalary(
         id: 0, // ID will be assigned by the backend
-        advanceSalary: double.parse(_advanceSalaryController.text),
+        advanceAmount: double.parse(_advanceSalaryController.text),
         reason: _reasonController.text,
         advanceDate: _selectedDate,
         user: user,
+        status: RequestStatus.pending, // Default status when submitting
       );
 
-      // Call the service to create advance salary
-      // AdvanceSalaryService().createAdvanceSalary(advanceSalary);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Advance Salary application submitted')),
-      );
+      // Simulating API call. Replace with actual service call.
+      // await AdvanceSalaryService().createAdvanceSalary(advanceSalary);
+
+      _showSnackBar('Advance Salary application submitted successfully!', Colors.green);
+      _clearForm();
+    } catch (e) {
+      _showSnackBar('Failed to submit application. Please try again.', Colors.red);
+    } finally {
+      setState(() {
+        _isSubmitting = false;
+      });
     }
   }
 
-  void _pickDate(BuildContext context) async {
+
+  /// Picks a date using the date picker.
+  Future<void> _pickDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
       context: context,
       initialDate: _selectedDate,
@@ -48,6 +67,25 @@ class _AdvanceSalaryApplyScreenState extends State<AdvanceSalaryApplyScreen> {
         _selectedDate = picked;
       });
     }
+  }
+
+  /// Displays a snack bar with a custom message and color.
+  void _showSnackBar(String message, Color color) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: color,
+      ),
+    );
+  }
+
+  /// Clears the form fields after successful submission.
+  void _clearForm() {
+    _advanceSalaryController.clear();
+    _reasonController.clear();
+    setState(() {
+      _selectedDate = DateTime.now();
+    });
   }
 
   @override
@@ -85,8 +123,9 @@ class _AdvanceSalaryApplyScreenState extends State<AdvanceSalaryApplyScreen> {
                     if (value == null || value.isEmpty) {
                       return 'Please enter the amount';
                     }
-                    if (double.tryParse(value) == null) {
-                      return 'Enter a valid number';
+                    final parsedValue = double.tryParse(value);
+                    if (parsedValue == null || parsedValue <= 0) {
+                      return 'Enter a valid amount greater than 0';
                     }
                     return null;
                   },
@@ -123,7 +162,9 @@ class _AdvanceSalaryApplyScreenState extends State<AdvanceSalaryApplyScreen> {
                 ),
                 const SizedBox(height: 24),
                 Center(
-                  child: ElevatedButton(
+                  child: _isSubmitting
+                      ? const CircularProgressIndicator()
+                      : ElevatedButton(
                     onPressed: _applyForAdvanceSalary,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.teal,

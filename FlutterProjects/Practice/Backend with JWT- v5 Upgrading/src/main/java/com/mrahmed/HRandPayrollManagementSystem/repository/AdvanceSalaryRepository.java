@@ -18,10 +18,27 @@ public interface AdvanceSalaryRepository extends JpaRepository<AdvanceSalary, Lo
     List<AdvanceSalary> findByDateRange(@Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
 
     // Find latest advance salary record for a user
-    @Query("SELECT a FROM AdvanceSalary a WHERE a.user.id = :userId ORDER BY a.advanceDate DESC")
-    List<AdvanceSalary> findLatestAdvanceSalaryByUser(@Param("userId") Long userId);
+    @Query("SELECT a FROM AdvanceSalary a WHERE a.user.id = :userId ORDER BY a.advanceDate DESC LIMIT 5")
+    List<AdvanceSalary> findTop5ByUserIdOrderByAdvanceDateDesc(Long userId);
 
     // Find a specific AdvanceSalary by ID (Optional wrapper for safety)
     @Override
     Optional<AdvanceSalary> findById(Long id);
+
+    List<AdvanceSalary> findByUserId(Long userId);
+
+    @Query("SELECT a FROM AdvanceSalary a WHERE a.status = 'PENDING'")
+    List<AdvanceSalary> findPendingSalaryRequests();
+
+    @Query("SELECT  a FROM AdvanceSalary a WHERE a.status = 'REJECTED'")
+    List<AdvanceSalary> findRejectedSalaryRequests();
+
+    @Query("SELECT  a FROM AdvanceSalary a WHERE a.user.id = :userId AND a.status = 'APPROVED'")
+    List<AdvanceSalary> findApprovedSalaryByUser(@Param("userId") Long userId);
+
+    @Query("SELECT  a FROM AdvanceSalary a WHERE a.user.id = :userId AND a.advanceDate BETWEEN :startDate AND :endDate")
+    List<AdvanceSalary> findAdvanceSalaryByUserAndDateRange(@Param("userId") Long userId, @Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
+
+
+
 }

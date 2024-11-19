@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:hr_and_pms/features/advanceSalary/screen/AdvanceSalaryApplyScreen.dart';
-import 'package:hr_and_pms/features/advanceSalary/screen/PendingApplicationsScreen.dart';
+import 'package:hr_and_pms/features/advanceSalary/employeescreen/PendingApplicationsScreen.dart';
 import 'package:hr_and_pms/features/attendance/screens/AttendanceLookupScreen.dart';
 import 'package:hr_and_pms/features/attendance/screens/AttendanceOverviewScreen.dart';
 import 'package:hr_and_pms/features/home/HomeScreen.dart';

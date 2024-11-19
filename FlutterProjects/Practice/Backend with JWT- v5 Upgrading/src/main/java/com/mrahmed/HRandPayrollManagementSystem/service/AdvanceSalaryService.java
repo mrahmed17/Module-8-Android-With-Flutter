@@ -58,7 +58,33 @@ public class AdvanceSalaryService {
     }
 
     // Find latest advance salary record for a user
-    public List<AdvanceSalary> getLatestAdvanceSalaryByUser(Long userId) {
-        return advanceSalaryRepository.findLatestAdvanceSalaryByUser(userId);
+    public List<AdvanceSalary> findTop5ByUserIdOrderByAdvanceDateDesc(Long userId) {
+        return advanceSalaryRepository.findTop5ByUserIdOrderByAdvanceDateDesc(userId);
     }
+
+    // Find all advance salary records for a specific user ID
+    public List<AdvanceSalary> findAllByUserId(Long userId) {
+        return advanceSalaryRepository.findByUserId(userId);
+    }
+
+    // Find pending salary requests
+    public List<AdvanceSalary> getPendingSalaryRequests() {
+        return advanceSalaryRepository.findPendingSalaryRequests();
+    }
+
+    // Find rejected salary requests
+    public List<AdvanceSalary> getRejectedSalaryRequests() {
+        return advanceSalaryRepository.findRejectedSalaryRequests();
+    }
+
+    // Find approved salary records for a specific user
+    public List<AdvanceSalary> getApprovedSalaryByUser (Long userId) {
+        return advanceSalaryRepository.findApprovedSalaryByUser (userId);
+    }
+
+    // Find advance salary records for a specific user within a date range
+    public List<AdvanceSalary> getAdvanceSalaryByUserAndDateRange(Long userId, LocalDateTime startDate, LocalDateTime endDate) {
+        return advanceSalaryRepository.findAdvanceSalaryByUserAndDateRange(userId, startDate, endDate);
+    }
+
 }
