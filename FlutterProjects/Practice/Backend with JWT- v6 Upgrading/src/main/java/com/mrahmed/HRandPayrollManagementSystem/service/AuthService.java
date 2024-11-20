@@ -117,7 +117,7 @@ public class AuthService {
         // Save the new token to the token repository
         saveUserToken(jwt, user);
 
-        return new AuthenticationResponse(jwt, "Employee login is successful", user);
+        return new AuthenticationResponse(jwt, "Login is successful", user);
     }
 
     // Mail text are store to EmailContentBuilder helper class and then implement it
@@ -138,7 +138,7 @@ public class AuthService {
     public String activateUser(long id) {
 
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Employee not Found with this ID" + id));
+                .orElseThrow(() -> new RuntimeException("User not Found with this ID" + id));
 
         if (user != null) {
             user.setActive(true);

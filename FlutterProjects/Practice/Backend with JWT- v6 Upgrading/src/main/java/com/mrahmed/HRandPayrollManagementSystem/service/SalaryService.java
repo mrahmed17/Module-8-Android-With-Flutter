@@ -23,11 +23,10 @@ public class SalaryService {
     private BonusRepository bonusRepository;
 
     @Autowired
-    private AdvanceSalaryRepository advanceSalaryRepository;
-
-    @Autowired
     private LeaveRepository leaveRepository;
 
+    @Autowired
+    private AdvanceSalaryRepository advanceSalaryRepository;
 
     public Salary saveSalary(Salary salary) {
         return salaryRepository.save(salary);
@@ -50,83 +49,97 @@ public class SalaryService {
         salaryRepository.deleteById(salaryId);
     }
 
-    // Get a salary record by ID
-    public Salary getSalaryById(Long salaryId) {
-        return salaryRepository.findById(salaryId)
-                .orElseThrow(() -> new RuntimeException("Salary record not found for ID: " + salaryId));
-    }
-
-
-    // findAllSalary
     public List<Salary> getAllSalaries() {
         return salaryRepository.findAll();
     }
 
-    // Get salaries within a specific date range
+    public Salary getSalaryById(Long salaryId) {
+        return salaryRepository.findById(salaryId)
+                .orElseThrow(() -> new RuntimeException("Salary not found for ID: " + salaryId));
+    }
+
     public List<Salary> getSalariesByDateRange(LocalDateTime startDate, LocalDateTime endDate) {
-        return salaryRepository.findSalariesByDateRange(startDate, endDate);
+        return salaryRepository.findByPaymentDateBetween(startDate, endDate);
     }
 
-    // Get the latest salary record for a specific user
-    public List<Salary> getLatestSalaryByUser(Long userId) {
-        return salaryRepository.findLatestSalaryByUser(userId);
+    public Optional<Salary> getLatestSalaryForUser(Long userId) {
+        return salaryRepository.findFirstByUser_IdOrderByPaymentDateDesc(userId);
     }
 
+    public List<Salary> getSalariesByStatus(String status) {
+        return salaryRepository.findBySalaryStatus(status);
+    }
 
-    public double calculateTotalSalary(long userId) {
-        // Retrieve the user's salary entity
-        Salary salary = salaryRepository.findBySalaryUserId(userId);
-
-        if (salary == null) {
-            throw new RuntimeException("Salary not found for user ID: " + userId);
-        }
+    public double calculateSalary(long userId) {
+        // Fetch the salary entity for calculations
+        Salary salary = salaryRepository.findFirstByUser_IdOrderByPaymentDateDesc(userId)
+                .orElseThrow(() -> new RuntimeException("Salary not found for user ID: " + userId));
 
         double baseSalary = salary.getUser().getBasicSalary();
-        double totalSalary = baseSalary;
+        double netSalary = baseSalary;
+
+        System.out.println("Base Salary: " + baseSalary); // Log base salary
 
         // 1. Overtime Calculation
-        List<Attendance> overtimeAttendances = attendanceRepository.findOvertimeForUser(userId);
-        totalSalary += calculateOvertimePay(overtimeAttendances, baseSalary);
+        List<Attendance> overtimeRecords = attendanceRepository.findOvertimeForUser(userId);
+        double overtimePay = calculateOvertimePay(overtimeRecords, baseSalary);
+        System.out.println("Overtime Pay: " + overtimePay); // Log overtime
 
-        // 2. Bonus Calculation
-        Optional<Bonus> bonuses = bonusRepository.findById(salary.getId());
-        totalSalary += calculateBonusAmount(bonuses);
+        netSalary += overtimePay;
 
-        // 3. Advance Salary Deduction
-        if (salary.getAdvanceSalary() != null) {
-            totalSalary -= salary.getAdvanceSalary().getAdvanceAmount();
-        }
-
-        // 4. Leave Deduction
-        Optional<Leave> leaves = leaveRepository.findById(salary.getId());
-        totalSalary -= calculateLeaveDeductions(leaves, baseSalary);
-
-        return totalSalary;
-    }
-
-    private double calculateOvertimePay(List<Attendance> overtimeAttendances, double baseSalary) {
-        double overtimeRate = baseSalary / (4 * 5 * 8); // Weekly 5 days, 8 hours per day
-        double totalOvertimeHours = overtimeAttendances.stream()
-                .mapToDouble(attendance -> {
-                    Duration duration = Duration.between(attendance.getClockInTime(), attendance.getClockOutTime());
-                    return Math.max(0, duration.toHours() - 8); // Subtract regular 8 hours
-                })
-                .sum();
-        return totalOvertimeHours * overtimeRate;
-    }
-
-    private double calculateBonusAmount(Optional<Bonus> bonuses) {
-        return bonuses.stream()
+        // 2. Bonuses
+        double bonusAmount = salary.getBonuses().stream()
                 .mapToDouble(Bonus::getBonusAmount)
                 .sum();
+        System.out.println("Bonuses: " + bonusAmount); // Log bonuses
+
+        netSalary += bonusAmount;
+
+        // 3. Advance Salary Deduction
+        if (salary.getAdvanceAmount() != null) {
+            double advanceDeduction = salary.getAdvanceAmount().getAdvanceAmount();
+            System.out.println("Advance Deduction: " + advanceDeduction); // Log advance salary
+            netSalary -= advanceDeduction;
+        }
+
+        // 4. Leave Deductions
+        double leaveDeductions = calculateLeaveDeductions(salary.getLeaves(), baseSalary);
+        System.out.println("Leave Deductions: " + leaveDeductions); // Log leave deductions
+
+        netSalary -= leaveDeductions;
+
+        // 5. Tax and Provident Fund
+        double providentFund = baseSalary * 0.02;
+        double tax = baseSalary * 0.05;
+        System.out.println("Provident Fund: " + providentFund); // Log provident fund
+        System.out.println("Tax: " + tax); // Log tax
+
+        salary.setProvidentFund(providentFund);
+        salary.setTax(tax);
+
+        netSalary -= providentFund + tax;
+
+        salary.setNetSalary(netSalary);
+
+        return netSalary;
     }
 
-    private double calculateLeaveDeductions(Optional<Leave> leaves, double baseSalary) {
-        double dailySalary = baseSalary / 30; // Assuming 30 days in a month
-        long totalLeaveDays = leaves.stream()
-                .mapToLong(leave -> Duration.between(leave.getStartDate().atStartOfDay(), leave.getEndDate().atStartOfDay()).toDays() + 1)
+
+    private double calculateOvertimePay(List<Attendance> overtimeRecords, double baseSalary) {
+        double hourlyRate = baseSalary / (4 * 5 * 8); // Weekly 5 days, 8 hours/day
+        return overtimeRecords.stream()
+                .mapToDouble(att -> {
+                    Duration duration = Duration.between(att.getClockInTime(), att.getClockOutTime());
+                    return Math.max(0, duration.toHours() - 8); // Overtime hours
+                })
+                .sum() * hourlyRate;
+    }
+
+    private double calculateLeaveDeductions(List<Leave> leaves, double baseSalary) {
+        double dailyRate = baseSalary / 30;
+        return leaves.stream()
+                .mapToDouble(leave -> Duration.between(leave.getStartDate().atStartOfDay(), leave.getEndDate().atStartOfDay()).toDays() * dailyRate)
                 .sum();
-        return totalLeaveDays * dailySalary;
     }
 
 }

@@ -4,6 +4,8 @@ import com.mrahmed.HRandPayrollManagementSystem.entity.AdvanceSalary;
 import com.mrahmed.HRandPayrollManagementSystem.entity.RequestStatus;
 import com.mrahmed.HRandPayrollManagementSystem.repository.AdvanceSalaryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -57,14 +59,10 @@ public class AdvanceSalaryService {
         }
     }
 
-//    // Find advance salary record by ID
-//    public Optional<AdvanceSalary> getAdvanceSalaryById(Long id) {
-//        return advanceSalaryRepository.findById(id);
-//    }
-
-    // Get advance salary by user ID
-    public List<AdvanceSalary> getAdvanceSalaryByUserId(Long userId) {
-        return advanceSalaryRepository.findByUserId(userId);
+    // Find advance salary record by ID
+    public AdvanceSalary getAdvanceSalaryById(Long id) {
+        return advanceSalaryRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("AdvanceSalary with ID " + id + " not found"));
     }
 
     // Get approved advances for a user
@@ -72,19 +70,19 @@ public class AdvanceSalaryService {
         return advanceSalaryRepository.findByUserAndStatus(userId, RequestStatus.APPROVED);
     }
 
+    // Find latest advance salary record for a user
+    public Page<AdvanceSalary> findTop5ByUserIdOrderByAdvanceDateDesc(Long userId) {
+        return advanceSalaryRepository.findTop5ByUserIdOrderByAdvanceDateDesc(userId, PageRequest.of(0, 5));
+    }
+
     // Find advance salaries within a specific date range
     public List<AdvanceSalary> getAdvanceSalariesByDateRange(LocalDateTime startDate, LocalDateTime endDate) {
         return advanceSalaryRepository.findByDateRange(startDate, endDate);
     }
 
-    // Find latest advance salary record for a user
-    public List<AdvanceSalary> findTop5ByUserIdOrderByAdvanceDateDesc(Long userId) {
-        return advanceSalaryRepository.findTop5ByUserIdOrderByAdvanceDateDesc(userId);
-    }
-
-    // Find all advance salary records for a specific user ID
-    public List<AdvanceSalary> findAllByUserId(Long userId) {
-        return advanceSalaryRepository.findByUserId(userId);
+    // Find all advance salary records
+    public List<AdvanceSalary> findAllAdvanceSalary() {
+        return advanceSalaryRepository.findAll();
     }
 
     // Find pending salary requests
@@ -98,8 +96,8 @@ public class AdvanceSalaryService {
     }
 
     // Find approved salary records for a specific user
-    public List<AdvanceSalary> getApprovedSalaryByUser (Long userId) {
-        return advanceSalaryRepository.findApprovedSalaryByUser (userId);
+    public List<AdvanceSalary> getApprovedSalaryByUser(Long userId) {
+        return advanceSalaryRepository.findApprovedSalaryByUser(userId);
     }
 
     // Find advance salary records for a specific user within a date range

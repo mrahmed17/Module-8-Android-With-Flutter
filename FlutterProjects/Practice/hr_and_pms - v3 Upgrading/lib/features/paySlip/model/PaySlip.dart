@@ -2,24 +2,24 @@ import 'package:hr_and_pms/administration/model/User.dart';
 import 'package:hr_and_pms/features/salary/model/Salary.dart';
 
 class PaySlip {
-   int id;
-   double totalAmount;
-  final DateTime billingDate;
-  final String paymentMethod;
-  final String status;
-  final User paidBy;
-  final User receivedBy;
-  final Salary salary;
+   int? id;
+   double? totalAmount;
+   DateTime? billingDate;
+   String? paymentMethod;
+   String? status;
+   User? paidBy;
+   User? receivedBy;
+   Salary? salary;
 
   PaySlip({
-    required this.id,
-    required this.totalAmount,
-    required this.billingDate,
-    required this.paymentMethod,
-    required this.status,
-    required this.paidBy,
-    required this.receivedBy,
-    required this.salary,
+     this.id,
+     this.totalAmount,
+     this.billingDate,
+     this.paymentMethod,
+     this.status,
+     this.paidBy,
+     this.receivedBy,
+     this.salary,
   });
 
   // Factory method to create a PaySlipModel from a JSON map
@@ -41,12 +41,12 @@ class PaySlip {
     return {
       'id': id,
       'totalAmount': totalAmount,
-      'billingDate': billingDate.toIso8601String(),
+      'billingDate': billingDate?.toIso8601String(),
       'paymentMethod': paymentMethod,
       'status': status,
-      'paidBy': paidBy.toJson(),
-      'receivedBy': receivedBy.toJson(),
-      'salary': salary.toJson(),
+      'paidBy': paidBy?.toJson(),
+      'receivedBy': receivedBy?.toJson(),
+      'salary': salary?.toJson(),
     };
   }
 }

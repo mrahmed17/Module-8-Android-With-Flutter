@@ -26,7 +26,7 @@ public class User implements UserDetails, Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
 
     @NotBlank(message = "Full name is required")
     @Size(max = 100, message = "Full name can have a maximum of 100 characters")

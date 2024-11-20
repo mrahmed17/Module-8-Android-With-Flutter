@@ -7,8 +7,9 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "advancesalaries")
-@Getter
-@Setter
+@Data
+//@Getter
+//@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString(exclude = "user")  // Prevent circular reference if User entity has AdvanceSalary relationship
@@ -27,7 +28,7 @@ public class AdvanceSalary {
     @Enumerated(EnumType.STRING)
     private RequestStatus status;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id")
     private User user;
 

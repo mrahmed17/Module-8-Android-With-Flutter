@@ -1,4 +1,3 @@
-
 import 'package:hr_and_pms/features/branch/model/Branch.dart';
 
 class Department {
@@ -6,11 +5,11 @@ class Department {
   final String name;
   final String email;
   final String cell;
-  final String? depImage;
-  final int employeeNum;
-  final Branch branch;  // Assuming you have a Branch model to represent the branch
-  final DateTime createdAt;
-  final DateTime updatedAt;
+  final String? depImage; // Nullable department image field
+  final int employeeNum; // Employee count field
+  final Branch branch; // Reference to Branch object
+  final DateTime createdAt; // Non-nullable createdAt
+  final DateTime? updatedAt; // Nullable updatedAt
 
   Department({
     required this.id,
@@ -21,21 +20,21 @@ class Department {
     required this.employeeNum,
     required this.branch,
     required this.createdAt,
-    required this.updatedAt,
+    this.updatedAt,
   });
 
   // Factory constructor for creating a Department object from JSON
   factory Department.fromJson(Map<String, dynamic> json) {
     return Department(
-      id: json['id'] as int,
-      name: json['name'] as String,
-      email: json['email'] as String,
-      cell: json['cell'] as String,
-      depImage: json['depImage'] as String?,
-      employeeNum: json['employeeNum'] as int,
-      branch: Branch.fromJson(json['branch'] as Map<String, dynamic>),  // Parsing the branch object
-      createdAt: DateTime.parse(json['createdAt']),
-      updatedAt: DateTime.parse(json['updatedAt']),
+      id: json['id'] ?? 0,
+      name: json['name'] ?? '',
+      email: json['email'] ?? '',
+      cell: json['cell'] ?? '',
+      depImage: json['depImage'],
+      employeeNum: json['employeeNum'] ?? 0,
+      branch: Branch.fromJson(json['branch'] ?? {}),
+      createdAt: DateTime.parse(json['createdAt'] ?? DateTime.now().toIso8601String()),
+      updatedAt: json['updatedAt'] != null ? DateTime.parse(json['updatedAt']) : null,
     );
   }
 
@@ -48,9 +47,9 @@ class Department {
       'cell': cell,
       'depImage': depImage,
       'employeeNum': employeeNum,
-      'branch': branch.toJson(),  // Converting the branch object to JSON
+      'branch': branch.toJson(),
       'createdAt': createdAt.toIso8601String(),
-      'updatedAt': updatedAt.toIso8601String(),
+      'updatedAt': updatedAt?.toIso8601String(),
     };
   }
 }

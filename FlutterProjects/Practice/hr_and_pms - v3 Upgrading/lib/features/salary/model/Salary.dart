@@ -3,42 +3,42 @@ import 'package:hr_and_pms/features/bonus/model/Bonus.dart';
 import 'package:hr_and_pms/features/leave/model/Leave.dart';
 
 class Salary {
-  final int id;
-  final DateTime paymentDate;
-  final double medicare;
-  final double providentFund;
-  final double insurance;
-  final double transportAllowance;
-  final double telephoneSubsidy;
-  final double utilityAllowance;
-  final double domesticAllowance;
-  final double lunchAllowance;
-  final double netSalary;
-  final double tax;
-  final List<Attendance> overtime; // Updated naming for clarity
-  final int userId; // Reference to User ID
-  final int? advanceSalaryId; // Reference to Advance Salary ID
-  final List<Bonus> bonuses;
-  final List<Leave> leaves;
+   int? id;
+   DateTime? paymentDate;
+   double? medicare;
+   double? providentFund;
+   double? insurance;
+   double? transportAllowance;
+   double? telephoneSubsidy;
+   double? utilityAllowance;
+   double? domesticAllowance;
+   double? lunchAllowance;
+   double? netSalary;
+   double? tax;
+   List<Attendance>? overtime; // Updated naming for clarity
+   int? userId; // Reference to User ID
+   int? advanceSalaryId; // Reference to Advance Salary ID
+   List<Bonus>? bonuses;
+   List<Leave>? leaves;
 
   Salary({
-    required this.id,
-    required this.paymentDate,
-    required this.medicare,
-    required this.providentFund,
-    required this.insurance,
-    required this.transportAllowance,
-    required this.telephoneSubsidy,
-    required this.utilityAllowance,
-    required this.domesticAllowance,
-    required this.lunchAllowance,
-    required this.netSalary,
-    required this.tax,
-    required this.overtime,
-    required this.userId,
+     this.id,
+     this.paymentDate,
+     this.medicare,
+     this.providentFund,
+     this.insurance,
+     this.transportAllowance,
+     this.telephoneSubsidy,
+     this.utilityAllowance,
+     this.domesticAllowance,
+     this.lunchAllowance,
+     this.netSalary,
+     this.tax,
+     this.overtime,
+     this.userId,
     this.advanceSalaryId,
-    required this.bonuses,
-    required this.leaves,
+     this.bonuses,
+     this.leaves,
   });
 
   /// Factory constructor to create a `Salary` instance from JSON
@@ -77,7 +77,7 @@ class Salary {
   Map<String, dynamic> toJson() {
     return {
       'id': id,
-      'paymentDate': paymentDate.toIso8601String(),
+      'paymentDate': paymentDate?.toIso8601String(),
       'medicare': medicare,
       'providentFund': providentFund,
       'insurance': insurance,
@@ -88,11 +88,11 @@ class Salary {
       'lunchAllowance': lunchAllowance,
       'netSalary': netSalary,
       'tax': tax,
-      'overtime': overtime.map((item) => item.toJson()).toList(),
+      'overtime': overtime?.map((item) => item.toJson()).toList(),
       'userId': userId, // User ID directly serialized
       'advanceSalaryId': advanceSalaryId, // Serialized as ID directly
-      'bonuses': bonuses.map((item) => item.toJson()).toList(),
-      'leaves': leaves.map((item) => item.toJson()).toList(),
+      'bonuses': bonuses?.map((item) => item.toJson()).toList(),
+      'leaves': leaves?.map((item) => item.toJson()).toList(),
     };
   }
 }

@@ -1,4 +1,4 @@
-package com.mrahmed.HRandPayrollManagementSystem.service;
+package com.mrahmed.HRandPayrollManagementSystem.util;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

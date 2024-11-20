@@ -1,19 +1,22 @@
-
 import 'package:hr_and_pms/administration/model/User.dart';
 
 class Attendance {
-  final int id;
-  final DateTime date;
-  final DateTime clockInTime;
-  final DateTime clockOutTime;
-  final User user;  // Referencing User object
+   int? id;
+   DateTime? date;
+   DateTime? clockInTime;
+   DateTime? clockOutTime;
+   double? overtimeHours;
+   bool? lateCheckIn;
+   User? user;
 
   Attendance({
-    required this.id,
-    required this.date,
-    required this.clockInTime,
-    required this.clockOutTime,
-    required this.user,
+     this.id,
+     this.date,
+     this.clockInTime,
+    this.clockOutTime,
+     this.overtimeHours,
+     this.lateCheckIn,
+     this.user,
   });
 
   factory Attendance.fromJson(Map<String, dynamic> json) {
@@ -21,7 +24,11 @@ class Attendance {
       id: json['id'] ?? 0,
       date: DateTime.parse(json['date'] ?? DateTime.now().toString()),
       clockInTime: DateTime.parse(json['clockInTime'] ?? DateTime.now().toString()),
-      clockOutTime: DateTime.parse(json['clockOutTime'] ?? DateTime.now().toString()),
+      clockOutTime: json['clockOutTime'] != null
+          ? DateTime.parse(json['clockOutTime'])
+          : null,
+      overtimeHours: (json['overtimeHours'] ?? 0).toDouble(),
+      lateCheckIn: json['lateCheckIn'] ?? false,
       user: User.fromJson(json['user'] ?? {}),
     );
   }
@@ -29,10 +36,52 @@ class Attendance {
   Map<String, dynamic> toJson() {
     return {
       'id': id,
-      'date': date.toIso8601String(),
-      'clockInTime': clockInTime.toIso8601String(),
-      'clockOutTime': clockOutTime.toIso8601String(),
-      'user': user.toJson(),  // Serializing the User object
+      'date': date?.toIso8601String(),
+      'clockInTime': clockInTime?.toIso8601String(),
+      'clockOutTime': clockOutTime?.toIso8601String(), // Nullable field
+      'overtimeHours': overtimeHours,
+      'lateCheckIn': lateCheckIn,
+      'user': user?.toJson(), // Serializing the User object
     };
   }
 }
+
+
+//
+// import 'package:hr_and_pms/administration/model/User.dart';
+//
+// class Attendance {
+//    int id;
+//    DateTime date;
+//    DateTime clockInTime;
+//    DateTime clockOutTime;
+//    User user;  // Referencing User object
+//
+//   Attendance({
+//      this.id,
+//      this.date,
+//      this.clockInTime,
+//      this.clockOutTime,
+//      this.user,
+//   });
+//
+//   factory Attendance.fromJson(Map<String, dynamic> json) {
+//     return Attendance(
+//       id: json['id'] ?? 0,
+//       date: DateTime.parse(json['date'] ?? DateTime.now().toString()),
+//       clockInTime: DateTime.parse(json['clockInTime'] ?? DateTime.now().toString()),
+//       clockOutTime: DateTime.parse(json['clockOutTime'] ?? DateTime.now().toString()),
+//       user: User.fromJson(json['user'] ?? {}),
+//     );
+//   }
+//
+//   Map<String, dynamic> toJson() {
+//     return {
+//       'id': id,
+//       'date': date.toIso8601String(),
+//       'clockInTime': clockInTime.toIso8601String(),
+//       'clockOutTime': clockOutTime.toIso8601String(),
+//       'user': user.toJson(),  // Serializing the User object
+//     };
+//   }
+// }

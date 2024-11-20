@@ -5,7 +5,7 @@ import 'package:hr_and_pms/administration/authScreen/ForgetPasswordScreen.dart';
 import 'package:hr_and_pms/administration/authScreen/RegistrationScreen.dart';
 import 'package:hr_and_pms/administration/dashboard/AdminDashboardScreen.dart';
 import 'package:hr_and_pms/administration/dashboard/ManagerDashboardScreen.dart';
-import 'package:hr_and_pms/features/dashboard/DashboardScreen.dart';
+import 'package:hr_and_pms/features/empDashboard/DashboardScreen.dart';
 import 'package:hr_and_pms/administration/service/AuthService.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -62,8 +62,8 @@ class _LoginScreenState extends State<LoginScreen> {
   Future<void> _checkForExistingToken() async {
     bool loggedIn = await AuthService().isLoggedIn();
     if (loggedIn) {
-      // Redirect to home or dashboard if already logged in
-      Navigator.pushReplacementNamed(context, '/dashboard');
+      // Redirect to home or empDashboard if already logged in
+      Navigator.pushReplacementNamed(context, '/empDashboard');
     }
   }
 

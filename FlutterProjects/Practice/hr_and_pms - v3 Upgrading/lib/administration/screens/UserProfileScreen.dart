@@ -61,7 +61,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
     TextEditingController nameController = TextEditingController(text: _user?.name ?? '');
     TextEditingController emailController = TextEditingController(text: _user?.email ?? '');
     TextEditingController addressController = TextEditingController(text: _user?.address ?? '');
-    TextEditingController contactController = TextEditingController(text: _user?.contact ?? '');
+    TextEditingController contactController = TextEditingController(text: _user?.cell ?? '');
 
     showDialog(
       context: context,
@@ -93,7 +93,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                     name: nameController.text,
                     email: emailController.text,
                     address: addressController.text,
-                    contact: contactController.text,
+                    cell: contactController.text,
                     // Populate all required fields
                     basicSalary: _user!.basicSalary,
                     dateOfBirth: _user!.dateOfBirth,

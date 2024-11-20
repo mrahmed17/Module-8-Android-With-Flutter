@@ -12,42 +12,36 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString(exclude = "user")  // Prevent circular reference if User entity has AdvanceSalary relationship
+@ToString(exclude = {"user", "bonuses", "leaves", "overTime", "advanceAmount"})
 public class Salary {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    private LocalDateTime paymentDate;
-    private double medicare;
-    private double providentFund; // baseSalary * (2% = 0.02)
-    private double insurance;
-    private double transportAllowance;
-    private double telephoneSubsidy;
-    private double utilityAllowance;
-    private double domesticAllowance;
-    private double lunchAllowance;
-    private double netSalary;
-    private double tax;
+    private LocalDateTime paymentDate; // Date of salary disbursement
+    private double netSalary; // Final salary after all calculations
+    private double tax; // Deductible tax
+    private double providentFund; // Calculated as a percentage of baseSalary
+    private String salaryStatus; // PENDING, PAID, etc.
 
-    @OneToMany(fetch = FetchType.LAZY)
+    @OneToMany(fetch = FetchType.EAGER)
     @JoinColumn(name = "over_time")
-    private List<Attendance> overTime; //Working hours are 8. If attendance checks over the 8 hours, it will count as overtime.
-    //  Overtime salary calculation = (basicSalary from user divided 4 week * 5 days * 8 hours)
+    private List<Attendance> overTime; // Overtime attendances
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
     @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
     @JoinColumn(name = "advance_salary_id")
-    private AdvanceSalary advanceSalary;
+    private AdvanceSalary advanceAmount;
 
-    @OneToMany (fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
     @JoinColumn(name = "bonus_id")
     private List<Bonus> bonuses;
 
-    @OneToMany (fetch = FetchType.LAZY)
+    @OneToMany(fetch = FetchType.EAGER)
     @JoinColumn(name = "leave_id")
     private List<Leave> leaves;
 

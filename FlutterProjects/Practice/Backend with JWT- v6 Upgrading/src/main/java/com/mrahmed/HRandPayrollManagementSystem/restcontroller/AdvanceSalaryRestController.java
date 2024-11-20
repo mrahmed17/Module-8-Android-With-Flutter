@@ -79,17 +79,17 @@ public class AdvanceSalaryRestController {
     }
 
     // Get advance salaries for a user
-    @GetMapping("/findAll/{userId}")
-    public ResponseEntity<List<AdvanceSalary>> getAllAdvanceSalaries(@PathVariable Long userId) {
-        List<AdvanceSalary> advanceSalaries = advanceSalaryService.getAdvanceSalaryByUserId(userId);
+    @GetMapping("/all")
+    public ResponseEntity<List<AdvanceSalary>> getAllAdvanceSalaries() {
+        List<AdvanceSalary> advanceSalaries = advanceSalaryService.findAllAdvanceSalary();
         return ResponseEntity.ok(advanceSalaries);
     }
 
     // Get approved advance salary records for a user
-    @GetMapping("/approved/{userId}")
-    public ResponseEntity<List<AdvanceSalary>> getApprovedAdvanceSalaries(@PathVariable Long userId) {
-        List<AdvanceSalary> approvedSalaries = advanceSalaryService.getApprovedAdvanceSalaries(userId);
-        return ResponseEntity.ok(approvedSalaries);
+    @GetMapping("/user/{userId}/latest")
+    public ResponseEntity<List<AdvanceSalary>> getLatestAdvanceSalaries(@PathVariable Long userId) {
+        List<AdvanceSalary> latestAdvances = advanceSalaryService.findTop5ByUserIdOrderByAdvanceDateDesc(userId).getContent();
+        return new ResponseEntity<>(latestAdvances, HttpStatus.OK);
     }
 
     // Get advance salaries within a specific date range
@@ -99,13 +99,6 @@ public class AdvanceSalaryRestController {
             @RequestParam LocalDateTime endDate) {
         List<AdvanceSalary> advanceSalaries = advanceSalaryService.getAdvanceSalariesByDateRange(startDate, endDate);
         return ResponseEntity.ok(advanceSalaries);
-    }
-
-    // Get the latest advance salary record for a user
-    @GetMapping("/topAdvanceTaker/user/{id}")
-    public ResponseEntity<List<AdvanceSalary>> findTop5ByUserIdOrderByAdvanceDateDesc(@PathVariable Long id) {
-        List<AdvanceSalary> latestAdvanceSalaries = advanceSalaryService.findTop5ByUserIdOrderByAdvanceDateDesc(id);
-        return ResponseEntity.ok(latestAdvanceSalaries);
     }
 
     // Get pending salary requests
