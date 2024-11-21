@@ -58,13 +58,13 @@ public class SalaryService {
                 .orElseThrow(() -> new RuntimeException("Salary not found for ID: " + salaryId));
     }
 
-    public List<Salary> getSalariesByDateRange(LocalDateTime startDate, LocalDateTime endDate) {
-        return salaryRepository.findByPaymentDateBetween(startDate, endDate);
-    }
-
-    public Optional<Salary> getLatestSalaryForUser(Long userId) {
-        return salaryRepository.findFirstByUser_IdOrderByPaymentDateDesc(userId);
-    }
+//    public List<Salary> getSalariesByDateRange(LocalDateTime startDate, LocalDateTime endDate) {
+//        return salaryRepository.findByPaymentDateBetween(startDate, endDate);
+//    }
+//
+//    public Optional<Salary> getLatestSalaryForUser(Long userId) {
+//        return salaryRepository.findFirstByUser_IdOrderByPaymentDateDesc(userId);
+//    }
 
     public List<Salary> getSalariesByStatus(String status) {
         return salaryRepository.findBySalaryStatus(status);

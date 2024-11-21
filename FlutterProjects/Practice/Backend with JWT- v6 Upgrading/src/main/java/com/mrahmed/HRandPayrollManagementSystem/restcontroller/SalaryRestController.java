@@ -39,13 +39,13 @@ public class SalaryRestController {
         return new ResponseEntity<>(createdSalary, HttpStatus.CREATED);
     }
 
-
-    @GetMapping("/latest/{userId}")
-    public ResponseEntity<Salary> getLatestSalary(@PathVariable Long userId) {
-        Salary salary = salaryService.getLatestSalaryForUser(userId)
-                .orElseThrow(() -> new RuntimeException("No salary record found for user ID: " + userId));
-        return ResponseEntity.ok(salary);
-    }
+//
+//    @GetMapping("/latest/{userId}")
+//    public ResponseEntity<Salary> getLatestSalary(@PathVariable Long userId) {
+//        Salary salary = salaryService.getLatestSalaryForUser(userId)
+//                .orElseThrow(() -> new RuntimeException("No salary record found for user ID: " + userId));
+//        return ResponseEntity.ok(salary);
+//    }
 
     @PutMapping("/update/{salaryId}")
     public ResponseEntity<Salary> updateSalary(
@@ -79,14 +79,14 @@ public class SalaryRestController {
         List<Salary> salaries = salaryService.getSalariesByStatus(status);
         return ResponseEntity.ok(salaries);
     }
-
-    @GetMapping("/dateRange")
-    public ResponseEntity<List<Salary>> getSalariesByDateRange(
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate) {
-        List<Salary> salaries = salaryService.getSalariesByDateRange(startDate, endDate);
-        return ResponseEntity.ok(salaries);
-    }
+//
+//    @GetMapping("/dateRange")
+//    public ResponseEntity<List<Salary>> getSalariesByDateRange(
+//            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
+//            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate) {
+//        List<Salary> salaries = salaryService.getSalariesByDateRange(startDate, endDate);
+//        return ResponseEntity.ok(salaries);
+//    }
 
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<String> handleRuntimeException(RuntimeException ex) {

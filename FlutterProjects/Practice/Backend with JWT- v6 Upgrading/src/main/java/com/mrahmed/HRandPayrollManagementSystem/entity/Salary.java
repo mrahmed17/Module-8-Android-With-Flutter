@@ -42,36 +42,5 @@ public class Salary {
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "salary")
     private List<Leave> leaves;
 
-    // Method to calculate the total salary
-    public double calculateTotalSalary() {
-        double totalSalary = netSalary;
-
-        // Add bonuses
-        for (Bonus bonus : bonuses) {
-            totalSalary += bonus.getBonusAmount();
-        }
-
-        // Deduct advance salary if paid
-        if (advanceAmount != null && advanceAmount.isPaid()) {
-            totalSalary -= advanceAmount.getAdvanceAmount();
-        }
-
-        // Add overtime
-        for (Attendance attendance : overTime) {
-            totalSalary += attendance.getOvertimeHours() * 100; // Assuming 100 is the hourly rate
-        }
-
-        // Calculate leave deductions and additions (Paid leave adds, Unpaid leave deducts)
-        for (Leave leave : leaves) {
-            if (leave.getLeaveType() == LeaveType.SICK) {
-                totalSalary += leave.getDuration() * 100; // Assuming 100 is the daily wage for paid leaves
-            } else if (leave.getLeaveType() == LeaveType.UNPAID) {
-                totalSalary -= leave.getDuration() * 100; // Assuming 100 is the daily wage for unpaid leaves
-            }
-        }
-
-        return totalSalary;
-    }
-
 }
 

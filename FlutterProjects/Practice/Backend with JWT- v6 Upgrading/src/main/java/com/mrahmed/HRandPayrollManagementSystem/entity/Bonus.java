@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "bonuses")
@@ -22,6 +23,10 @@ public class Bonus {
     private LocalDateTime bonusDate;
 
     private String bonusType; // Performance, Annual, Festival, Promotional
+
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
+    @JoinColumn(name = "salary_id")
+    private Salary salary;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id")

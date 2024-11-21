@@ -82,12 +82,12 @@ public class AdvanceSalaryController {
         return ResponseEntity.ok(advanceSalaries);
     }
 
-    // Get approved advance salary records for a user
-    @GetMapping("/user/{userId}/latest")
-    public ResponseEntity<List<AdvanceSalary>> getLatestAdvanceSalaries(@PathVariable Long userId) {
-        List<AdvanceSalary> latestAdvances = advanceSalaryService.findTop5ByUserIdOrderByAdvanceDateDesc(userId).getContent();
-        return new ResponseEntity<>(latestAdvances, HttpStatus.OK);
-    }
+//    // Get approved advance salary records for a user
+//    @GetMapping("/user/{userId}/latest")
+//    public ResponseEntity<List<AdvanceSalary>> getLatestAdvanceSalaries(@PathVariable Long userId) {
+//        List<AdvanceSalary> latestAdvances = advanceSalaryService.findTop5ByUserIdOrderByAdvanceDateDesc(userId).getContent();
+//        return new ResponseEntity<>(latestAdvances, HttpStatus.OK);
+//    }
 
     // getAdvanceSalariesStatus
     @GetMapping("/status/{userId}")
@@ -96,14 +96,14 @@ public class AdvanceSalaryController {
         return ResponseEntity.ok(advanceSalaries);
     }
 
-    // Get advance salaries within a specific date range
-    @GetMapping("/date-range")
-    public ResponseEntity<List<AdvanceSalary>> getAdvanceSalariesByDateRange(
-            @RequestParam LocalDateTime startDate,
-            @RequestParam LocalDateTime endDate) {
-        List<AdvanceSalary> advanceSalaries = advanceSalaryService.getAdvanceSalariesByDateRange(startDate, endDate);
-        return ResponseEntity.ok(advanceSalaries);
-    }
+//    // Get advance salaries within a specific date range
+//    @GetMapping("/date-range")
+//    public ResponseEntity<List<AdvanceSalary>> getAdvanceSalariesByDateRange(
+//            @RequestParam LocalDateTime startDate,
+//            @RequestParam LocalDateTime endDate) {
+//        List<AdvanceSalary> advanceSalaries = advanceSalaryService.getAdvanceSalariesByDateRange(startDate, endDate);
+//        return ResponseEntity.ok(advanceSalaries);
+//    }
 
     // Get pending salary requests
     @GetMapping("/pending")
@@ -126,15 +126,15 @@ public class AdvanceSalaryController {
         return ResponseEntity.ok(approvedSalaries);
     }
 
-    @GetMapping("/userDate-range/{id}")
-    public ResponseEntity<List<AdvanceSalary>> getAdvanceSalaryByUserAndDateRange(
-            @PathVariable Long id,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate) {
-
-        List<AdvanceSalary> advanceSalaries =
-                advanceSalaryService.getAdvanceSalaryByUserAndDateRange(id, startDate, endDate);
-        return ResponseEntity.ok(advanceSalaries);
-    }
+//    @GetMapping("/userDate-range/{id}")
+//    public ResponseEntity<List<AdvanceSalary>> getAdvanceSalaryByUserAndDateRange(
+//            @PathVariable Long id,
+//            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
+//            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate) {
+//
+//        List<AdvanceSalary> advanceSalaries =
+//                advanceSalaryService.getAdvanceSalaryByUserAndDateRange(id, startDate, endDate);
+//        return ResponseEntity.ok(advanceSalaries);
+//    }
 
 }

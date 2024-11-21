@@ -64,15 +64,15 @@ public class AdvanceSalaryService {
         return advanceSalaryRepository.findByUserAndStatus(userId, RequestStatus.APPROVED);
     }
 
-    // Find latest advance salary record for a user
-    public Page<AdvanceSalary> findTop5ByUserIdOrderByAdvanceDateDesc(Long userId) {
-        return advanceSalaryRepository.findTop5ByUserIdOrderByAdvanceDateDesc(userId, PageRequest.of(0, 5));
-    }
+//    // Find latest advance salary record for a user
+//    public Page<AdvanceSalary> findTop5ByUserIdOrderByAdvanceDateDesc(Long userId) {
+//        return advanceSalaryRepository.findTop5ByUserIdOrderByAdvanceDateDesc(userId, PageRequest.of(0, 5));
+//    }
 
-    // Find advance salaries within a specific date range
-    public List<AdvanceSalary> getAdvanceSalariesByDateRange(LocalDateTime startDate, LocalDateTime endDate) {
-        return advanceSalaryRepository.findByDateRange(startDate, endDate);
-    }
+//    // Find advance salaries within a specific date range
+//    public List<AdvanceSalary> getAdvanceSalariesByDateRange(LocalDateTime startDate, LocalDateTime endDate) {
+//        return advanceSalaryRepository.findByDateRange(startDate, endDate);
+//    }
 
     // Find all advance salary records
     public List<AdvanceSalary> findAllAdvanceSalary() {
@@ -94,9 +94,9 @@ public class AdvanceSalaryService {
         return advanceSalaryRepository.findApprovedSalaryByUser(userId);
     }
 
-    // Find advance salary records for a specific user within a date range
-    public List<AdvanceSalary> getAdvanceSalaryByUserAndDateRange(Long userId, LocalDateTime startDate, LocalDateTime endDate) {
-        return advanceSalaryRepository.findAdvanceSalaryByUserAndDateRange(userId, startDate, endDate);
-    }
+//    // Find advance salary records for a specific user within a date range
+//    public List<AdvanceSalary> getAdvanceSalaryByUserAndDateRange(Long userId, LocalDateTime startDate, LocalDateTime endDate) {
+//        return advanceSalaryRepository.findAdvanceSalaryByUserAndDateRange(userId, startDate, endDate);
+//    }
 
 }

@@ -37,6 +37,10 @@ public class Leave {
     @Enumerated(EnumType.STRING)
     private RequestStatus requestStatus;
 
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
+    @JoinColumn(name = "salary_id")
+    private Salary salary;
+
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;

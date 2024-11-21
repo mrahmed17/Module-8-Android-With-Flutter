@@ -31,6 +31,10 @@ public class Attendance {
 
     private double overtimeHours;
 
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
+    @JoinColumn(name = "salary_id")
+    private Salary salary;
+
     private boolean lateCheckIn;
 
     @PrePersist

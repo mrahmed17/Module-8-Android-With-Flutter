@@ -92,9 +92,9 @@ public class AttendanceService {
         return attendanceRepository.findAttendancesForToday(LocalDate.now());
     }
 
-    public List<Attendance> getAllAttendances() {
-        return attendanceRepository.findAll();
-    }
+//    public List<Attendance> getAllAttendances() {
+//        return attendanceRepository.findAll();
+//    }
 
     public Attendance findAttendanceById(long id) {
         return attendanceRepository.findById(id)
