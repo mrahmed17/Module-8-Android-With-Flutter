@@ -32,18 +32,14 @@
 //    @Column(nullable = false)
 //    private String status;  // PAID, UNPAID, CANCELLED
 //
-//    // Manager who approves the salary
 //    @ManyToOne
 //    @JoinColumn(name = "managerId", nullable = false)
 //    private User paidBy;  // This is the manager who approves and processes the payslip
 //
-//    // User (employee) who receives the payslip
 //    @ManyToOne
 //    @JoinColumn(name = "employeeId", nullable = false)
 //    private User receivedBy;  // The employee receiving the salary
 //
-//    // Payment is generated based on salary (typically for the month)
-//    @JsonBackReference
 //    @OneToOne
 //    @JoinColumn(name = "salaryId", nullable = false)
 //    private Salary salary;  // The associated salary record for the employee's payment

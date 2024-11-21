@@ -1,9 +1,6 @@
 package com.mrahmed.HRandPayrollManagementSystem.service;
 
-import com.mrahmed.HRandPayrollManagementSystem.entity.Leave;
-import com.mrahmed.HRandPayrollManagementSystem.entity.LeaveType;
-import com.mrahmed.HRandPayrollManagementSystem.entity.RequestStatus;
-import com.mrahmed.HRandPayrollManagementSystem.entity.User;
+import com.mrahmed.HRandPayrollManagementSystem.entity.*;
 import com.mrahmed.HRandPayrollManagementSystem.repository.LeaveRepository;
 import com.mrahmed.HRandPayrollManagementSystem.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,26 +17,79 @@ public class LeaveService {
 
     @Autowired
     private LeaveRepository leaveRepository;
+
     @Autowired
     private UserRepository userRepository;
 
-    public boolean applyLeave(User user, LeaveType leaveType, int requestedDays) {
+
+    public Leave applyLeave(Long userId, LeaveType leaveType, String reason, LocalDate startDate, LocalDate endDate) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found with ID: " + userId));
+
+        int duration = calculateLeaveDuration(startDate, endDate);
         Map<LeaveType, Integer> leaveBalance = user.getLeaveBalance();
         int remainingDays = leaveBalance.getOrDefault(leaveType, 0);
 
-        if (leaveType == LeaveType.UNPAID) {
-            double deduction = calculateSalaryDeduction(user, requestedDays);
-            user.setBasicSalary(user.getBasicSalary() - deduction);
-            return true;
+        if (leaveType == LeaveType.UNPAID || remainingDays < duration) {
+            if (remainingDays < duration) {
+                throw new IllegalArgumentException("Insufficient leave balance for " + leaveType);
+            }
+            double salaryDeduction = calculateSalaryDeduction(user, duration - remainingDays);
+            user.setBasicSalary(user.getBasicSalary() - salaryDeduction);
+            leaveBalance.put(leaveType, 0); // Deplete the balance for this leave type
+        } else {
+            leaveBalance.put(leaveType, remainingDays - duration);
         }
 
-        if (remainingDays >= requestedDays) {
-            leaveBalance.put(leaveType, remainingDays - requestedDays);
-            userRepository.save(user);
-            return true;
-        }
+        Leave leave = new Leave();
+        leave.setUser(user);
+        leave.setLeaveType(leaveType);
+        leave.setReason(reason);
+        leave.setStartDate(startDate);
+        leave.setEndDate(endDate);
+        leave.setDuration(duration);
+        leave.setRequestStatus(RequestStatus.PENDING);
 
-        throw new IllegalArgumentException("Not enough " + leaveType + " leave available.");
+        userRepository.save(user);
+        return leaveRepository.save(leave);
+    }
+
+
+//    public boolean applyLeave(User user, LeaveType leaveType, int requestedDays) {
+//        Map<LeaveType, Integer> leaveBalance = user.getLeaveBalance();
+//        int remainingDays = leaveBalance.getOrDefault(leaveType, 0);
+//
+//        if (leaveType == LeaveType.UNPAID) {
+//            double deduction = calculateSalaryDeduction(user, requestedDays);
+//            user.setBasicSalary(user.getBasicSalary() - deduction);
+//            return true;
+//        }
+//
+//        if (remainingDays >= requestedDays) {
+//            leaveBalance.put(leaveType, remainingDays - requestedDays);
+//            userRepository.save(user);
+//            return true;
+//        }
+//
+//        throw new IllegalArgumentException("Not enough " + leaveType + " leave available.");
+//    }
+
+
+    public Map<LeaveType, Integer> getUserLeaveBalance(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found with ID: " + userId));
+        return user.getLeaveBalance();
+    }
+
+    private int calculateLeaveDuration(LocalDate startDate, LocalDate endDate) {
+        if (startDate.isAfter(endDate)) {
+            throw new IllegalArgumentException("Start date cannot be after end date.");
+        }
+        return (int) (endDate.toEpochDay() - startDate.toEpochDay()) + 1;
+    }
+
+    private double calculateSalaryDeduction(User user, int unpaidDays) {
+        return unpaidDays * (user.getBasicSalary() / 30.0); // Assuming a 30-day month
     }
 
     //  update leave request
@@ -50,7 +100,6 @@ public class LeaveService {
 
         existingLeave.setStartDate(updatedLeave.getStartDate());
         existingLeave.setEndDate(updatedLeave.getEndDate());
-        existingLeave.setRequestDate(updatedLeave.getRequestDate());
         existingLeave.setReason(updatedLeave.getReason());
         existingLeave.setLeaveType(updatedLeave.getLeaveType());
         existingLeave.setRequestStatus(updatedLeave.getRequestStatus());
@@ -61,6 +110,18 @@ public class LeaveService {
     // Delete leave by ID
     public void deleteLeave(Long leaveId) {
         leaveRepository.deleteById(leaveId);
+    }
+
+
+    // Find leave by ID
+    public Optional<Leave> getLeaveById(Long leaveId) {
+        return leaveRepository.findById(leaveId);
+    }
+    
+    
+    // Find all Leave records
+    public List<Leave> findAllLeave() {
+        return leaveRepository.findAll();
     }
 
     public Leave approveLeaveRequest(Long leaveId) {
@@ -75,7 +136,7 @@ public class LeaveService {
         return leaveRepository.save(leave);
     }
 
-    @Scheduled(cron = "0 0 0 1 1 *") // At midnight on January 1st every year
+    @Scheduled(cron = "0 0 0 1 1 *") // Reset leave balances on Jan 1st every year
     public void resetLeaveBalances() {
         List<User> users = userRepository.findAll();
         for (User user : users) {
@@ -85,10 +146,6 @@ public class LeaveService {
         }
     }
 
-    // Find leave by ID
-    public Optional<Leave> getLeaveById(Long leaveId) {
-        return leaveRepository.findById(leaveId);
-    }
 
     public List<Leave> getPendingLeaveRequests() {
         return leaveRepository.findPendingLeaveRequests();
@@ -117,10 +174,6 @@ public class LeaveService {
 
     private int calculateRemainingLeaveDays(LocalDate startDate, LocalDate endDate) {
         return (int) (endDate.toEpochDay() - startDate.toEpochDay()) + 1;
-    }
-
-    private double calculateSalaryDeduction(User user, int requestedDays) {
-        return requestedDays * (user.getBasicSalary() / 30); // Assuming 30 days in a month
     }
 
     private void validateLeaveDates(LocalDate startDate, LocalDate endDate) {

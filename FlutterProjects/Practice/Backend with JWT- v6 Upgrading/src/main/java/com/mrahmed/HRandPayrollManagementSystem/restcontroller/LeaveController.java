@@ -1,5 +1,6 @@
 package com.mrahmed.HRandPayrollManagementSystem.restcontroller;
 
+import com.mrahmed.HRandPayrollManagementSystem.entity.Bonus;
 import com.mrahmed.HRandPayrollManagementSystem.entity.Leave;
 import com.mrahmed.HRandPayrollManagementSystem.entity.LeaveType;
 import com.mrahmed.HRandPayrollManagementSystem.entity.User;
@@ -11,12 +12,13 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/leaves")
 @CrossOrigin("*")
-public class LeaveRestController {
+public class LeaveController {
 
     @Autowired
     private LeaveService leaveService;
@@ -24,38 +26,28 @@ public class LeaveRestController {
     private UserService userService;
 
     @PostMapping("/apply")
-    public ResponseEntity<String> applyLeave(@RequestBody Leave leave) {
-        User user = userService.findUserById(leave.getUser().getId());
-        boolean success = leaveService.applyLeave(user, leave.getLeaveType(), leave.getDuration());
-
-        if (success) {
-            return ResponseEntity.ok("Leave applied successfully.");
-        }
-        return ResponseEntity.badRequest().body("Leave application failed.");
+    public ResponseEntity<Leave> applyLeave(@RequestBody Leave leaveRequest) {
+        Leave leave = leaveService.applyLeave(
+                leaveRequest.getId(),
+                leaveRequest.getLeaveType(),
+                leaveRequest.getReason(),
+                leaveRequest.getStartDate(),
+                leaveRequest.getEndDate()
+        );
+        return ResponseEntity.ok(leave);
     }
 
-    @PutMapping("/{id}")
+
+    @PutMapping("update/{id}")
     public ResponseEntity<Leave> updateLeaveRequest(@PathVariable Long id, @RequestBody Leave leave) {
         Leave updatedLeave = leaveService.updateLeaveRequest(id, leave);
         return ResponseEntity.ok(updatedLeave);
     }
 
-    @DeleteMapping("/{leaveId}")
+    @DeleteMapping("delete/{leaveId}")
     public ResponseEntity<String> deleteLeave(@PathVariable Long leaveId) {
         leaveService.deleteLeave(leaveId);
         return ResponseEntity.ok("Leave deleted successfully.");
-    }
-
-    @PostMapping("/approve/{leaveId}")
-    public ResponseEntity<Leave> approveLeaveRequest(@PathVariable Long leaveId) {
-        Leave approvedLeave = leaveService.approveLeaveRequest(leaveId);
-        return ResponseEntity.ok(approvedLeave);
-    }
-
-    @PostMapping("/reject/{leaveId}")
-    public ResponseEntity<Leave> rejectLeaveRequest(@PathVariable Long leaveId) {
-        Leave rejectedLeave = leaveService.rejectLeaveRequest(leaveId);
-        return ResponseEntity.ok(rejectedLeave);
     }
 
     // Find a leave by ID
@@ -64,6 +56,33 @@ public class LeaveRestController {
         Optional<Leave> leave = leaveService.getLeaveById(leaveId);
         return leave.map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
     }
+
+    // Get All Bonus record
+    @GetMapping("/all")
+    public ResponseEntity<List<Leave>> getAllLeave() {
+        List<Leave> leaves = leaveService.findAllLeave();
+        return ResponseEntity.ok(leaves);
+    }
+
+    @GetMapping("/balance/{userId}")
+    public ResponseEntity<Map<LeaveType, Integer>> getUserLeaveBalance(@PathVariable Long userId) {
+        Map<LeaveType, Integer> leaveBalance = leaveService.getUserLeaveBalance(userId);
+        return ResponseEntity.ok(leaveBalance);
+    }
+
+    @PatchMapping("/approve/{leaveId}")
+    public ResponseEntity<Leave> approveLeaveRequest(@PathVariable Long leaveId) {
+        Leave approvedLeave = leaveService.approveLeaveRequest(leaveId);
+        return ResponseEntity.ok(approvedLeave);
+    }
+
+    @PatchMapping("/reject/{leaveId}")
+    public ResponseEntity<Leave> rejectLeaveRequest(@PathVariable Long leaveId) {
+        Leave rejectedLeave = leaveService.rejectLeaveRequest(leaveId);
+        return ResponseEntity.ok(rejectedLeave);
+    }
+
+
 
     @GetMapping("/pending")
     public ResponseEntity<List<Leave>> getPendingLeaveRequests() {

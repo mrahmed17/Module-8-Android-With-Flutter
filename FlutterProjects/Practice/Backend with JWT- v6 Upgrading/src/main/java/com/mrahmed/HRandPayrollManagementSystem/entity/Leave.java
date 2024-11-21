@@ -18,11 +18,16 @@ public class Leave {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
+
     private LocalDate startDate;
     private LocalDate endDate;
+
     private LocalDateTime requestDate;
+
+    @Column(nullable = false)
     private String reason;
-    private int duration; // Number of leave days
+
+    private int duration;
 
 //    private int remainingLeave; // total 25 days in a year: (reserve 10 + sick 15 days), remainingCalculation(total -(endDate-startDate))
 

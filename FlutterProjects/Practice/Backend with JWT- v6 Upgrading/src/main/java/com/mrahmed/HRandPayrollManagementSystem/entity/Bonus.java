@@ -21,7 +21,7 @@ public class Bonus {
 
     private LocalDateTime bonusDate;
 
-    private String bonusType;
+    private String bonusType; // Performance, Annual, Festival, Promotional
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id")

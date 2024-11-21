@@ -32,10 +32,8 @@ public class AdvanceSalary {
     @JoinColumn(name = "user_id")
     private User user;
 
-    // Newly added field for tracking the approval of the advance salary
     private boolean isPaid;
 
-    // Adding the applied date for salary calculation purposes
     private LocalDateTime paidDate;
 
     public void setIsPaid(boolean isPaid) {

@@ -14,15 +14,14 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/attendance")
+@RequestMapping("/api/attendances")
 @CrossOrigin("*")
-public class AttendanceRestController {
+public class AttendanceController {
 
     @Autowired
     private AttendanceService attendanceService;
@@ -30,16 +29,19 @@ public class AttendanceRestController {
     private AttendanceRepository attendanceRepository;
 
     @PostMapping("/{userId}/check-in")
-    public ResponseEntity<Attendance> checkIn(@PathVariable Long userId) {
+    public ResponseEntity<?> checkIn(@PathVariable Long userId) {
         try {
             Attendance attendance = attendanceService.checkIn(userId);
             return ResponseEntity.ok(attendance);
         } catch (IllegalStateException e) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(null);
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body(Map.of("message", e.getMessage(), "status", HttpStatus.CONFLICT.value()));
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("message", "An unexpected error occurred.", "status", HttpStatus.INTERNAL_SERVER_ERROR.value()));
         }
     }
+
 
     @PostMapping("/{userId}/check-out")
     public ResponseEntity<Attendance> checkOut(@PathVariable Long userId) {

@@ -14,7 +14,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/advanceSalaries")
 @CrossOrigin("*")
-public class AdvanceSalaryRestController {
+public class AdvanceSalaryController {
 
     @Autowired
     private AdvanceSalaryService advanceSalaryService;
@@ -30,7 +30,6 @@ public class AdvanceSalaryRestController {
         }
     }
 
-    // Update an existing advance salary record
     @PutMapping("/update/{id}")
     public ResponseEntity<?> updateAdvanceSalary(@PathVariable Long id, @RequestBody AdvanceSalary advanceSalary) {
         try {
@@ -38,12 +37,10 @@ public class AdvanceSalaryRestController {
             AdvanceSalary updatedAdvanceSalary = advanceSalaryService.updateAdvanceSalary(advanceSalary);
             return ResponseEntity.ok(updatedAdvanceSalary);
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Advance salary record not found.");
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Failed to update advance salary: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
     }
+
 
     // Delete an advance salary record by ID
     @DeleteMapping("/delete/{id}")
@@ -52,7 +49,7 @@ public class AdvanceSalaryRestController {
             advanceSalaryService.deleteAdvanceSalary(id);
             return ResponseEntity.noContent().build();
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.notFound().build(); // Return not found if ID doesn't exist
+            return ResponseEntity.notFound().build();
         }
     }
 
@@ -90,6 +87,13 @@ public class AdvanceSalaryRestController {
     public ResponseEntity<List<AdvanceSalary>> getLatestAdvanceSalaries(@PathVariable Long userId) {
         List<AdvanceSalary> latestAdvances = advanceSalaryService.findTop5ByUserIdOrderByAdvanceDateDesc(userId).getContent();
         return new ResponseEntity<>(latestAdvances, HttpStatus.OK);
+    }
+
+    // getAdvanceSalariesStatus
+    @GetMapping("/status/{userId}")
+    public ResponseEntity<List<AdvanceSalary>> getAdvanceSalariesStatus(@PathVariable Long userId) {
+        List<AdvanceSalary> advanceSalaries = advanceSalaryService.getAdvanceSalariesStatus(userId);
+        return ResponseEntity.ok(advanceSalaries);
     }
 
     // Get advance salaries within a specific date range

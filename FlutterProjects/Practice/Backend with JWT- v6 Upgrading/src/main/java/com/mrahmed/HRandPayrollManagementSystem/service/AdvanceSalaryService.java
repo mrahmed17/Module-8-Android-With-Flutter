@@ -35,12 +35,6 @@ public class AdvanceSalaryService {
         return advanceSalaryRepository.save(advanceSalary);
     }
 
-    // Calculate total salary considering advances (for monthly payroll)
-    public double calculateTotalSalary(Long userId, double baseSalary) {
-        List<AdvanceSalary> approvedAdvances = advanceSalaryRepository.findByUserAndStatus(userId, RequestStatus.APPROVED);
-        double totalAdvance = approvedAdvances.stream().mapToDouble(AdvanceSalary::getAdvanceAmount).sum();
-        return baseSalary - totalAdvance;  // Deduct advance from base salary
-    }
 
     // Update existing advance salary record
     public AdvanceSalary updateAdvanceSalary(AdvanceSalary advanceSalary) {
@@ -66,7 +60,7 @@ public class AdvanceSalaryService {
     }
 
     // Get approved advances for a user
-    public List<AdvanceSalary> getApprovedAdvanceSalaries(Long userId) {
+    public List<AdvanceSalary> getAdvanceSalariesStatus(Long userId) {
         return advanceSalaryRepository.findByUserAndStatus(userId, RequestStatus.APPROVED);
     }
 

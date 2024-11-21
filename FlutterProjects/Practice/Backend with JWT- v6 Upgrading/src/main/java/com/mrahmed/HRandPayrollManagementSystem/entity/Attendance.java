@@ -24,14 +24,14 @@ public class Attendance {
     @JoinColumn(name = "user_id")
     private User user;
 
-    private LocalDate date;
+    private LocalDate date= LocalDate.now();
 
     private LocalDateTime clockInTime;
     private LocalDateTime clockOutTime;
 
-    private double overtimeHours; // Calculated based on business logic
+    private double overtimeHours;
 
-    private boolean lateCheckIn; // Indicates late attendance
+    private boolean lateCheckIn;
 
     @PrePersist
     @PreUpdate

@@ -25,9 +25,8 @@ public class Salary {
     private double providentFund; // Calculated as a percentage of baseSalary
     private String salaryStatus; // PENDING, PAID, etc.
 
-    @OneToMany(fetch = FetchType.EAGER)
-    @JoinColumn(name = "over_time")
-    private List<Attendance> overTime; // Overtime attendances
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "salary")
+    private List<Attendance> overTime;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id", nullable = false)
@@ -37,14 +36,42 @@ public class Salary {
     @JoinColumn(name = "advance_salary_id")
     private AdvanceSalary advanceAmount;
 
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
-    @JoinColumn(name = "bonus_id")
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST, mappedBy = "salary")
     private List<Bonus> bonuses;
 
-    @OneToMany(fetch = FetchType.EAGER)
-    @JoinColumn(name = "leave_id")
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "salary")
     private List<Leave> leaves;
 
+    // Method to calculate the total salary
+    public double calculateTotalSalary() {
+        double totalSalary = netSalary;
+
+        // Add bonuses
+        for (Bonus bonus : bonuses) {
+            totalSalary += bonus.getBonusAmount();
+        }
+
+        // Deduct advance salary if paid
+        if (advanceAmount != null && advanceAmount.isPaid()) {
+            totalSalary -= advanceAmount.getAdvanceAmount();
+        }
+
+        // Add overtime
+        for (Attendance attendance : overTime) {
+            totalSalary += attendance.getOvertimeHours() * 100; // Assuming 100 is the hourly rate
+        }
+
+        // Calculate leave deductions and additions (Paid leave adds, Unpaid leave deducts)
+        for (Leave leave : leaves) {
+            if (leave.getLeaveType() == LeaveType.SICK) {
+                totalSalary += leave.getDuration() * 100; // Assuming 100 is the daily wage for paid leaves
+            } else if (leave.getLeaveType() == LeaveType.UNPAID) {
+                totalSalary -= leave.getDuration() * 100; // Assuming 100 is the daily wage for unpaid leaves
+            }
+        }
+
+        return totalSalary;
+    }
 
 }
 

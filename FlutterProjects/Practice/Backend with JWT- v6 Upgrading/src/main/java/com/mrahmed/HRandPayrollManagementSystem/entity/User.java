@@ -89,7 +89,7 @@ public class User implements UserDetails, Serializable {
     @NotNull(message = "Role is required")
     private Role role;
 
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
     @JsonIgnore
     private List<Attendance> attendances;
 
@@ -119,7 +119,6 @@ public class User implements UserDetails, Serializable {
 
     @Override
     public boolean isAccountNonLocked() {
-//        return UserDetails.super.isAccountNonLocked();
 //        return true;  // NirjashBro
 //        return isLock;  // Sir
         return !isLock;  // bigBro
@@ -127,13 +126,11 @@ public class User implements UserDetails, Serializable {
 
     @Override
     public boolean isCredentialsNonExpired() {
-//        return UserDetails.super.isCredentialsNonExpired();
         return true;
     }
 
     @Override
     public boolean isEnabled() {
-//        return UserDetails.super.isEnabled();
         return active;
     }
 
