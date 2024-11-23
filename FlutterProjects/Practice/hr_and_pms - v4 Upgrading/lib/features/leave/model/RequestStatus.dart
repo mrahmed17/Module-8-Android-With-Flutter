@@ -1,38 +1,26 @@
 enum RequestStatus {
-  APPROVED,
-  PENDING,
-  REJECTED,
+  approved,
+  pending,
+  rejected,
 }
 
-extension RequestStatusExtension on RequestStatus {
-  // Converts a string to a RequestStatus enum value
-  static RequestStatus fromString(String statusString) {
-    return RequestStatus.values.firstWhere(
-          (status) => status.toString().split('.').last.toUpperCase() ==
-          statusString.toUpperCase(),
-      orElse: () => RequestStatus.PENDING, // Default to pending if not found
-    );
-  }
-
-  // Converts RequestStatus enum to a lowercase string
-  String toShortString() {
-    return toString().split('.').last.toUpperCase();
-  }
+// Convert enum to a string for JSON
+String requestStatusToJson(RequestStatus status) {
+  return status.toString().split('.').last;
 }
 
-// enum RequestStatus { pending, approved, rejected }
-//
-// extension RequestStatusExtension on RequestStatus {
-//   static RequestStatus fromString(String statusString) {
-//     return RequestStatus.values.firstWhere(
-//           (status) =>
-//       status.toString().split('.').last.toLowerCase() ==
-//           statusString.toLowerCase(),
-//       orElse: () => RequestStatus.pending,
-//     );
-//   }
-//
-//   String toShortString() {
-//     return toString().split('.').last.toUpperCase();
-//   }
-// }
+// Parse string to enum from JSON
+RequestStatus requestStatusFromJson(String? status) {
+  switch (status) {
+    case 'approved':
+      return RequestStatus.approved;
+    case 'pending':
+      return RequestStatus.pending;
+    case 'rejected':
+      return RequestStatus.rejected;
+    default:
+      print('Warning: Unknown request status "$status". Defaulting to "pending".');
+      return RequestStatus.pending;  // Default value
+      throw Exception('Unknown request status');
+  }
+}
