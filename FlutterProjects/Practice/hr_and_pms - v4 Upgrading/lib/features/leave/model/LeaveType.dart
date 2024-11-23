@@ -1,36 +1,26 @@
-enum LeaveType { SICK, UNPAID, RESERVE }
-
-extension LeaveTypeExtension on LeaveType {
-  static LeaveType fromInt(int value) {
-    return LeaveType.values.firstWhere(
-          (leaveType) => leaveType.index == value,
-      orElse: () => LeaveType.SICK, // Default to SICK if value is unknown
-    );
-  }
-
-  int toInt() {
-    return this.index; // Returns the integer index of the enum (0, 1, or 3)
-  }
+enum LeaveType {
+  sick,
+  unpaid,
+  reserve,
 }
 
+// Convert enum to a string for JSON
+String leaveTypeToJson(LeaveType type) {
+  return type.toString().split('.').last;
+}
 
-
-// enum LeaveType { SICK, UNPAID, RESERVE }
-//
-// extension LeaveTypeExtension on LeaveType {
-//   static LeaveType fromString(String leaveTypeString) {
-//     return LeaveType.values.firstWhere(
-//       (leaveType) =>
-//           leaveType.toString().split('.').last.toUpperCase() ==
-//           leaveTypeString.toUpperCase(),
-//       orElse: () => LeaveType.SICK, // Default to SICK if not found
-//     );
-//   }
-//
-//   String toShortString() {
-//     return toString()
-//         .split('.')
-//         .last
-//         .toUpperCase(); // Ensure uppercase string representation
-//   }
-// }
+// Parse string to enum from JSON
+LeaveType leaveTypeFromJson(String? type) {
+  switch (type) {
+    case 'sick':
+      return LeaveType.sick;
+    case 'unpaid':
+      return LeaveType.unpaid;
+    case 'reserve':
+      return LeaveType.reserve;
+    default:
+      print('Warning: Unknown leave type "$type". Defaulting to "sick".');
+      return LeaveType.sick;  // Default value
+      throw Exception('Unknown leave type');
+  }
+}
