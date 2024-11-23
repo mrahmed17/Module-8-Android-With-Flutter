@@ -1,27 +1,27 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
-import 'package:hr_and_pms/administration/service/AuthService.dart';
-import 'package:hr_and_pms/administration/model/User.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
+import 'package:hr_and_pms/administration/service/AuthService.dart';
+import 'package:hr_and_pms/administration/model/User.dart';
 
 class UserProfileScreen extends StatefulWidget {
   final int userId;
-  final String role;
 
-  const UserProfileScreen({
-    super.key,
-    required this.userId,
-    required this.role,
-  });
+  const UserProfileScreen({super.key, required this.userId});
 
   @override
-  _UserProfileScreenState createState() => _UserProfileScreenState();
+  State<UserProfileScreen> createState() => _UserProfileScreenState();
 }
 
 class _UserProfileScreenState extends State<UserProfileScreen> {
   final AuthService _authService = AuthService();
   User? _user;
   bool _isLoading = true;
+  bool _isUpdating = false;
+
+  XFile? _selectedImage;
 
   @override
   void initState() {
@@ -31,7 +31,6 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
 
   Future<void> _fetchUserDetails() async {
     try {
-      // Replace with actual method to fetch user by ID
       final user = await _authService.getUserById(widget.userId);
       setState(() {
         _user = user;
@@ -41,27 +40,48 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Failed to load user details: $e')),
       );
+      setState(() => _isLoading = false);
+    }
+  }
+
+  Future<void> _updateUserProfile(User updatedUser) async {
+    try {
+      setState(() => _isUpdating = true);
+      String result = await _authService.updateUserProfile(
+        updatedUser.id,
+        updatedUser,
+        _selectedImage,
+      );
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(result)));
+      _fetchUserDetails();
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error updating user: $e')),
+      );
+    } finally {
+      setState(() => _isUpdating = false);
+    }
+  }
+
+  Future<void> _pickImage() async {
+    final picker = ImagePicker();
+    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+    if (pickedFile != null) {
       setState(() {
-        _isLoading = false;
+        _selectedImage = pickedFile;
       });
     }
   }
 
-  Future<void> _updateUserProfile(User updatedUser, XFile? profilePhoto) async {
-    try {
-      String result = await _authService.updateUserProfile(updatedUser.id, updatedUser, profilePhoto);
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(result)));
-      _fetchUserDetails();
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error updating user: $e')));
-    }
-  }
-
   void _showUpdateDialog() {
-    TextEditingController nameController = TextEditingController(text: _user?.name ?? '');
-    TextEditingController emailController = TextEditingController(text: _user?.email ?? '');
-    TextEditingController addressController = TextEditingController(text: _user?.address ?? '');
-    TextEditingController contactController = TextEditingController(text: _user?.cell ?? '');
+    TextEditingController nameController =
+    TextEditingController(text: _user?.name ?? '');
+    TextEditingController emailController =
+    TextEditingController(text: _user?.email ?? '');
+    TextEditingController addressController =
+    TextEditingController(text: _user?.address ?? '');
+    TextEditingController contactController =
+    TextEditingController(text: _user?.cell ?? '');
 
     showDialog(
       context: context,
@@ -72,10 +92,22 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                TextField(controller: nameController, decoration: const InputDecoration(labelText: 'Name')),
-                TextField(controller: emailController, decoration: const InputDecoration(labelText: 'Email')),
-                TextField(controller: addressController, decoration: const InputDecoration(labelText: 'Address')),
-                TextField(controller: contactController, decoration: const InputDecoration(labelText: 'Contact')),
+                TextField(
+                  controller: nameController,
+                  decoration: const InputDecoration(labelText: 'Name'),
+                ),
+                TextField(
+                  controller: emailController,
+                  decoration: const InputDecoration(labelText: 'Email'),
+                ),
+                TextField(
+                  controller: addressController,
+                  decoration: const InputDecoration(labelText: 'Address'),
+                ),
+                TextField(
+                  controller: contactController,
+                  decoration: const InputDecoration(labelText: 'Contact'),
+                ),
               ],
             ),
           ),
@@ -94,7 +126,6 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                     email: emailController.text,
                     address: addressController.text,
                     cell: contactController.text,
-                    // Populate all required fields
                     basicSalary: _user!.basicSalary,
                     dateOfBirth: _user!.dateOfBirth,
                     gender: _user!.gender,
@@ -104,7 +135,6 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                     profilePhoto: _user!.profilePhoto,
                     role: _user!.role,
                   ),
-                  null,
                 );
               },
               child: const Text('Update'),
@@ -127,33 +157,59 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
           ? const Center(child: Text('User not found'))
           : Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  DateFormat('yyyy-MM-dd HH:mm').format(DateTime.now()),
-                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              Center(
+                child: Stack(
+                  children: [
+                    CircleAvatar(
+                      radius: 60,
+                      backgroundImage: _selectedImage != null
+                          ? FileImage(File(_selectedImage!.path))
+                          : _user!.profilePhoto != null
+                          ? NetworkImage(
+                        "http://localhost:8080/uploadDir/images/${_user!.profilePhoto}",
+                      )
+                          : null as ImageProvider<Object>?,
+                      child: _selectedImage == null &&
+                          _user!.profilePhoto == null
+                          ? const Icon(Icons.person, size: 60)
+                          : null,
+                    ),
+                    Positioned(
+                      bottom: 0,
+                      right: 0,
+                      child: GestureDetector(
+                        onTap: _pickImage,
+                        child: const CircleAvatar(
+                          backgroundColor: Colors.blue,
+                          child: Icon(Icons.edit, color: Colors.white),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
-                CircleAvatar(
-                  backgroundImage: _user?.profilePhoto != null
-                      ? NetworkImage("http://localhost:8080/uploadDir/images/${_user!.profilePhoto}")
-                      : null,
-                  radius: 60,
-                ),
-              ],
-            ),
-            const SizedBox(height: 20),
-            Text('Name: ${_user?.name ?? ''}'),
-            Text('Email: ${_user?.email ?? ''}'),
-            // Additional fields...
-            const Divider(),
-            ElevatedButton(
-              onPressed: () => _showUpdateDialog(),
-              child: const Text('Edit Profile'),
-            ),
-          ],
+              ),
+              const SizedBox(height: 20),
+              Text('Name: ${_user?.name ?? ''}',
+                  style: const TextStyle(fontSize: 18)),
+              Text('Email: ${_user?.email ?? ''}',
+                  style: const TextStyle(fontSize: 18)),
+              Text('Role: ${_user?.role.toString() ?? ''}',
+                  style: const TextStyle(fontSize: 18)),
+              const SizedBox(height: 20),
+              const Divider(),
+              ElevatedButton(
+                onPressed: () => _showUpdateDialog(),
+                child: _isUpdating
+                    ? const CircularProgressIndicator(
+                  color: Colors.white,
+                )
+                    : const Text('Edit Profile'),
+              ),
+            ],
+          ),
         ),
       ),
     );

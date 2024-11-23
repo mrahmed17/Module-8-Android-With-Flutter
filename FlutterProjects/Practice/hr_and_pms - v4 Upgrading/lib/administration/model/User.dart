@@ -32,16 +32,19 @@ class User {
       basicSalary: (json['basicSalary'] ?? 0).toDouble(),
       joinedDate: DateTime.tryParse(json['joinedDate'] ?? '') ?? DateTime.now(),
       leaveBalance: (json['leaveBalance'] as Map<String, dynamic>?)
-          ?.map((key, value) => MapEntry(LeaveTypeExtension.fromString(key), value as int)) ??
-          {},
+          ?.map((key, value) {
+        // Adjust the key so that it removes the "LeaveType." prefix
+        String enumKey = key.replaceAll('LeaveType.', '');
+        return MapEntry(LeaveTypeExtension.fromString(enumKey), value as int);
+      }) ?? {},
       profilePhoto: json['profilePhoto'] ?? '',
       role: RoleExtension.fromString(json['role'] ?? 'EMPLOYEE'),
       attendances: (json['attendances'] as List<dynamic>?)
           ?.map((attendance) => Attendance.fromJson(attendance))
-          .toList() ??
-          [],
+          .toList() ?? [],
     );
   }
+
 
   User({
     required this.id,

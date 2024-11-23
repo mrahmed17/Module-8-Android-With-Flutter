@@ -8,14 +8,14 @@ public enum RequestStatus {
     PENDING,
     REJECTED;
 
-    @JsonCreator
-    public static RequestStatus fromString(String value) {
-        return RequestStatus.valueOf(value.toUpperCase());
-    }
-
-    @JsonValue
-    public String toJson() {
-        return this.name();
-    }
+//    @JsonCreator
+//    public static RequestStatus fromString(String value) {
+//        return RequestStatus.valueOf(value.toUpperCase());
+//    }
+//
+//    @JsonValue
+//    public String toJson() {
+//        return this.name();
+//    }
 
 }

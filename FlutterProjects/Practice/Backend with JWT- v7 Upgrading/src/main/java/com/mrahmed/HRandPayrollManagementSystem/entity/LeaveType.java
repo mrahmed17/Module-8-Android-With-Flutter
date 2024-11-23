@@ -8,24 +8,16 @@ public enum LeaveType {
     UNPAID,
     RESERVE;
 
+
 //    @JsonCreator
-//    public static LeaveType fromString(String key) {
-//        if (key == null) {
-//            return null;
-//        }
-//        return LeaveType.valueOf(key.toUpperCase());
+//    public static LeaveType fromString(String value) {
+//        return LeaveType.valueOf(value.toUpperCase());
 //    }
-
-
-    @JsonCreator
-    public static LeaveType fromString(String value) {
-        return LeaveType.valueOf(value.toUpperCase());
-    }
-
-    @JsonValue
-    public String toJson() {
-        return this.name();
-    }
+//
+//    @JsonValue
+//    public String toJson() {
+//        return this.name();
+//    }
 
 }
 

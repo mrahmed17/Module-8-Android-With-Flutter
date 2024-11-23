@@ -16,7 +16,7 @@ class _LeaveCreateScreenState extends State<LeaveCreateScreen> {
   DateTime? _endDate;
   String? _reason;
   LeaveType? _leaveType;
-
+  final RequestStatus _requestStatus = RequestStatus.PENDING;
   final LeaveService _leaveService = LeaveService();
 
   @override
@@ -57,8 +57,8 @@ class _LeaveCreateScreenState extends State<LeaveCreateScreen> {
         endDate: _endDate,
         reason: _reason,
         leaveType: _leaveType,
-        requestStatus: RequestStatus.PENDING, // Default to pending
-        user: user,
+        requestStatus: _requestStatus,
+        user: await AuthService().getUser(),
         requestDate: DateTime.now(),
       );
 

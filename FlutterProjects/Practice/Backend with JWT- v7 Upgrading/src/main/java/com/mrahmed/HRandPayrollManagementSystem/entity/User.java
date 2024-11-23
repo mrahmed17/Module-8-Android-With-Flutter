@@ -1,7 +1,7 @@
 package com.mrahmed.HRandPayrollManagementSystem.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.*;
@@ -62,6 +62,7 @@ public class User implements UserDetails, Serializable {
     @PastOrPresent(message = "Joined date cannot be in the future")
     private LocalDate joinedDate;
 
+    @JsonDeserialize(keyUsing = Salary.LeaveTypeKeyDeserializer.class)
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "user_leave_balance", joinColumns = @JoinColumn(name = "user_id"))
     @MapKeyColumn(name = "leave_type")

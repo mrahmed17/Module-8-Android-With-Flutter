@@ -22,6 +22,7 @@ public class Leave {
     private LocalDate startDate;
     private LocalDate endDate;
     private LocalDateTime requestDate;
+
     @Column(nullable = false)
     private String reason;
 

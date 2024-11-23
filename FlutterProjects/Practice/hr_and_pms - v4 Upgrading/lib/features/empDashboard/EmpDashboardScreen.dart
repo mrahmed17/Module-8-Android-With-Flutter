@@ -1,9 +1,11 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:hr_and_pms/administration/model/User.dart';
-import 'package:hr_and_pms/administration/service/AuthService.dart';
 import 'package:hr_and_pms/features/attendance/screens/AttendanceScreen.dart';
 import 'package:hr_and_pms/features/leave/screens/LeaveCreateScreen.dart';
+import 'package:intl/intl.dart'; // For formatting date and time
+import 'package:hr_and_pms/administration/authScreen/LoginScreen.dart';
+import 'package:hr_and_pms/administration/model/User.dart';
+import 'package:hr_and_pms/administration/service/AuthService.dart';
 
 class EmpDashboardScreen extends StatefulWidget {
   const EmpDashboardScreen({super.key});
@@ -17,9 +19,26 @@ class _EmpDashboardScreenState extends State<EmpDashboardScreen> {
   User? _currentUser;
   String _currentTime = '';
 
+  // Welcome message and current time
+  String getWelcomeMessage() {
+    final hour = DateTime.now().hour;
+    if (hour < 12) {
+      return 'Good Morning';
+    } else if (hour < 17) {
+      return 'Good Afternoon';
+    } else {
+      return 'Good Evening';
+    }
+  }
+
+  String getCurrentDateTime() {
+    return DateFormat('EEEE, MMMM d, yyyy • h:mm a').format(DateTime.now());
+  }
+
   final List<Widget> _screens = [
     AttendanceScreen(),
     LeaveCreateScreen(),
+    LoginScreen(),
     Container(), // Placeholder for Feedback
     Container(), // Placeholder for Logout
   ];
@@ -28,7 +47,7 @@ class _EmpDashboardScreenState extends State<EmpDashboardScreen> {
   void initState() {
     super.initState();
     _fetchCurrentUser();
-    _startClock();
+    // _startClock();
   }
 
   /// Fetch the currently logged-in user's details
@@ -40,16 +59,16 @@ class _EmpDashboardScreenState extends State<EmpDashboardScreen> {
   }
 
   /// Start the real-time clock
-  void _startClock() {
-    Timer.periodic(const Duration(seconds: 1), (timer) {
-      final now = DateTime.now();
-      final formattedTime = "${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}";
-      final formattedDate = "${now.day.toString().padLeft(2, '0')}/${now.month.toString().padLeft(2, '0')}/${now.year}";
-      setState(() {
-        _currentTime = "$formattedDate | $formattedTime";
-      });
-    });
-  }
+  // void _startClock() {
+  //   Timer.periodic(const Duration(seconds: 1), (timer) {
+  //     final now = DateTime.now();
+  //     final formattedTime = "${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}";
+  //     final formattedDate = "${now.day.toString().padLeft(2, '0')}/${now.month.toString().padLeft(2, '0')}/${now.year}";
+  //     setState(() {
+  //       _currentTime = "$formattedDate | $formattedTime";
+  //     });
+  //   });
+  // }
 
   void _onItemTapped(int index) {
     setState(() {
@@ -78,29 +97,29 @@ class _EmpDashboardScreenState extends State<EmpDashboardScreen> {
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _selectedIndex,
         onTap: _onItemTapped,
-        backgroundColor: Colors.blue,
+        backgroundColor: Colors.teal,
         selectedItemColor: Colors.white,
-        unselectedItemColor: Colors.indigo.shade100,
+        unselectedItemColor: Colors.teal.shade100,
         selectedFontSize: 14,
         unselectedFontSize: 14,
         showSelectedLabels: true,
         showUnselectedLabels: true,
         type: BottomNavigationBarType.fixed,
-        items: const [
-          BottomNavigationBarItem(
+        items: [
+          const BottomNavigationBarItem(
             icon: Icon(Icons.home),
             label: 'Home',
           ),
-          BottomNavigationBarItem(
+          const BottomNavigationBarItem(
             icon: Icon(Icons.person),
             label: 'Profile',
           ),
-          BottomNavigationBarItem(
+          const BottomNavigationBarItem(
             icon: Icon(Icons.feedback),
             label: 'Feedback',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.logout),
+            icon: const Icon(Icons.logout),
             label: 'Logout',
           ),
         ],
@@ -118,22 +137,26 @@ class _EmpDashboardScreenState extends State<EmpDashboardScreen> {
             children: [
               Expanded(
                 child: Text(
-                  'Welcome, ${_currentUser?.name ?? 'User'}!',
+                  '${getWelcomeMessage()}, ${_currentUser!.name}!',
                   style: const TextStyle(
-                    fontSize: 18,
+                    fontSize: 20,
                     fontWeight: FontWeight.bold,
                     color: Colors.teal,
                   ),
                 ),
               ),
               Text(
-                _currentTime,
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.grey,
-                ),
+                getCurrentDateTime(),
+                style: const TextStyle(fontSize: 14, color: Colors.grey),
               ),
+              // Text(
+              //   _currentTime,
+              //   style: const TextStyle(
+              //     fontSize: 16,
+              //     fontWeight: FontWeight.w600,
+              //     color: Colors.grey,
+              //   ),
+              // ),
             ],
           ),
         ),
@@ -207,9 +230,9 @@ class _EmpDashboardScreenState extends State<EmpDashboardScreen> {
   String _getLabel(int index) {
     switch (index) {
       case 0:
-        return 'Check Attendance';
+        return 'Attendance';
       case 1:
-        return 'Leave Application';
+        return 'Leave';
       default:
         return 'Coming Soon';
     }

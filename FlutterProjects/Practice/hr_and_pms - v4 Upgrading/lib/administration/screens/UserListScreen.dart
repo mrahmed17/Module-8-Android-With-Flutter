@@ -27,7 +27,7 @@ class _UserListScreenState extends State<UserListScreen> {
   double _maxSalary = 100000.0;
 
   // Dropdown items for role and gender
-  final List<String> _roles = ['Manager', 'Employee'];
+  final List<String> _roles = [ 'Employee'];
   final List<String> _genders = ['Male', 'Female', 'Other'];
 
   @override
@@ -226,7 +226,7 @@ class _UserListScreenState extends State<UserListScreen> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => UserProfileScreen(userId: user.id, role: '',),
+                        builder: (context) => UserProfileScreen(),
                       ),
                     ).then((value) => _fetchUsers());
                   },

@@ -1,8 +1,11 @@
 package com.mrahmed.HRandPayrollManagementSystem.entity;
 
+import com.fasterxml.jackson.databind.DeserializationContext;
+import com.fasterxml.jackson.databind.KeyDeserializer;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -53,5 +56,11 @@ public class Salary {
 //    double? domesticAllowance;
 //    double? lunchAllowance;
 
+    public static class LeaveTypeKeyDeserializer extends KeyDeserializer {
+        @Override
+        public Object deserializeKey(String key, DeserializationContext context) throws IOException {
+            return LeaveType.valueOf(key.replace("LeaveType.", ""));
+        }
+    }
 }
 

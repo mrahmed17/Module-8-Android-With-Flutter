@@ -86,12 +86,10 @@ class _LeaveManagementScreenState extends State<LeaveManagementScreen> {
     }
   }
 
-  /// Show snackbar notifications
   void _showSnackBar(String message) {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
   }
 
-  /// Display date range picker
   Future<void> _selectDateRange() async {
     final DateTimeRange? picked = await showDateRangePicker(
       context: context,
@@ -151,11 +149,11 @@ class _LeaveManagementScreenState extends State<LeaveManagementScreen> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     IconButton(
-                      icon: const Icon(Icons.check, color: Colors.greenAccent),
+                      icon: const Icon(Icons.check, color: Colors.green),
                       onPressed: () => _approveLeave(leave.id!),
                     ),
                     IconButton(
-                      icon: const Icon(Icons.close, color: Colors.redAccent),
+                      icon: const Icon(Icons.close, color: Colors.red),
                       onPressed: () => _rejectLeave(leave.id!),
                     ),
                   ],

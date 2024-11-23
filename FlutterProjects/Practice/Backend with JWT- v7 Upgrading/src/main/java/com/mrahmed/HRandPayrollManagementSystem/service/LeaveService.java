@@ -74,24 +74,6 @@ public class LeaveService {
         return unpaidDays * (user.getBasicSalary() / 30.0); // Assuming a 30-day month
     }
 
-    private void validateLeaveBalance(User user, LeaveType leaveType, int duration) {
-        // Logic for checking leave balance
-    }
-
-
-//    public Leave applyLeave(Long userId, Leave leaveRequest) {
-//        User user = userRepository.findById(userId)
-//                .orElseThrow(() -> new RuntimeException("User not found"));
-//        int duration = calculateDuration(leaveRequest.getStartDate(), leaveRequest.getEndDate());
-//        validateLeaveBalance(user, leaveRequest.getLeaveType(), duration);
-//
-//        leaveRequest.setUser(user);
-//        leaveRequest.setDuration(duration);
-//        leaveRequest.setRequestStatus(RequestStatus.PENDING);
-//        leaveRequest.setRequestDate(LocalDateTime.now());
-//        return leaveRepository.save(leaveRequest);
-//    }
-
     public Leave updateLeave(Long id, Leave updatedLeave) {
         Leave existingLeave = leaveRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Leave not found"));
