@@ -2,9 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:hr_and_pms/administration/authScreen/LoginScreen.dart';
 import 'package:hr_and_pms/administration/model/User.dart';
 import 'package:hr_and_pms/administration/service/AuthService.dart';
-import 'package:hr_and_pms/features/attendance/screens/AttendanceLookupScreen.dart';
-import 'package:hr_and_pms/features/attendance/screens/AttendanceOverviewScreen.dart';
-import 'package:hr_and_pms/features/attendance/screens/AttendanceAnalyticsScreen.dart';
+import 'package:hr_and_pms/features/attendance/screens/AttendanceReportScreen.dart';
 import 'package:hr_and_pms/administration/screens/UserProfileScreen.dart';
 
 class AdminDashboardScreen extends StatefulWidget {

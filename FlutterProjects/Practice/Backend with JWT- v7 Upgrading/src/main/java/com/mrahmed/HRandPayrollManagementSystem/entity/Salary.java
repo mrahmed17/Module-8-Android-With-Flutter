@@ -24,24 +24,34 @@ public class Salary {
     private double tax;
     private double providentFund;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
     private RequestStatus salaryStatus;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "advance_salary_id")
     private AdvanceSalary advanceSalary;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "salary")
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "salary")
     private List<Bonus> bonuses;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "salary")
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "salary")
     private List<Leave> leaves;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "salary")
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "salary")
     private List<Attendance> overTime;
+
+
+
+//    double? medicare;
+//    double? insurance;
+//    double? transportAllowance;
+//    double? telephoneSubsidy;
+//    double? utilityAllowance;
+//    double? domesticAllowance;
+//    double? lunchAllowance;
 
 }
 

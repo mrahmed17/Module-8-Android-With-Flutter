@@ -1,75 +1,58 @@
 import 'package:hr_and_pms/features/attendance/model/AttendanceModel.dart';
 import 'package:hr_and_pms/features/bonus/model/Bonus.dart';
 import 'package:hr_and_pms/features/leave/model/Leave.dart';
+import 'package:hr_and_pms/features/leave/model/RequestStatus.dart';
 
 class Salary {
-   int? id;
-   DateTime? paymentDate;
-   double? medicare;
-   double? providentFund;
-   double? insurance;
-   double? transportAllowance;
-   double? telephoneSubsidy;
-   double? utilityAllowance;
-   double? domesticAllowance;
-   double? lunchAllowance;
-   double? netSalary;
-   double? tax;
-   List<Attendance>? overtime; // Updated naming for clarity
-   int? userId; // Reference to User ID
-   int? advanceSalaryId; // Reference to Advance Salary ID
-   List<Bonus>? bonuses;
-   List<Leave>? leaves;
+  int? id;
+  DateTime? paymentDate;
+  double? netSalary;
+  double? tax;
+  double? providentFund;
+
+  double? advanceSalaryId;
+  List<Bonus>? bonuses;
+  List<Leave>? leaves;
+  List<Attendance>? overTime;
+  int? userId;
+  RequestStatus? salaryStatus;
 
   Salary({
-     this.id,
-     this.paymentDate,
-     this.medicare,
-     this.providentFund,
-     this.insurance,
-     this.transportAllowance,
-     this.telephoneSubsidy,
-     this.utilityAllowance,
-     this.domesticAllowance,
-     this.lunchAllowance,
-     this.netSalary,
-     this.tax,
-     this.overtime,
-     this.userId,
+    this.id,
+    this.paymentDate,
+    this.netSalary,
+    this.tax,
+    this.providentFund,
     this.advanceSalaryId,
-     this.bonuses,
-     this.leaves,
+    this.bonuses,
+    this.leaves,
+    this.overTime,
+    this.userId,
+    this.salaryStatus,
   });
 
   /// Factory constructor to create a `Salary` instance from JSON
   factory Salary.fromJson(Map<String, dynamic> json) {
     return Salary(
       id: json['id'] ?? 0,
-      paymentDate: DateTime.parse(json['paymentDate']),
-      medicare: json['medicare']?.toDouble() ?? 0.0,
-      providentFund: json['providentFund']?.toDouble() ?? 0.0,
-      insurance: json['insurance']?.toDouble() ?? 0.0,
-      transportAllowance: json['transportAllowance']?.toDouble() ?? 0.0,
-      telephoneSubsidy: json['telephoneSubsidy']?.toDouble() ?? 0.0,
-      utilityAllowance: json['utilityAllowance']?.toDouble() ?? 0.0,
-      domesticAllowance: json['domesticAllowance']?.toDouble() ?? 0.0,
-      lunchAllowance: json['lunchAllowance']?.toDouble() ?? 0.0,
+      paymentDate: DateTime.tryParse(json['paymentDate'] ?? '') ?? DateTime.now(),
       netSalary: json['netSalary']?.toDouble() ?? 0.0,
       tax: json['tax']?.toDouble() ?? 0.0,
-      overtime: (json['overtime'] as List<dynamic>?)
-          ?.map((item) => Attendance.fromJson(item))
-          .toList() ??
-          [],
-      userId: json['userId'] ?? 0, // Direct userId mapping for consistency
+      providentFund: json['providentFund']?.toDouble() ?? 0.0,
       advanceSalaryId: json['advanceSalaryId'], // Mapped directly as an ID
       bonuses: (json['bonuses'] as List<dynamic>?)
           ?.map((item) => Bonus.fromJson(item))
-          .toList() ??
-          [],
+          .toList() ?? [],
       leaves: (json['leaves'] as List<dynamic>?)
           ?.map((item) => Leave.fromJson(item))
-          .toList() ??
-          [],
+          .toList() ?? [],
+      overTime: (json['overTime'] as List<dynamic>?)
+          ?.map((item) => Attendance.fromJson(item))
+          .toList() ?? [],
+      userId: json['userId'] ?? 0, // Direct userId mapping for consistency
+      salaryStatus: json['salaryStatus'] != null
+          ? RequestStatusExtension.fromString(json['salaryStatus'])
+          : null, // Assuming you have a RequestStatus enum and extension
     );
   }
 
@@ -78,21 +61,15 @@ class Salary {
     return {
       'id': id,
       'paymentDate': paymentDate?.toIso8601String(),
-      'medicare': medicare,
-      'providentFund': providentFund,
-      'insurance': insurance,
-      'transportAllowance': transportAllowance,
-      'telephoneSubsidy': telephoneSubsidy,
-      'utilityAllowance': utilityAllowance,
-      'domesticAllowance': domesticAllowance,
-      'lunchAllowance': lunchAllowance,
       'netSalary': netSalary,
       'tax': tax,
-      'overtime': overtime?.map((item) => item.toJson()).toList(),
-      'userId': userId, // User ID directly serialized
+      'providentFund': providentFund,
       'advanceSalaryId': advanceSalaryId, // Serialized as ID directly
       'bonuses': bonuses?.map((item) => item.toJson()).toList(),
       'leaves': leaves?.map((item) => item.toJson()).toList(),
+      'overTime': overTime?.map((item) => item.toJson()).toList(),
+      'userId': userId, // User ID directly serialized
+      'salaryStatus': salaryStatus?.toShortString(), // Assuming you want to serialize it as a string
     };
   }
 }

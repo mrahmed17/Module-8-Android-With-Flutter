@@ -1,12 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:hr_and_pms/administration/authScreen/LoginScreen.dart';
-import 'package:hr_and_pms/features/advanceSalary/AdvanceSalaryFilterScreen.dart';
-import 'package:hr_and_pms/features/advanceSalary/employeeScreen/AdvanceSalaryHistoryScreen.dart';
-import 'package:hr_and_pms/features/advanceSalary/employeeScreen/AdvanceSalaryStatusScreen.dart';
-import 'package:hr_and_pms/features/advanceSalary/employeeScreen/CreateAdvanceSalaryScreen.dart';
-import 'package:hr_and_pms/features/advanceSalary/employeescreen/PendingApplicationsScreen.dart';
-import 'package:hr_and_pms/features/attendance/screens/AttendanceLookupScreen.dart';
-import 'package:hr_and_pms/features/attendance/screens/AttendanceOverviewScreen.dart';
+import 'package:hr_and_pms/features/attendance/screens/AttendanceScreen.dart';
+import 'package:hr_and_pms/features/attendance/service/AttendanceService.dart';
 import 'package:hr_and_pms/features/home/HomeScreen.dart';
 import 'package:hr_and_pms/widget/SplashScreen.dart';
 
@@ -32,17 +26,14 @@ class MyApp extends StatelessWidget {
       // home: AdvanceSalaryHistoryScreen(userId: 3),
       // home: PendingApplicationsScreen(),
       // home: AdvanceSalaryApplyScreen(),
-      // home: HomeScreen(),
-      // home: AttendanceAnalyticsScreen(),
-      // home: AttendanceOverviewScreen(),
-      // home: AttendanceLookupScreen(),
+      home: HomeScreen(),
       // home: DashboardScreen(),
-      // home: AttendanceScreen(),
+      // home: AttendanceScreen(attendanceService: AttendanceService()),
       // home: ManagerDashboardScreen(),
       // home: AdminDashboardScreen(),
       // home: UserListScreen(),
       // home: RegistrationScreen(),
-      home: LoginScreen(),
+      // home: LoginScreen(),
     );
   }
 }

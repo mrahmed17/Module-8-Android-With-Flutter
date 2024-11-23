@@ -6,167 +6,116 @@ import 'package:intl/intl.dart';
 class LeaveService {
   final String baseUrl = 'http://localhost:8080/api/leaves';
 
-  // Method to save a leave request
-  Future<Map<String, dynamic>> saveLeaveRequest(Leave leave) async {
+  /// Apply for leave
+  Future<Leave> applyLeave(Leave leave, int userId) async {
     final response = await http.post(
-      Uri.parse('$baseUrl/save'),
+      Uri.parse('$baseUrl/apply/$userId'),
       headers: {'Content-Type': 'application/json'},
-      body: jsonEncode(leave),
+      body: jsonEncode(leave.toJson()),
     );
 
     if (response.statusCode == 200) {
-      return jsonDecode(response.body);
+      return Leave.fromJson(jsonDecode(response.body));
     } else {
-      throw Exception('Failed to save leave request');
+      throw Exception('Failed to apply leave: ${response.reasonPhrase}');
     }
   }
 
-  // Method to update a leave request
-  Future<Map<String, dynamic>> updateLeaveRequest(int leaveId, Map<String, dynamic> leaveData) async {
+  /// Update a leave request
+  Future<Leave> updateLeaveRequest(int leaveId, Leave leave) async {
     final response = await http.put(
       Uri.parse('$baseUrl/update/$leaveId'),
       headers: {'Content-Type': 'application/json'},
-      body: jsonEncode(leaveData),
+      body: jsonEncode(leave.toJson()),
     );
 
     if (response.statusCode == 200) {
-      return jsonDecode(response.body);
+      return Leave.fromJson(jsonDecode(response.body));
     } else {
-      throw Exception('Failed to update leave request');
+      throw Exception('Failed to update leave request: ${response.reasonPhrase}');
     }
   }
 
-  // Method to delete a leave request by ID
+  /// Delete a leave by ID
   Future<void> deleteLeave(int leaveId) async {
-    final response = await http.delete(
-      Uri.parse('$baseUrl/delete/$leaveId'),
-    );
+    final response = await http.delete(Uri.parse('$baseUrl/delete/$leaveId'));
 
     if (response.statusCode != 204) {
-      throw Exception('Failed to delete leave');
+      throw Exception('Failed to delete leave: ${response.reasonPhrase}');
     }
   }
 
-  // Method to get leave by ID
-  Future<Map<String, dynamic>> getLeaveById(int leaveId) async {
+  /// Get all pending leave requests
+  Future<List<Leave>> getAllPendingLeaves() async {
+    final response = await http.get(Uri.parse('$baseUrl/pending'));
+
+    if (response.statusCode == 200) {
+      final List<dynamic> jsonList = jsonDecode(response.body);
+      return jsonList.map((json) => Leave.fromJson(json)).toList();
+    } else {
+      throw Exception('Failed to load pending leaves: ${response.reasonPhrase}');
+    }
+  }
+
+  /// Get all leaves for a specific user
+  Future<List<Leave>> getAllLeavesByUser(int userId) async {
+    final response = await http.get(Uri.parse('$baseUrl/user/$userId/all'));
+
+    if (response.statusCode == 200) {
+      final List<dynamic> jsonList = jsonDecode(response.body);
+      return jsonList.map((json) => Leave.fromJson(json)).toList();
+    } else {
+      throw Exception('Failed to fetch all leaves for user: ${response.reasonPhrase}');
+    }
+  }
+
+  /// Get user leaves (approved only)
+  Future<List<Leave>> getUserLeaves(int userId) async {
+    final response = await http.get(Uri.parse('$baseUrl/user/$userId'));
+
+    if (response.statusCode == 200) {
+      final List<dynamic> jsonList = jsonDecode(response.body);
+      return jsonList.map((json) => Leave.fromJson(json)).toList();
+    } else {
+      throw Exception('Failed to fetch user leaves: ${response.reasonPhrase}');
+    }
+  }
+
+  /// Get leaves for a user within a specific date range
+  Future<List<Leave>> getLeavesByUserAndDateRange(
+      int userId, DateTime startDate, DateTime endDate) async {
     final response = await http.get(
-      Uri.parse('$baseUrl/find/$leaveId'),
+      Uri.parse(
+          '$baseUrl/user/$userId/range?startDate=${DateFormat('yyyy-MM-dd').format(startDate)}&endDate=${DateFormat('yyyy-MM-dd').format(endDate)}'),
     );
 
     if (response.statusCode == 200) {
-      return jsonDecode(response.body);
+      final List<dynamic> jsonList = jsonDecode(response.body);
+      return jsonList.map((json) => Leave.fromJson(json)).toList();
     } else {
-      throw Exception('Leave not found');
+      throw Exception('Failed to load leaves by date range: ${response.reasonPhrase}');
     }
   }
 
-  // Method to approve a leave request
-  Future<Map<String, dynamic>> approveLeaveRequest(int leaveId) async {
-    final response = await http.post(
-      Uri.parse('$baseUrl/approve/$leaveId'),
-    );
+  /// Approve a leave request
+  Future<Leave> approveLeave(int leaveId) async {
+    final response = await http.patch(Uri.parse('$baseUrl/$leaveId/approve'));
 
     if (response.statusCode == 200) {
-      return jsonDecode(response.body);
+      return Leave.fromJson(jsonDecode(response.body));
     } else {
-      throw Exception('Failed to approve leave request');
+      throw Exception('Failed to approve leave request: ${response.reasonPhrase}');
     }
   }
 
-  // Method to reject a leave request
-  Future<Map<String, dynamic>> rejectLeaveRequest(int leaveId) async {
-    final response = await http.post(
-      Uri.parse('$baseUrl/reject/$leaveId'),
-    );
+  /// Reject a leave request
+  Future<Leave> rejectLeave(int leaveId) async {
+    final response = await http.patch(Uri.parse('$baseUrl/$leaveId/reject'));
 
     if (response.statusCode == 200) {
-      return jsonDecode(response.body);
+      return Leave.fromJson(jsonDecode(response.body));
     } else {
-      throw Exception('Failed to reject leave request');
-    }
-  }
-
-  // Method to get all pending leave requests
-  Future<List<Map<String, dynamic>>> getPendingLeaveRequests() async {
-    final response = await http.get(
-      Uri.parse('$baseUrl/pending'),
-    );
-
-    if (response.statusCode == 200) {
-      List<dynamic> data = jsonDecode(response.body);
-      return List<Map<String, dynamic>>.from(data);
-    } else {
-      throw Exception('Failed to load pending leaves');
-    }
-  }
-
-  // Method to get all leaves by leave type
-  Future<List<Map<String, dynamic>>> getLeavesByType(String leaveType) async {
-    final response = await http.get(
-      Uri.parse('$baseUrl/type/$leaveType'),
-    );
-
-    if (response.statusCode == 200) {
-      List<dynamic> data = jsonDecode(response.body);
-      return List<Map<String, dynamic>>.from(data);
-    } else {
-      throw Exception('Failed to load leaves by type');
-    }
-  }
-
-  // Method to get rejected leave requests
-  Future<List<Map<String, dynamic>>> getRejectedLeaveRequests() async {
-    final response = await http.get(
-      Uri.parse('$baseUrl/rejected'),
-    );
-
-    if (response.statusCode == 200) {
-      List<dynamic> data = jsonDecode(response.body);
-      return List<Map<String, dynamic>>.from(data);
-    } else {
-      throw Exception('Failed to load rejected leaves');
-    }
-  }
-
-  // Method to get approved leaves by user ID
-  Future<List<Map<String, dynamic>>> getApprovedLeavesByUser(int userId) async {
-    final response = await http.get(
-      Uri.parse('$baseUrl/user/$userId/approved'),
-    );
-
-    if (response.statusCode == 200) {
-      List<dynamic> data = jsonDecode(response.body);
-      return List<Map<String, dynamic>>.from(data);
-    } else {
-      throw Exception('Failed to load approved leaves for user');
-    }
-  }
-
-  // Method to get leaves by user and date range
-  Future<List<Map<String, dynamic>>> getLeavesByUserAndDateRange(int userId, DateTime startDate, DateTime endDate) async {
-    final response = await http.get(
-      Uri.parse('$baseUrl/user/$userId/range?startDate=${DateFormat('yyyy-MM-dd').format(startDate)}&endDate=${DateFormat('yyyy-MM-dd').format(endDate)}'),
-    );
-
-    if (response.statusCode == 200) {
-      List<dynamic> data = jsonDecode(response.body);
-      return List<Map<String, dynamic>>.from(data);
-    } else {
-      throw Exception('Failed to load leaves by date range');
-    }
-  }
-
-  // Method to get leaves by reason
-  Future<List<Map<String, dynamic>>> getLeavesByReason(String reason) async {
-    final response = await http.get(
-      Uri.parse('$baseUrl/reason/$reason'),
-    );
-
-    if (response.statusCode == 200) {
-      List<dynamic> data = jsonDecode(response.body);
-      return List<Map<String, dynamic>>.from(data);
-    } else {
-      throw Exception('Failed to load leaves by reason');
+      throw Exception('Failed to reject leave request: ${response.reasonPhrase}');
     }
   }
 }

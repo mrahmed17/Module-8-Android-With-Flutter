@@ -17,7 +17,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.time.LocalDateTime;
 
@@ -71,6 +73,14 @@ public class AuthService {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.setRole(role);
         user.setActive(false);
+
+        // Set default leave balance (e.g., 25 days for all leave types)
+        Map<LeaveType, Integer> defaultLeaveBalance = new HashMap<>();
+        defaultLeaveBalance.put(LeaveType.SICK, 15); // Example for paid leave
+        defaultLeaveBalance.put(LeaveType.UNPAID, 0); // Example for unpaid leave
+        defaultLeaveBalance.put(LeaveType.RESERVE, 10); // Example for unpaid leave
+        user.setLeaveBalance(defaultLeaveBalance);
+
         userRepository.save(user);
 
         String jwt = jwtService.generateToken(user);

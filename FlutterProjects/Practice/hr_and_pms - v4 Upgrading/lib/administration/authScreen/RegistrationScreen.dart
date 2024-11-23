@@ -204,7 +204,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                                 .hasMatch(value)) {
                               return 'Please enter a valid email';
                             }
-                            return null; // No error
+                            return null;
                           }),
                           const SizedBox(height: 20),
                           _buildTextField(password, 'Password', Icons.lock,

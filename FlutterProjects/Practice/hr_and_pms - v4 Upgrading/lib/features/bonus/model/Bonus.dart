@@ -1,18 +1,21 @@
 import 'package:hr_and_pms/administration/model/User.dart';
+import '../../salary/model/Salary.dart';
 
 class Bonus {
-   int? id;
-   double? bonusAmount;
-   DateTime? bonusDate;
-   String? bonusType;
-   User? user;
+  int? id;
+  double? bonusAmount;
+  DateTime? bonusDate;
+  String? bonusType; // Performance, Annual, Festival, Promotional
+  Salary? salary;
+  User? user;
 
   Bonus({
-     this.id,
-     this.bonusAmount,
-     this.bonusDate,
-     this.bonusType,
-     this.user,
+    this.id,
+    this.bonusAmount,
+    this.bonusDate,
+    this.bonusType,
+    this.salary,
+    this.user,
   });
 
   // Factory constructor to create Bonus object from JSON
@@ -20,9 +23,12 @@ class Bonus {
     return Bonus(
       id: json['id'] ?? 0,
       bonusAmount: (json['bonusAmount'] ?? 0).toDouble(),
-      bonusDate: DateTime.parse(json['bonusDate'] ?? DateTime.now().toString()),
+      bonusDate: json['bonusDate'] != null
+          ? DateTime.tryParse(json['bonusDate'])
+          : null,
       bonusType: json['bonusType'] ?? '',
-      user: User.fromJson(json['user'] ?? {}),
+      salary: json['salary'] != null ? Salary.fromJson(json['salary']) : null, // Deserialize Salary
+      user: json['user'] != null ? User.fromJson(json['user']) : null, // Deserialize User
     );
   }
 
@@ -33,11 +39,11 @@ class Bonus {
       'bonusAmount': bonusAmount,
       'bonusDate': bonusDate?.toIso8601String(),
       'bonusType': bonusType,
-      'user': user?.toJson(), // Serializing the User object
+      'salary': salary?.toJson(), // Serialize Salary object
+      'user': user?.toJson(), // Serialize User object
     };
   }
 }
-
 
 // import 'package:hr_and_pms/administration/model/User.dart';
 //

@@ -80,7 +80,7 @@ public class User implements UserDetails, Serializable {
     private List<Attendance> attendances;
 
 
-
+//    JWT Start from here
     @Column(nullable = false)
     private boolean active;
 

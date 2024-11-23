@@ -4,6 +4,7 @@ import com.mrahmed.HRandPayrollManagementSystem.entity.AdvanceSalary;
 import com.mrahmed.HRandPayrollManagementSystem.entity.RequestStatus;
 import com.mrahmed.HRandPayrollManagementSystem.service.AdvanceSalaryService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -30,24 +31,32 @@ public class AdvanceSalaryController {
     }
 
     // Delete AdvanceSalary by ID
+//    @DeleteMapping("/delete/{id}")
+//    public ResponseEntity<Void> deleteAdvanceSalary(@PathVariable Long id) {
+//        advanceSalaryService.deleteAdvanceSalary(id);
+//        return ResponseEntity.noContent().build();
+//    }
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<Void> deleteAdvanceSalary(@PathVariable Long id) {
         advanceSalaryService.deleteAdvanceSalary(id);
-        return ResponseEntity.noContent().build();
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Message", "AdvanceSalary Deleted Successfully");
+        return ResponseEntity.noContent().headers(headers).build();
     }
+
 
     @PutMapping("/approve/{id}")
     public ResponseEntity<AdvanceSalary> approveAdvanceSalary(@PathVariable Long id) {
         return ResponseEntity.ok(advanceSalaryService.approveAdvanceSalary(id));
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/find/{id}")
     public ResponseEntity<AdvanceSalary> getAdvanceSalaryById(@PathVariable Long id) {
         AdvanceSalary advanceSalary = advanceSalaryService.getAdvanceSalaryById(id);
         return ResponseEntity.ok(advanceSalary);
     }
 
-    @GetMapping("/")
+    @GetMapping("/all")
     public ResponseEntity<List<AdvanceSalary>> getAllAdvanceSalaries() {
         List<AdvanceSalary> advanceSalaries = advanceSalaryService.getAllAdvanceSalaries();
         return ResponseEntity.ok(advanceSalaries);
@@ -57,6 +66,11 @@ public class AdvanceSalaryController {
     public ResponseEntity<List<AdvanceSalary>> getAdvanceSalariesByUserId(@PathVariable Long userId) {
         List<AdvanceSalary> advanceSalaries = advanceSalaryService.getAdvanceSalariesByUserId(userId);
         return ResponseEntity.ok(advanceSalaries);
+    }
+
+    @GetMapping("/approved/{userId}")
+    public ResponseEntity<Optional<AdvanceSalary>> getApprovedAdvanceSalaryByUserId(@PathVariable Long userId){
+        return ResponseEntity.ok(advanceSalaryService.getApprovedAdvanceSalaryByUserId(userId));
     }
 
 

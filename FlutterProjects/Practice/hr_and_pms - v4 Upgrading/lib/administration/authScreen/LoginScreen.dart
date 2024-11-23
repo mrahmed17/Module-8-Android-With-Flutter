@@ -5,7 +5,7 @@ import 'package:hr_and_pms/administration/authScreen/ForgetPasswordScreen.dart';
 import 'package:hr_and_pms/administration/authScreen/RegistrationScreen.dart';
 import 'package:hr_and_pms/administration/dashboard/AdminDashboardScreen.dart';
 import 'package:hr_and_pms/administration/dashboard/ManagerDashboardScreen.dart';
-import 'package:hr_and_pms/features/empDashboard/DashboardScreen.dart';
+import 'package:hr_and_pms/features/empDashboard/EmpDashboardScreen.dart';
 import 'package:hr_and_pms/administration/service/AuthService.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -43,7 +43,7 @@ class _LoginScreenState extends State<LoginScreen> {
       } else if (role == 'EMPLOYEE') {
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => DashboardScreen()),
+          MaterialPageRoute(builder: (context) => EmpDashboardScreen()),
         );
       } else {
         print('Unknown role: $role');

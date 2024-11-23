@@ -102,13 +102,13 @@ class NotificationBox extends StatelessWidget {
       title: Text("Messages"),
       children: [
         MessageItem(
-          author: 'Richard Miles',
-          time: '12:28 AM',
+          author: 'Rezvi',
+          time: '1:28 PM, 1 Dec',
           content: 'Lorem ipsum dolor sit amet, consectetur adipiscing',
         ),
         MessageItem(
-          author: 'John Doe',
-          time: '1 Aug',
+          author: 'Shabab',
+          time: '2:38 PM, 1 Dec',
           content: 'Lorem ipsum dolor sit amet, consectetur adipiscing',
           isNew: true,
         ),

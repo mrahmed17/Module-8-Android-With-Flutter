@@ -29,7 +29,7 @@ public class Attendance {
     private LocalDateTime clockInTime;
     private LocalDateTime clockOutTime;
 
-    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "salary_id")
     private Salary salary;
 

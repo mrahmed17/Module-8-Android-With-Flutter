@@ -130,20 +130,27 @@
             <version>2.15.2</version>
         </dependency>
 
+        <!--  Generate PDF format-->
+        <dependency>
+            <groupId>com.itextpdf</groupId>
+            <artifactId>itext7-core</artifactId>
+            <version>7.2.3</version>
+        </dependency>
+
 
         <!-- for DTO mapping-->
-<!--        <dependency>-->
-<!--            <groupId>org.mapstruct</groupId>-->
-<!--            <artifactId>mapstruct</artifactId>-->
-<!--            <version>1.5.5.Final</version>-->
-<!--        </dependency>-->
+        <!--        <dependency>-->
+        <!--            <groupId>org.mapstruct</groupId>-->
+        <!--            <artifactId>mapstruct</artifactId>-->
+        <!--            <version>1.5.5.Final</version>-->
+        <!--        </dependency>-->
 
-<!--        <dependency>-->
-<!--            <groupId>org.mapstruct</groupId>-->
-<!--            <artifactId>mapstruct-processor</artifactId>-->
-<!--            <version>1.5.5.Final</version>-->
-<!--            <scope>provided</scope>-->
-<!--        </dependency>-->
+        <!--        <dependency>-->
+        <!--            <groupId>org.mapstruct</groupId>-->
+        <!--            <artifactId>mapstruct-processor</artifactId>-->
+        <!--            <version>1.5.5.Final</version>-->
+        <!--            <scope>provided</scope>-->
+        <!--        </dependency>-->
 
 
     </dependencies>

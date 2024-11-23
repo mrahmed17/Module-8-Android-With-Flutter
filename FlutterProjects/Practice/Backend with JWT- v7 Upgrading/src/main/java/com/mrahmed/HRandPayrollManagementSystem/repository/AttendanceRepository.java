@@ -14,6 +14,8 @@ import java.util.Optional;
 @Repository
 public interface AttendanceRepository extends JpaRepository<Attendance, Long> {
 
+    List<Attendance> findBySalaryId(long salaryId);
+
     @Query("SELECT a FROM Attendance a WHERE a.user.id = :userId AND a.date = :date")
     List<Attendance> findByUserIdAndDate(@Param("userId") Long userId, @Param("date") LocalDate date);
 
@@ -26,8 +28,7 @@ public interface AttendanceRepository extends JpaRepository<Attendance, Long> {
     @Query("SELECT a FROM Attendance a WHERE a.date = :date")
     List<Attendance> findByDate(@Param("date") LocalDate date);
 
-    @Query("SELECT a FROM Attendance a WHERE a.user.id = :userId AND a.clockOutTime IS NOT NULL")
-    List<Attendance> findAttendancesWithClockOutByUserId(@Param("userId") Long userId);
+    List<Attendance> findByUserAndSalaryIsNull(User user);
 
 
 }

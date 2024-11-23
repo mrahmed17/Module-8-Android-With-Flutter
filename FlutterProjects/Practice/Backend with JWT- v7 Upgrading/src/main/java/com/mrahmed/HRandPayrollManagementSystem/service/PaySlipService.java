@@ -1,85 +1,71 @@
-//package com.mrahmed.HRandPayrollManagementSystem.service;
-//
-//import com.mrahmed.HRandPayrollManagementSystem.entity.PaySlip;
-//import com.mrahmed.HRandPayrollManagementSystem.entity.User;
-//import com.mrahmed.HRandPayrollManagementSystem.entity.Salary;
-//import com.mrahmed.HRandPayrollManagementSystem.repository.PaySlipRepository;
-//import com.mrahmed.HRandPayrollManagementSystem.repository.UserRepository;
-//import com.mrahmed.HRandPayrollManagementSystem.repository.SalaryRepository;
-//import org.springframework.beans.factory.annotation.Autowired;
-//import org.springframework.stereotype.Service;
-//
-//import java.time.LocalDateTime;
-//import java.util.List;
-//
-//@Service
-//public class PaySlipService {
-//
-//    @Autowired
-//    private PaySlipRepository paySlipRepository;
-//
-//    @Autowired
-//    private UserRepository userRepository;
-//
-//    @Autowired
-//    private SalaryRepository salaryRepository;
-//
-//    // Create PaySlip
-//    public PaySlip createPaySlip(Long employeeId, Long managerId, Long salaryId, double totalAmount, String paymentMethod) {
-//        User paidBy = userRepository.findById(managerId).orElseThrow(() -> new RuntimeException("Manager not found"));
-//        User receivedBy = userRepository.findById(employeeId).orElseThrow(() -> new RuntimeException("Employee not found"));
-//        Salary salary = salaryRepository.findById(salaryId).orElseThrow(() -> new RuntimeException("Salary not found"));
-//
-//        PaySlip paySlip = new PaySlip();
-//        paySlip.setTotalAmount(totalAmount);
-//        paySlip.setBillingDate(LocalDateTime.now());  // Set the billing date to the current date
-//        paySlip.setPaymentMethod(paymentMethod);
-//        paySlip.setStatus("PAID");  // Set initial status as "PAID"
-//        paySlip.setPaidBy(paidBy);
-//        paySlip.setReceivedBy(receivedBy);
-//        paySlip.setSalary(salary);
-//
-//        return paySlipRepository.save(paySlip);  // Save the pay slip to the database
-//    }
-//
-//    // Get Payslips by Employee ID
-//    public List<PaySlip> getPayslipsByEmployee(Long employeeId) {
-//        return paySlipRepository.findByReceivedById(employeeId);
-//    }
-//
-//    // Get Payslips by Manager ID
-//    public List<PaySlip> getPayslipsByManager(Long managerId) {
-//        return paySlipRepository.findByPaidById(managerId);
-//    }
-//
-//    // Get Payslips by Status
-//    public List<PaySlip> getPayslipsByStatus(String status) {
-//        return paySlipRepository.findByStatus(status);
-//    }
-//
-//    // Get Payslips by Billing Date Range
-//    public List<PaySlip> findByBillingDateBetween(LocalDateTime startDate, LocalDateTime endDate) {
-//        return paySlipRepository.findByBillingDateBetween(startDate, endDate);
-//    }
-//
-//    // Get Payslip by Salary ID
-//    public PaySlip getPayslipBySalaryId(Long salaryId) {
-//        return paySlipRepository.findBySalaryId(salaryId).orElseThrow(() -> new RuntimeException("Payslip not found"));
-//    }
-//
-//    // Get Payslips by Payment Method (e.g., Cash, Bank)
-//    public List<PaySlip> getPayslipsByPaymentMethod(String paymentMethod) {
-//        return paySlipRepository.findByPaymentMethod(paymentMethod);
-//    }
-//
-//    // findByReceivedByIdAndStatus
-//    public List<PaySlip> getPayslipsByEmployeeAndStatus(Long employeeId, String status) {
-//        return paySlipRepository.findByReceivedByIdAndStatus(employeeId, status);
-//    }
-//
-//
-//    // Count Payslips by Status
-//    public Long countPayslipsByStatus(String status) {
-//        return paySlipRepository.countByStatus(status);
-//    }
-//}
+package com.mrahmed.HRandPayrollManagementSystem.service;
+
+import com.mrahmed.HRandPayrollManagementSystem.entity.*;
+import com.mrahmed.HRandPayrollManagementSystem.repository.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+
+import java.util.List;
+import java.util.Optional;
+
+@Service
+public class PaySlipService {
+
+    @Autowired
+    private SalaryRepository salaryRepository;
+
+    @Autowired
+    private BonusRepository bonusRepository;
+
+    @Autowired
+    private LeaveRepository leaveRepository;
+
+    @Autowired
+    private AttendanceRepository attendanceRepository;
+
+    // Method to generate payslip for an employee
+    public String generatePaySlip(long userId) {
+        // Fetch the Salary for the User
+        Optional<Salary> salaryOpt = salaryRepository.findByUserId(userId);
+        if (!salaryOpt.isPresent()) {
+            return "Salary record not found for user with ID: " + userId;
+        }
+        Salary salary = salaryOpt.get();
+
+        // Fetch bonuses for the User
+        List<Bonus> bonuses = bonusRepository.findBySalaryId(salary.getId());
+
+        // Fetch leaves for the User
+        List<Leave> leaves = leaveRepository.findBySalaryId(salary.getId());
+
+        // Fetch attendance details for overtime calculation
+        List<Attendance> overtimeRecords = attendanceRepository.findBySalaryId(salary.getId());
+
+        // Calculate total bonus amount
+        double totalBonus = bonuses.stream().mapToDouble(Bonus::getBonusAmount).sum();
+
+        // Calculate total leaves and deduct from salary
+        int totalLeaveDays = leaves.stream().mapToInt(leave -> leave.getEndDate().getDayOfYear() - leave.getStartDate().getDayOfYear()).sum();
+        double leaveDeduction = totalLeaveDays * salary.getNetSalary() / 30; // Assuming net salary is monthly
+
+        // Calculate overtime (example: assuming overtime is added as additional pay)
+        double totalOvertime = overtimeRecords.stream().filter(Attendance::isLateCheckIn).mapToDouble(attendance -> 10).sum(); // Just a placeholder calculation
+
+        // Construct payslip content
+        StringBuilder paySlip = new StringBuilder();
+        paySlip.append("=== Payslip for ").append(salary.getUser().getName()).append(" ===\n");
+        paySlip.append("Employee ID: ").append(salary.getUser().getId()).append("\n");
+        paySlip.append("Basic Salary: ").append(salary.getNetSalary()).append("\n");
+        paySlip.append("Bonus: ").append(totalBonus).append("\n");
+        paySlip.append("Leave Deduction: ").append(leaveDeduction).append("\n");
+        paySlip.append("Overtime: ").append(totalOvertime).append("\n");
+        paySlip.append("Tax Deduction: ").append(salary.getTax()).append("\n");
+        paySlip.append("Provident Fund Deduction: ").append(salary.getProvidentFund()).append("\n");
+        paySlip.append("Net Salary: ").append(salary.getNetSalary() + totalBonus - leaveDeduction + totalOvertime - salary.getTax() - salary.getProvidentFund()).append("\n");
+        paySlip.append("=====================================\n");
+
+        return paySlip.toString();
+    }
+
+}

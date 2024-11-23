@@ -2,7 +2,9 @@ package com.mrahmed.HRandPayrollManagementSystem.service;
 
 import com.mrahmed.HRandPayrollManagementSystem.entity.AdvanceSalary;
 import com.mrahmed.HRandPayrollManagementSystem.entity.Bonus;
+import com.mrahmed.HRandPayrollManagementSystem.entity.User;
 import com.mrahmed.HRandPayrollManagementSystem.repository.BonusRepository;
+import com.mrahmed.HRandPayrollManagementSystem.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.data.domain.PageRequest;
@@ -18,12 +20,19 @@ public class BonusService {
     @Autowired
     private BonusRepository bonusRepository;
 
+    @Autowired
+    private UserRepository userRepository;
+
     // Create a new Bonus
     public Bonus saveBonus(Bonus bonus) {
         if (!isValidBonusType(bonus.getBonusType())) {
             throw new IllegalArgumentException("Invalid bonus type.");
         }
+
+        User user = userRepository.findById(bonus.getUser().getId())
+                .orElseThrow(() -> new IllegalArgumentException("User not found with ID: " + bonus.getUser().getId()));
         bonus.setBonusDate(LocalDateTime.now()); // Automatically set the date
+        bonus.setUser(user);
         return bonusRepository.save(bonus);
     }
 
@@ -31,7 +40,13 @@ public class BonusService {
     public Bonus updateBonus(Long id, Bonus updatedBonus) {
         Optional<Bonus> existingBonus = bonusRepository.findById(id);
         if (existingBonus.isPresent()) {
-            updatedBonus.setId(id); // Set ID for update
+
+            Bonus bonus = existingBonus.get();
+            // Update fields with new values
+            bonus.setBonusAmount(updatedBonus.getBonusAmount()); // Assuming Bonus has a bonusAmount field
+            bonus.setBonusDate(LocalDateTime.now()); // Automatically set the updated date
+
+//            updatedBonus.setId(id); // Set ID for update
             return bonusRepository.save(updatedBonus);
         } else {
             throw new RuntimeException("Bonus not found with ID: " + id);

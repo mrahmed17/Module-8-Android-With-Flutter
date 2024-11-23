@@ -1,21 +1,24 @@
-enum RequestStatus { pending, approved, rejected }
+enum RequestStatus {
+  APPROVED,
+  PENDING,
+  REJECTED,
+}
 
 extension RequestStatusExtension on RequestStatus {
-   static RequestStatus fromString(String statusString) {
+  // Converts a string to a RequestStatus enum value
+  static RequestStatus fromString(String statusString) {
     return RequestStatus.values.firstWhere(
-          (status) =>
-      status.toString().split('.').last.toLowerCase() ==
-          statusString.toLowerCase(),
-      orElse: () => RequestStatus.pending,
+          (status) => status.toString().split('.').last.toUpperCase() ==
+          statusString.toUpperCase(),
+      orElse: () => RequestStatus.PENDING, // Default to pending if not found
     );
   }
 
-  // Convert the enum to a lowercase string
+  // Converts RequestStatus enum to a lowercase string
   String toShortString() {
-    return toString().split('.').last.toLowerCase();
+    return toString().split('.').last.toUpperCase();
   }
 }
-
 
 // enum RequestStatus { pending, approved, rejected }
 //

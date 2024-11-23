@@ -1,18 +1,19 @@
 import 'package:hr_and_pms/features/attendance/model/AttendanceModel.dart';
 import 'package:hr_and_pms/administration/model/Role.dart';
+import 'package:hr_and_pms/features/leave/model/LeaveType.dart';
 
 class User {
   final int id;
   final String name;
   final String email;
-  final String password;
-  final String address;
-  final String gender;
-  final DateTime dateOfBirth;
+  final String? password;
   final String cell;
+  final String address;
+  final DateTime? dateOfBirth;
+  final String gender;
   final double basicSalary;
   final DateTime joinedDate;
-  final Map<String, int> leaveBalance; // Map for leave balance
+  final Map<LeaveType, int> leaveBalance; // Map for leave balance
   final String profilePhoto;
   final Role role;
   final List<Attendance> attendances;
@@ -23,15 +24,15 @@ class User {
       id: json['id'] ?? 0,
       name: json['name'] ?? '',
       email: json['email'] ?? '',
-      password: json['password'] ?? '',
+      password: json['password'], // Keep it nullable
       address: json['address'] ?? '',
       gender: json['gender'] ?? '',
-      dateOfBirth: DateTime.tryParse(json['dateOfBirth'] ?? '') ?? DateTime.now(),
+      dateOfBirth: json['dateOfBirth'] != null ? DateTime.tryParse(json['dateOfBirth']) : null,
       cell: json['cell'] ?? '',
       basicSalary: (json['basicSalary'] ?? 0).toDouble(),
       joinedDate: DateTime.tryParse(json['joinedDate'] ?? '') ?? DateTime.now(),
       leaveBalance: (json['leaveBalance'] as Map<String, dynamic>?)
-          ?.map((key, value) => MapEntry(key, value as int)) ??
+          ?.map((key, value) => MapEntry(LeaveTypeExtension.fromString(key), value as int)) ??
           {},
       profilePhoto: json['profilePhoto'] ?? '',
       role: RoleExtension.fromString(json['role'] ?? 'EMPLOYEE'),
@@ -46,10 +47,10 @@ class User {
     required this.id,
     required this.name,
     required this.email,
-    required this.password,
+    this.password,
     required this.address,
     required this.gender,
-    required this.dateOfBirth,
+    this.dateOfBirth,
     required this.cell,
     required this.basicSalary,
     required this.joinedDate,
@@ -64,10 +65,10 @@ class User {
       id: 0,
       name: '',
       email: '',
-      password: '',
+      password: null,
       address: '',
       gender: '',
-      dateOfBirth: DateTime(1900, 1, 1),
+      dateOfBirth: null,
       cell: '',
       basicSalary: 0.0,
       joinedDate: DateTime(1900, 1, 1),
@@ -87,15 +88,14 @@ class User {
       'password': password,
       'address': address,
       'gender': gender,
-      'dateOfBirth': dateOfBirth.toIso8601String(),
+      'dateOfBirth': dateOfBirth?.toIso8601String(),
       'cell': cell,
       'basicSalary': basicSalary,
       'joinedDate': joinedDate.toIso8601String(),
-      'leaveBalance': leaveBalance,
+      'leaveBalance': leaveBalance.map((key, value) => MapEntry(key.toString(), value)),
       'profilePhoto': profilePhoto,
       'role': role.toShortString(),
-      'attendances':
-      attendances.map((attendance) => attendance.toJson()).toList(),
+      'attendances': attendances.map((attendance) => attendance.toJson()).toList(),
     };
   }
 }

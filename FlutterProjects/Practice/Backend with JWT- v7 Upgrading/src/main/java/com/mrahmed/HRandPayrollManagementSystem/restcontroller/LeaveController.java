@@ -24,14 +24,8 @@ public class LeaveController {
     private LeaveService leaveService;
 
     @PostMapping("/apply/{userId}")
-    public ResponseEntity<Leave> applyLeave(@PathVariable Long userId, @RequestBody Leave leaveRequest) {
-        if (leaveRequest.getStartDate() == null || leaveRequest.getEndDate() == null) {
-            throw new IllegalArgumentException("Start date and end date must be provided.");
-        }
-        if (leaveRequest.getStartDate().isAfter(leaveRequest.getEndDate())) {
-            throw new IllegalArgumentException("Start date cannot be after end date.");
-        }
-
+    public ResponseEntity<?> applyLeave(@PathVariable Long userId, @RequestBody Leave leaveRequest) {
+        try {
         Leave leave = leaveService.applyLeave(
                 userId,
                 leaveRequest.getLeaveType(),
@@ -40,18 +34,54 @@ public class LeaveController {
                 leaveRequest.getEndDate()
         );
         return ResponseEntity.ok(leave);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
-
 
     @PutMapping("/update/{id}")
-    public ResponseEntity<Leave> updateLeave(@PathVariable Long id, @RequestBody Leave leave) {
-        return ResponseEntity.ok(leaveService.updateLeave(id, leave));
+    public ResponseEntity<?> updateLeave(@PathVariable Long id, @RequestBody Leave leave) {
+        try {
+            Leave updatedLeave = leaveService.updateLeave(id, leave);
+            return ResponseEntity.ok(updatedLeave);
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
+
+//    @PutMapping("/update/{id}")
+//    public ResponseEntity<Leave> updateLeave(@PathVariable Long id, @RequestBody Leave leave) {
+//        return ResponseEntity.ok(leaveService.updateLeave(id, leave));
+//    }
 
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<String> deleteLeave(@PathVariable Long id) {
         leaveService.deleteLeave(id);
         return ResponseEntity.ok("Leave deleted successfully");
+    }
+
+    @GetMapping("/pending")
+    public ResponseEntity<List<Leave>> getAllPendingLeaves() {
+        return ResponseEntity.ok(leaveService.getAllPendingLeaves());
+    }
+
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<List<Leave>> getUserLeaves(@PathVariable Long userId) {
+        return ResponseEntity.ok(leaveService.getUserLeaves(userId));
+    }
+
+    @GetMapping("/user/{userId}/all")
+    public ResponseEntity<List<Leave>> getAllLeavesByUser(@PathVariable Long userId) {
+        return ResponseEntity.ok(leaveService.getAllLeavesByUser(userId));
+    }
+
+    @GetMapping("/user/{userId}/range")
+    public ResponseEntity<List<Leave>> getLeavesByUserAndDateRange(
+            @PathVariable Long userId,
+            @RequestParam LocalDate startDate,
+            @RequestParam LocalDate endDate) {
+        List<Leave> leaves = leaveService.getLeavesByUserAndDateRange(userId, startDate, endDate);
+        return ResponseEntity.ok(leaves);
     }
 
     @PatchMapping("/{id}/approve")
@@ -64,8 +94,4 @@ public class LeaveController {
         return ResponseEntity.ok(leaveService.rejectLeave(id));
     }
 
-    @GetMapping("/user/{userId}")
-    public ResponseEntity<List<Leave>> getUserLeaves(@PathVariable Long userId) {
-        return ResponseEntity.ok(leaveService.getUserLeaves(userId));
-    }
 }

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hr_and_pms/administration/authScreen/LoginScreen.dart';
+import 'package:hr_and_pms/features/attendance/screens/AttendanceReportScreen.dart';
+import 'package:hr_and_pms/features/salary/Payroll.dart';
 
 class ManagerDashboardScreen extends StatefulWidget {
   const ManagerDashboardScreen({super.key});
@@ -40,10 +42,18 @@ class _ManagerDashboardScreenState extends State<ManagerDashboardScreen> {
               onTap: () {
                 switch (index) {
                   case 0:
-                    print('Give Attendance Clicked');
+                    print('Attendance Report Clicked');
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(builder: (context) => AttendanceReportScreen()),
+                    );
                     break;
                   case 1:
                     print('View Employees Clicked');
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(builder: (context) => EmployeeDetails()),
+                    );
                     break;
                   case 2:
                     print('View Departments Clicked');
@@ -55,7 +65,7 @@ class _ManagerDashboardScreenState extends State<ManagerDashboardScreen> {
                     print('Settings Clicked');
                     break;
                   case 5:
-                    print('Logout Clicked');
+                    print('Login Clicked');
                     Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(builder: (context) => LoginScreen()),
@@ -116,8 +126,8 @@ class _ManagerDashboardScreenState extends State<ManagerDashboardScreen> {
         type: BottomNavigationBarType.fixed,
         items: const [
           BottomNavigationBarItem(
-            icon: Icon(Icons.dashboard),
-            label: 'Dashboard',
+            icon: Icon(Icons.home),
+            label: 'Home',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.people),
@@ -139,7 +149,7 @@ class _ManagerDashboardScreenState extends State<ManagerDashboardScreen> {
   String _getLabel(int index) {
     switch (index) {
       case 0:
-        return 'Give Attendance';
+        return 'Attendance Report';
       case 1:
         return 'View Employees';
       case 2:
