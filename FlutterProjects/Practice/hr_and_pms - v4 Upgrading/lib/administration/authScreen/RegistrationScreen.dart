@@ -21,7 +21,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   final TextEditingController name = TextEditingController()
     ..text = 'Test Name';
   final TextEditingController email = TextEditingController()
-    ..text = 'test@gmail.com';
+    ..text = 'mrahmed1796@gmail.com';
   final TextEditingController password = TextEditingController()
     ..text = '123456';
   // final TextEditingController confirmPassword = TextEditingController()

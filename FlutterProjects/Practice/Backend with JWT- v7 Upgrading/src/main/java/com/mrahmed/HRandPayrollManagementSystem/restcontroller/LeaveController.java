@@ -39,26 +39,6 @@ public class LeaveController {
         }
     }
 
-    @PutMapping("/update/{id}")
-    public ResponseEntity<?> updateLeave(@PathVariable Long id, @RequestBody Leave leave) {
-        try {
-            Leave updatedLeave = leaveService.updateLeave(id, leave);
-            return ResponseEntity.ok(updatedLeave);
-        } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
-    }
-
-//    @PutMapping("/update/{id}")
-//    public ResponseEntity<Leave> updateLeave(@PathVariable Long id, @RequestBody Leave leave) {
-//        return ResponseEntity.ok(leaveService.updateLeave(id, leave));
-//    }
-
-    @DeleteMapping("/delete/{id}")
-    public ResponseEntity<String> deleteLeave(@PathVariable Long id) {
-        leaveService.deleteLeave(id);
-        return ResponseEntity.ok("Leave deleted successfully");
-    }
 
     @GetMapping("/pending")
     public ResponseEntity<List<Leave>> getAllPendingLeaves() {

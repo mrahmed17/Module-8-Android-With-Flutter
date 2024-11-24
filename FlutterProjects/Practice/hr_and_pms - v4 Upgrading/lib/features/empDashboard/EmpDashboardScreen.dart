@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:hr_and_pms/administration/model/User.dart';
 import 'package:hr_and_pms/administration/screens/UserProfileScreen.dart';
+import 'package:hr_and_pms/features/advanceSalary/Screens/ApplyAdvanceSalaryScreen.dart';
 import 'package:intl/intl.dart';
 import 'package:hr_and_pms/features/attendance/screens/AttendanceScreen.dart';
-import 'package:hr_and_pms/features/leave/screens/LeaveCreateScreen.dart';
+import 'package:hr_and_pms/features/leave/screens/ApplyLeaveScreen.dart';
 import 'package:hr_and_pms/administration/authScreen/LoginScreen.dart';
 import 'package:hr_and_pms/administration/service/AuthService.dart';
 
@@ -33,7 +34,7 @@ class _EmpDashboardScreenState extends State<EmpDashboardScreen> {
   // Navigation items for the BottomNavigationBar
   final List<Map<String, dynamic>> _navItems = [
     {'icon': Icons.home, 'label': 'Home', 'screen': AttendanceScreen()},
-    {'icon': Icons.work_off, 'label': 'Leave', 'screen': LeaveCreateScreen()},
+    {'icon': Icons.work_off, 'label': 'Leave', 'screen': ApplyLeaveScreen()},
     {'icon': Icons.feedback, 'label': 'Feedback', 'screen': Container()},
     {'icon': Icons.person, 'label': 'Profile', 'screen': UserProfileScreen()},
     {'icon': Icons.logout, 'label': 'Logout', 'screen': ()},
@@ -132,8 +133,9 @@ class _EmpDashboardScreenState extends State<EmpDashboardScreen> {
   Widget _buildDashboardGrid(BuildContext context) {
     final List<Map<String, dynamic>> features = [
       {'icon': Icons.access_time, 'label': 'Attendance', 'screen': AttendanceScreen()},
-      {'icon': Icons.date_range, 'label': 'Leave', 'screen': LeaveCreateScreen()},
-      {'icon': Icons.history, 'label': 'History', 'screen': Container()},
+      {'icon': Icons.date_range, 'label': 'Apply Leave', 'screen': ApplyLeaveScreen()},
+      {'icon': Icons.money, 'label': 'Apply Advance', 'screen': ApplyAdvanceSalaryScreen()},
+      {'icon': Icons.history, 'label': 'Coming soon', 'screen': Container()},
       {'icon': Icons.history, 'label': 'Coming soon', 'screen': Container()},
       {'icon': Icons.history, 'label': 'Coming soon', 'screen': Container()},
       {'icon': Icons.history, 'label': 'Coming soon', 'screen': Container()},

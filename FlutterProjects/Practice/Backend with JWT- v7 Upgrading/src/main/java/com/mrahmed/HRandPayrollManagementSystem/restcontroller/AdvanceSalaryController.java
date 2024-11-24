@@ -4,53 +4,50 @@ import com.mrahmed.HRandPayrollManagementSystem.entity.AdvanceSalary;
 import com.mrahmed.HRandPayrollManagementSystem.entity.RequestStatus;
 import com.mrahmed.HRandPayrollManagementSystem.service.AdvanceSalaryService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/advanceSalaries")
 @CrossOrigin("*")
 public class AdvanceSalaryController {
+
     @Autowired
     private AdvanceSalaryService advanceSalaryService;
 
     @PostMapping("/apply")
     public ResponseEntity<AdvanceSalary> applyForAdvanceSalary(@RequestBody AdvanceSalary advanceSalary) {
-        return ResponseEntity.ok(advanceSalaryService.applyAdvanceSalary(advanceSalary));
+        AdvanceSalary savedAdvanceSalary = advanceSalaryService.applyAdvanceSalary(advanceSalary);
+        return ResponseEntity.ok(savedAdvanceSalary);
     }
 
-    @PostMapping("/update")
-    public ResponseEntity<AdvanceSalary> updateAdvanceSalary(@RequestBody AdvanceSalary advanceSalary) {
-        AdvanceSalary savedAdvanceSalary = advanceSalaryService.updateAdvanceSalary(advanceSalary);
-        return ResponseEntity.status(HttpStatus.CREATED).body(savedAdvanceSalary);
-    }
-
-    // Delete AdvanceSalary by ID
-//    @DeleteMapping("/delete/{id}")
-//    public ResponseEntity<Void> deleteAdvanceSalary(@PathVariable Long id) {
-//        advanceSalaryService.deleteAdvanceSalary(id);
-//        return ResponseEntity.noContent().build();
-//    }
-    @DeleteMapping("/delete/{id}")
-    public ResponseEntity<Void> deleteAdvanceSalary(@PathVariable Long id) {
-        advanceSalaryService.deleteAdvanceSalary(id);
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Message", "AdvanceSalary Deleted Successfully");
-        return ResponseEntity.noContent().headers(headers).build();
-    }
-
-
-    @PutMapping("/approve/{id}")
+    @PutMapping("/{id}/approve")
     public ResponseEntity<AdvanceSalary> approveAdvanceSalary(@PathVariable Long id) {
-        return ResponseEntity.ok(advanceSalaryService.approveAdvanceSalary(id));
+        AdvanceSalary approvedAdvanceSalary = advanceSalaryService.approveAdvanceSalary(id);
+        return ResponseEntity.ok(approvedAdvanceSalary);
     }
 
-    @GetMapping("/find/{id}")
+    @PatchMapping("/{id}/reject")
+    public ResponseEntity<AdvanceSalary> getRejectedAdvanceSalary(@PathVariable Long id) {
+        AdvanceSalary rejectedAdvanceSalary = advanceSalaryService.getRejectedAdvanceSalary(id);
+        return ResponseEntity.ok(rejectedAdvanceSalary);
+    }
+
+    @GetMapping("/pending")
+    public ResponseEntity<List<AdvanceSalary>> getAllPendingAdvanceSalaries() {
+        List<AdvanceSalary> pendingAdvanceSalaries = advanceSalaryService.getAllPendingAdvanceSalary();
+        return ResponseEntity.ok(pendingAdvanceSalaries);
+    }
+
+    @GetMapping("/user/{userId}/all")
+    public ResponseEntity<List<AdvanceSalary>> getAllAdvanceSalariesByUser(@PathVariable Long userId) {
+        List<AdvanceSalary> userAdvanceSalaries = advanceSalaryService.getAllAdvanceByUser(userId);
+        return ResponseEntity.ok(userAdvanceSalaries);
+    }
+
+    @GetMapping("/{id}")
     public ResponseEntity<AdvanceSalary> getAdvanceSalaryById(@PathVariable Long id) {
         AdvanceSalary advanceSalary = advanceSalaryService.getAdvanceSalaryById(id);
         return ResponseEntity.ok(advanceSalary);
@@ -58,31 +55,32 @@ public class AdvanceSalaryController {
 
     @GetMapping("/all")
     public ResponseEntity<List<AdvanceSalary>> getAllAdvanceSalaries() {
-        List<AdvanceSalary> advanceSalaries = advanceSalaryService.getAllAdvanceSalaries();
-        return ResponseEntity.ok(advanceSalaries);
+        List<AdvanceSalary> allAdvanceSalaries = advanceSalaryService.getAllAdvanceSalaries();
+        return ResponseEntity.ok(allAdvanceSalaries);
     }
 
     @GetMapping("/user/{userId}")
     public ResponseEntity<List<AdvanceSalary>> getAdvanceSalariesByUserId(@PathVariable Long userId) {
-        List<AdvanceSalary> advanceSalaries = advanceSalaryService.getAdvanceSalariesByUserId(userId);
-        return ResponseEntity.ok(advanceSalaries);
+        List<AdvanceSalary> userAdvanceSalaries = advanceSalaryService.getAdvanceSalariesByUserId(userId);
+        return ResponseEntity.ok(userAdvanceSalaries);
     }
 
-    @GetMapping("/approved/{userId}")
-    public ResponseEntity<Optional<AdvanceSalary>> getApprovedAdvanceSalaryByUserId(@PathVariable Long userId){
-        return ResponseEntity.ok(advanceSalaryService.getApprovedAdvanceSalaryByUserId(userId));
+    @GetMapping("/user/{userId}/approved")
+    public ResponseEntity<List<AdvanceSalary>> getApprovedAdvanceSalariesByUserId(@PathVariable Long userId) {
+        List<AdvanceSalary> approvedSalaries = advanceSalaryService.getApprovedAdvanceSalaryByUserId(userId);
+        return ResponseEntity.ok(approvedSalaries);
     }
-
 
     @GetMapping("/user/{userId}/status/{status}")
-    public ResponseEntity<Optional<AdvanceSalary>> getAdvanceSalariesByUserAndStatus(
+    public ResponseEntity<List<AdvanceSalary>> getAdvanceSalariesByUserAndStatus(
             @PathVariable Long userId, @PathVariable RequestStatus status) {
-        return ResponseEntity.ok(advanceSalaryService.getAdvanceSalariesByUserAndStatus(userId, status));
+        List<AdvanceSalary> advanceSalaries = advanceSalaryService.getAdvanceSalariesByUserAndStatus(userId, status);
+        return ResponseEntity.ok(advanceSalaries);
     }
 
     @GetMapping("/status/{status}")
     public ResponseEntity<List<AdvanceSalary>> getAdvanceSalariesByStatus(@PathVariable RequestStatus status) {
-        return ResponseEntity.ok(advanceSalaryService.getAdvanceSalariesByStatus(status));
+        List<AdvanceSalary> advanceSalaries = advanceSalaryService.getAdvanceSalariesByStatus(status);
+        return ResponseEntity.ok(advanceSalaries);
     }
-
 }

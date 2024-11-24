@@ -5,12 +5,12 @@ import 'package:hr_and_pms/features/leave/model/LeaveType.dart';
 import 'package:hr_and_pms/features/leave/model/RequestStatus.dart';
 import 'package:hr_and_pms/features/leave/service/LeaveService.dart';
 
-class LeaveCreateScreen extends StatefulWidget {
+class ApplyLeaveScreen extends StatefulWidget {
   @override
-  _LeaveCreateScreenState createState() => _LeaveCreateScreenState();
+  _ApplyLeaveScreenState createState() => _ApplyLeaveScreenState();
 }
 
-class _LeaveCreateScreenState extends State<LeaveCreateScreen> {
+class _ApplyLeaveScreenState extends State<ApplyLeaveScreen> {
   final _formKey = GlobalKey<FormState>();
   DateTime? _startDate;
   DateTime? _endDate;

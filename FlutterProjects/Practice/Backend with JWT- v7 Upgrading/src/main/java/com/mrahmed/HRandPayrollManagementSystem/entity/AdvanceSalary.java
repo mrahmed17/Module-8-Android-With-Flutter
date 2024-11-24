@@ -34,7 +34,7 @@ public class AdvanceSalary {
     private LocalDateTime advanceDate = LocalDateTime.now();
 
     @Enumerated(EnumType.STRING)
-    private RequestStatus status = RequestStatus.PENDING;
+    private RequestStatus status;
 
     private boolean isPaid;
 

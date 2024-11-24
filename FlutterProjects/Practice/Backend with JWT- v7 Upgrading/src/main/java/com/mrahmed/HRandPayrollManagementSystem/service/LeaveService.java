@@ -73,21 +73,6 @@ public class LeaveService {
         return unpaidDays * (user.getBasicSalary() / 30.0); // Assuming a 30-day month
     }
 
-    public Leave updateLeave(Long id, Leave updatedLeave) {
-        Leave existingLeave = leaveRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Leave not found"));
-        existingLeave.setStartDate(updatedLeave.getStartDate());
-        existingLeave.setEndDate(updatedLeave.getEndDate());
-        existingLeave.setReason(updatedLeave.getReason());
-        existingLeave.setLeaveType(updatedLeave.getLeaveType());
-        existingLeave.setRequestStatus(updatedLeave.getRequestStatus());
-        return leaveRepository.save(existingLeave);
-    }
-
-    public void deleteLeave(Long leaveId) {
-        leaveRepository.deleteById(leaveId);
-    }
-
     public List<Leave> getAllPendingLeaves() {
         return leaveRepository.findByRequestStatus(RequestStatus.PENDING);
     }

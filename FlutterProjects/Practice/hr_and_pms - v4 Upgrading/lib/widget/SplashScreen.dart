@@ -24,10 +24,10 @@ class _SplashScreenState extends State<SplashScreen> {
   Future<void> _checkLoginStatus() async {
     bool loggedIn = await AuthService().isLoggedIn();
     if (loggedIn) {
-      // Navigate to the home/empDashboard employeeScreen
+      // Navigate to the home/empDashboard Screens
       Navigator.pushReplacementNamed(context, '/empDashboard');
     } else {
-      // Stay on the login employeeScreen
+      // Stay on the login Screens
       Navigator.pushReplacementNamed(context, '/home');
     }
   }

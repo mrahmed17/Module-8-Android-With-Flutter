@@ -22,29 +22,6 @@ class AdvanceSalary {
     this.paidDate,
   });
 
-  // Create a copyWith method to return a new instance with a modified status
-  AdvanceSalary copyWith({
-    int? id,
-    double? advanceAmount, // Corrected naming
-    String? reason,
-    DateTime? advanceDate,
-    User? user,
-    RequestStatus? status,
-    bool? isPaid,
-    DateTime? paidDate,
-  }) {
-    return AdvanceSalary(
-      id: id ?? this.id,
-      advanceAmount: advanceAmount ?? this.advanceAmount, // Corrected naming
-      reason: reason ?? this.reason,
-      advanceDate: advanceDate ?? this.advanceDate,
-      user: user ?? this.user,
-      status: status ?? this.status,
-      isPaid: isPaid ?? this.isPaid,
-      paidDate: paidDate ?? this.paidDate, // Keep the current value unless explicitly changed
-    );
-  }
-
   // Method to convert JSON to AdvanceSalary instance
   factory AdvanceSalary.fromJson(Map<String, dynamic> json) {
     return AdvanceSalary(

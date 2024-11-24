@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class AdvanceSalaryService {
@@ -24,63 +23,60 @@ public class AdvanceSalaryService {
     public AdvanceSalary applyAdvanceSalary(AdvanceSalary advanceSalary) {
         User user = userRepository.findById(advanceSalary.getUser().getId())
                 .orElseThrow(() -> new IllegalArgumentException("User not found with ID: " + advanceSalary.getUser().getId()));
-
         advanceSalary.setUser(user);
         advanceSalary.setAdvanceDate(LocalDateTime.now()); // Automatically set the date
-        return advanceSalaryRepository.save(advanceSalary);
-    }
-
-
-//    public AdvanceSalary applyAdvanceSalary(AdvanceSalary advanceSalary) {
-//        return advanceSalaryRepository.save(advanceSalary);
-//    }
-
-    public AdvanceSalary updateAdvanceSalary(AdvanceSalary advanceSalary) {
+        advanceSalary.setStatus(RequestStatus.PENDING);    // Default status is PENDING
         return advanceSalaryRepository.save(advanceSalary);
     }
 
     public AdvanceSalary approveAdvanceSalary(Long id) {
-        AdvanceSalary advanceSalary = advanceSalaryRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("AdvanceSalary with ID " + id + " not found"));
+        AdvanceSalary advanceSalary = findAdvanceOrThrow(id);
         advanceSalary.setStatus(RequestStatus.APPROVED);
         advanceSalary.setIsPaid(true);
-        advanceSalary.setPaidDate(java.time.LocalDateTime.now());
+        advanceSalary.setPaidDate(LocalDateTime.now()); // Automatically set paid date
         return advanceSalaryRepository.save(advanceSalary);
     }
 
-    public AdvanceSalary getAdvanceSalaryById(Long id) {
-        return advanceSalaryRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("AdvanceSalary with ID " + id + " not found"));
+    public AdvanceSalary getRejectedAdvanceSalary(Long id) {
+        AdvanceSalary advanceSalary = findAdvanceOrThrow(id);
+        advanceSalary.setStatus(RequestStatus.REJECTED);
+        return advanceSalaryRepository.save(advanceSalary);
     }
 
-    // Get all AdvanceSalary records
+    public List<AdvanceSalary> getAllPendingAdvanceSalary() {
+        return advanceSalaryRepository.findByStatus(RequestStatus.PENDING);
+    }
+
+    public List<AdvanceSalary> getAllAdvanceByUser(Long userId) {
+        return advanceSalaryRepository.findByUserId(userId);
+    }
+
+    public AdvanceSalary getAdvanceSalaryById(Long id) {
+        return findAdvanceOrThrow(id);
+    }
+
     public List<AdvanceSalary> getAllAdvanceSalaries() {
         return advanceSalaryRepository.findAll();
     }
 
-    // Get AdvanceSalaries by User ID
     public List<AdvanceSalary> getAdvanceSalariesByUserId(Long userId) {
         return advanceSalaryRepository.findByUserId(userId);
     }
 
-    // Delete AdvanceSalary by ID
-    public void deleteAdvanceSalary(Long id) {
-        if (advanceSalaryRepository.existsById(id)) {
-            advanceSalaryRepository.deleteById(id);
-        } else {
-            throw new IllegalArgumentException("AdvanceSalary with ID " + id + " does not exist.");
-        }
-    }
-
-    public Optional<AdvanceSalary> getApprovedAdvanceSalaryByUserId(Long userId) {
+    public List<AdvanceSalary> getApprovedAdvanceSalaryByUserId(Long userId) {
         return advanceSalaryRepository.findApprovedAdvanceSalaryByUserId(userId);
     }
 
-    public Optional<AdvanceSalary> getAdvanceSalariesByUserAndStatus(Long userId, RequestStatus status) {
+    public List<AdvanceSalary> getAdvanceSalariesByUserAndStatus(Long userId, RequestStatus status) {
         return advanceSalaryRepository.findByUserIdAndStatus(userId, status);
     }
 
     public List<AdvanceSalary> getAdvanceSalariesByStatus(RequestStatus status) {
         return advanceSalaryRepository.findByStatus(status);
+    }
+
+    private AdvanceSalary findAdvanceOrThrow(Long advanceId) {
+        return advanceSalaryRepository.findById(advanceId)
+                .orElseThrow(() -> new RuntimeException("Advance Salary not found with ID: " + advanceId));
     }
 }

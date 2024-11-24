@@ -134,7 +134,7 @@ class _LeaveManagementScreenState extends State<LeaveManagementScreen> {
               margin: const EdgeInsets.symmetric(vertical: 8),
               child: ListTile(
                 title: Text(
-                  '${leave.user?.name ?? 'Unknown'} - ${leave.leaveType ?? 'Unknown'} Leave',
+                  '${leave.user?.name ?? 'Unknown User'} - ${leave.leaveType ?? 'Unknown'} Leave',
                   style: const TextStyle(fontWeight: FontWeight.bold),
                 ),
                 subtitle: Column(
