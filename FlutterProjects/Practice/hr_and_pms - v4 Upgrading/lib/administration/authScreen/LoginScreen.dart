@@ -53,19 +53,19 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
-  @override
-  void initState() {
-    super.initState();
-    _checkForExistingToken();
-  }
-
-  Future<void> _checkForExistingToken() async {
-    bool loggedIn = await AuthService().isLoggedIn();
-    if (loggedIn) {
-      // Redirect to home or empDashboard if already logged in
-      Navigator.pushReplacementNamed(context, '/empDashboard');
-    }
-  }
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   _checkForExistingToken();
+  // }
+  //
+  // Future<void> _checkForExistingToken() async {
+  //   bool loggedIn = await AuthService().isLoggedIn();
+  //   if (loggedIn) {
+  //     // Redirect to home or empDashboard if already logged in
+  //     Navigator.pushReplacementNamed(context, '/empDashboard');
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -144,7 +144,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             },
                             child: const Text(
                               "Forget Password?",
-                              style: TextStyle(color: Colors.deepOrange),
+                              style: TextStyle(color: Colors.red),
                               ),
                             ),
                           ),

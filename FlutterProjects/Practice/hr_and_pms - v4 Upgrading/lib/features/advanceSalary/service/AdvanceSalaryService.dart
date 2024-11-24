@@ -6,18 +6,35 @@ import 'package:http/http.dart' as http;
 class AdvanceSalaryService {
   static const String baseUrl = 'http://localhost:8080/api/advanceSalaries';
 
-  // Create a new advance salary record
-  Future<AdvanceSalary> createAdvanceSalary(AdvanceSalary advanceSalary) async {
+  // Apply for a new advance salary
+  Future<AdvanceSalary> applyAdvanceSalary(AdvanceSalary advanceSalary) async {
     try {
       final response = await http.post(
-        Uri.parse('$baseUrl/create'),
+        Uri.parse('$baseUrl/apply'),
         headers: {'Content-Type': 'application/json'},
         body: json.encode(advanceSalary.toJson()),
       );
-      if (response.statusCode == 201) {
+      if (response.statusCode == 200) {
         return AdvanceSalary.fromJson(json.decode(response.body));
       } else {
-        throw Exception('Failed to create advance salary');
+        throw Exception('Failed to apply for advance salary');
+      }
+    } catch (e) {
+      throw Exception('Error: $e');
+    }
+  }
+
+  // Approve an advance salary application by ID
+  Future<AdvanceSalary> approveAdvanceSalary(int id) async {
+    try {
+      final response = await http.put(
+        Uri.parse('$baseUrl/approve/$id'),
+        headers: {'Content-Type': 'application/json'},
+      );
+      if (response.statusCode == 200) {
+        return AdvanceSalary.fromJson(json.decode(response.body));
+      } else {
+        throw Exception('Failed to approve advance salary');
       }
     } catch (e) {
       throw Exception('Error: $e');
@@ -25,8 +42,8 @@ class AdvanceSalaryService {
   }
 
   // Update the status of an advance salary application
-  Future<void> updateAdvanceSalary(int applicationId, AdvanceSalary updatedApplication) async {
-    final url = Uri.parse('$baseUrl/update/$applicationId');
+  Future<void> updateAdvanceSalary( AdvanceSalary updatedApplication) async {
+    final url = Uri.parse('$baseUrl/update');
     final response = await http.put(
       url,
       headers: {'Content-Type': 'application/json'},
@@ -38,7 +55,7 @@ class AdvanceSalaryService {
     }
   }
 
-  // Delete an advance salary record
+// Delete an advance salary record by ID
   Future<void> deleteAdvanceSalary(int id) async {
     try {
       final response = await http.delete(Uri.parse('$baseUrl/delete/$id'));
@@ -64,50 +81,99 @@ class AdvanceSalaryService {
     }
   }
 
-  // Fetch all advance salary applications for admins/managers
+// Fetch all advance salaries
   Future<List<AdvanceSalary>> getAllAdvanceSalaries() async {
-    final url = Uri.parse('$baseUrl/all'); // Adjust endpoint as needed
-    final response = await http.get(url);
-
-    if (response.statusCode == 200) {
-      final List<dynamic> data = json.decode(response.body);
-      return data.map((json) => AdvanceSalary.fromJson(json)).toList();
-    } else {
-      throw Exception('Failed to fetch all advance salary applications');
-    }
-  }
-
-  // Fetch advance salary applications for a specific user
-  Future<List<AdvanceSalary>> getAdvanceSalaries(int id) async {
-    final url = Uri.parse('$baseUrl/findAll/$id'); // Adjust endpoint as needed
-    final response = await http.get(url);
-
-    if (response.statusCode == 200) {
-      final List<dynamic> data = json.decode(response.body);
-      return data.map((json) => AdvanceSalary.fromJson(json)).toList();
-    } else {
-      throw Exception('Failed to fetch advance salary history');
-    }
-  }
-
-  // Fetch advance salaries for a user within a specific date range
-  Future<List<AdvanceSalary>> getAdvanceSalariesByUserAndDateRange(
-      int id, DateTime startDate, DateTime endDate) async {
     try {
-      final response = await http.get(
-        Uri.parse(
-            '$baseUrl/userDate-range/$id?startDate=${startDate.toIso8601String()}&endDate=${endDate.toIso8601String()}'),
-      );
+      final response = await http.get(Uri.parse('$baseUrl/all'));
       if (response.statusCode == 200) {
         List<dynamic> data = json.decode(response.body);
-        return data.map((item) => AdvanceSalary.fromJson(item)).toList();
+        return data.map((json) => AdvanceSalary.fromJson(json)).toList();
       } else {
-        throw Exception('Failed to fetch salaries for user within date range');
+        throw Exception('Failed to fetch all advance salaries');
       }
     } catch (e) {
       throw Exception('Error: $e');
     }
   }
+
+
+  // Fetch advance salaries for a specific user
+  Future<List<AdvanceSalary>> getAdvanceSalariesByUser(int userId) async {
+    try {
+      final response = await http.get(Uri.parse('$baseUrl/user/$userId'));
+      if (response.statusCode == 200) {
+        List<dynamic> data = json.decode(response.body);
+        return data.map((json) => AdvanceSalary.fromJson(json)).toList();
+      } else {
+        throw Exception('Failed to fetch advance salaries for user');
+      }
+    } catch (e) {
+      throw Exception('Error: $e');
+    }
+  }
+
+  // Fetch advance salaries for a specific user and status
+  Future<List<AdvanceSalary>> getAdvanceSalariesByUserAndStatus(
+      int userId, RequestStatus status) async {
+    try {
+      final response = await http.get(Uri.parse('$baseUrl/user/$userId/status/$status'));
+      if (response.statusCode == 200) {
+        List<dynamic> data = json.decode(response.body);
+        return data.map((json) => AdvanceSalary.fromJson(json)).toList();
+      } else {
+        throw Exception('Failed to fetch advance salaries by status');
+      }
+    } catch (e) {
+      throw Exception('Error: $e');
+    }
+  }
+
+  // Fetch advance salaries by status
+  Future<List<AdvanceSalary>> getAdvanceSalariesByStatus(RequestStatus status) async {
+    try {
+      final response = await http.get(Uri.parse('$baseUrl/status/$status'));
+      if (response.statusCode == 200) {
+        List<dynamic> data = json.decode(response.body);
+        return data.map((json) => AdvanceSalary.fromJson(json)).toList();
+      } else {
+        throw Exception('Failed to fetch advance salaries by status');
+      }
+    } catch (e) {
+      throw Exception('Error: $e');
+    }
+  }
+
+  // // Fetch advance salary applications for a specific user
+  // Future<List<AdvanceSalary>> getAdvanceSalaries(int id) async {
+  //   final url = Uri.parse('$baseUrl/findAll/$id'); // Adjust endpoint as needed
+  //   final response = await http.get(url);
+  //
+  //   if (response.statusCode == 200) {
+  //     final List<dynamic> data = json.decode(response.body);
+  //     return data.map((json) => AdvanceSalary.fromJson(json)).toList();
+  //   } else {
+  //     throw Exception('Failed to fetch advance salary history');
+  //   }
+  // }
+
+  // // Fetch advance salaries for a user within a specific date range
+  // Future<List<AdvanceSalary>> getAdvanceSalariesByUserAndDateRange(
+  //     int id, DateTime startDate, DateTime endDate) async {
+  //   try {
+  //     final response = await http.get(
+  //       Uri.parse(
+  //           '$baseUrl/userDate-range/$id?startDate=${startDate.toIso8601String()}&endDate=${endDate.toIso8601String()}'),
+  //     );
+  //     if (response.statusCode == 200) {
+  //       List<dynamic> data = json.decode(response.body);
+  //       return data.map((item) => AdvanceSalary.fromJson(item)).toList();
+  //     } else {
+  //       throw Exception('Failed to fetch salaries for user within date range');
+  //     }
+  //   } catch (e) {
+  //     throw Exception('Error: $e');
+  //   }
+  // }
 
   // Fetch all pending advance salary requests
   Future<List<AdvanceSalary>> getPendingSalaryRequests() async {
@@ -188,26 +254,5 @@ class AdvanceSalaryService {
     }
   }
 
-  // Fetch advance salary applications based on user ID and status
-  Future<List<AdvanceSalary>> getAdvanceSalariesByStatus(int userId, RequestStatus status) async {
-    try {
-      // Create the URL with status and user ID
-      final url = Uri.parse('$baseUrl/status/$status/user/$userId');
-
-      // Send the GET request to the backend
-      final response = await http.get(url);
-
-      // Check if the response is successful
-      if (response.statusCode == 200) {
-        // Parse the response body to a list of AdvanceSalary objects
-        List<dynamic> data = json.decode(response.body);
-        return data.map((item) => AdvanceSalary.fromJson(item)).toList();
-      } else {
-        throw Exception('Failed to load advance salary applications');
-      }
-    } catch (e) {
-      throw Exception('Error: $e');
-    }
-  }
 
 }

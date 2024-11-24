@@ -32,6 +32,8 @@ dependencies:
     sdk: flutter
   carousel_slider: ^5.0.0
 
+  intl: ^0.18.0
+
   # accessing biometrics (fingerprint, face recognition) on iOS and Android.
   local_auth: ^2.1.6
 

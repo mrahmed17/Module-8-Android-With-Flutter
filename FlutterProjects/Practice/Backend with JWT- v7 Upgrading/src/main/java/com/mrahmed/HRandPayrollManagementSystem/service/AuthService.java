@@ -74,7 +74,7 @@ public class AuthService {
         user.setRole(role);
         user.setActive(false);
 
-        // Set default leave balance (e.g., 25 days for all leave types)
+        // Set default leave balance (e.g., 25 days for sick and reserve and 30 days for unpaid in a year leave types)
         Map<LeaveType, Integer> defaultLeaveBalance = new HashMap<>();
         defaultLeaveBalance.put(LeaveType.SICK, 15); // Example for paid leave
         defaultLeaveBalance.put(LeaveType.UNPAID, 30); // Example for unpaid leave

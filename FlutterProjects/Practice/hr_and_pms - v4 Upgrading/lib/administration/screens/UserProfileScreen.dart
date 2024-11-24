@@ -7,9 +7,7 @@ import 'package:hr_and_pms/administration/service/AuthService.dart';
 import 'package:hr_and_pms/administration/model/User.dart';
 
 class UserProfileScreen extends StatefulWidget {
-  final int userId;
-
-  const UserProfileScreen({super.key, required this.userId});
+  const UserProfileScreen({super.key});
 
   @override
   State<UserProfileScreen> createState() => _UserProfileScreenState();
@@ -18,6 +16,7 @@ class UserProfileScreen extends StatefulWidget {
 class _UserProfileScreenState extends State<UserProfileScreen> {
   final AuthService _authService = AuthService();
   User? _user;
+   // final imageUrl = "http://localhost:8080/uploadDir/images/${_user?.profilePhoto}";
   bool _isLoading = true;
   bool _isUpdating = false;
 
@@ -31,9 +30,9 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
 
   Future<void> _fetchUserDetails() async {
     try {
-      final user = await _authService.getUserById(widget.userId);
+      final user = await _authService.getUser;
       setState(() {
-        _user = user;
+        _user = user as User?;
         _isLoading = false;
       });
     } catch (e) {
@@ -168,8 +167,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                       backgroundImage: _selectedImage != null
                           ? FileImage(File(_selectedImage!.path))
                           : _user!.profilePhoto != null
-                          ? NetworkImage(
-                        "http://localhost:8080/uploadDir/images/${_user!.profilePhoto}",
+                          ? NetworkImage("http://localhost:8080/uploadDir/images/${_user!.profilePhoto}"
                       )
                           : null as ImageProvider<Object>?,
                       child: _selectedImage == null &&

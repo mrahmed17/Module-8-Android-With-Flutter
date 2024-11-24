@@ -17,7 +17,7 @@ class AdminDashboardScreen extends StatefulWidget {
 class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
   int _selectedIndex = 0;
   User? _currentUser;
-  String _currentTime = '';
+  // String _currentTime = '';
 
   // Welcome message and current time
   String getWelcomeMessage() {
@@ -31,9 +31,9 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
     }
   }
 
-  String getCurrentDateTime() {
-    return DateFormat('EEEE, MMMM d, yyyy • h:mm a').format(DateTime.now());
-  }
+  // String getCurrentDateTime() {
+  //   return DateFormat('EEEE, MMMM d, yyyy • h:mm a').format(DateTime.now());
+  // }
 
   final List<Widget> _screens = [
     AttendanceReportScreen(),
@@ -47,16 +47,92 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
   void initState() {
     super.initState();
     _fetchCurrentUser();
+    _checkAuthentication();
     // _startClock();
   }
 
+
   /// Fetch the currently logged-in user's details
   Future<void> _fetchCurrentUser() async {
-    final user = await AuthService().getUser(); // Assuming AuthService handles fetching the logged-in user
-    setState(() {
-      _currentUser = user;
-    });
+    try {
+      final user = await AuthService().getUser();
+      if (user != null) {
+        setState(() {
+          _currentUser = user;
+        });
+      } else {
+        // Handle no user found
+        print('No user data available');
+      }
+    } catch (e) {
+      print('Error fetching user data: $e');
+    }
   }
+
+  Future<void> _checkAuthentication() async {
+    if (!await AuthService().isLoggedIn()) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => LoginScreen()),
+      );
+    }
+  }
+
+  Future<void> _logout() async {
+    final confirm = await showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Logout'),
+        content: const Text('Are you sure you want to logout?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            child: const Text('Logout'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirm) {
+      await AuthService().logout();
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => LoginScreen()),
+      );
+    }
+  }
+
+  void _onItemTapped(int index) {
+    if (index == 3) {
+      _logout();
+    } else {
+      setState(() {
+        _selectedIndex = index;
+      });
+    }
+  }
+
+  // Build the live clock widget
+  Widget _buildClock() {
+    return StreamBuilder<DateTime>(
+      stream: Stream.periodic(const Duration(seconds: 1), (_) => DateTime.now()),
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          return Text(
+            DateFormat('EEEE, MMMM d, yyyy • h:mm:ss a').format(snapshot.data!),
+            style: const TextStyle(fontSize: 14, color: Colors.teal, fontWeight: FontWeight.bold),
+          );
+        }
+        return const CircularProgressIndicator();
+      },
+    );
+  }
+
+
 
   /// Start the real-time clock
   // void _startClock() {
@@ -70,11 +146,11 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
   //   });
   // }
 
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
-  }
+  // void _onItemTapped(int index) {
+  //   setState(() {
+  //     _selectedIndex = index;
+  //   });
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -144,11 +220,11 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                     color: Colors.teal,
                   ),
                 ),
-              ),
-              Text(
-                getCurrentDateTime(),
-                style: const TextStyle(fontSize: 14, color: Colors.grey),
-              ),
+              ),_buildClock(),
+              // // Text(
+              // //   getCurrentDateTime(),
+              // //   style: const TextStyle(fontSize: 14, color: Colors.grey),
+              // ),
               // Text(
               //   _currentTime,
               //   style: const TextStyle(

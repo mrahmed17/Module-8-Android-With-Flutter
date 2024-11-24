@@ -57,11 +57,11 @@ class _UserListScreenState extends State<UserListScreen> {
       _filteredUsers = _users.where((user) {
         // Convert the role and gender to lowercase to make the comparison case-insensitive
         final roleString = user.role.toString().toLowerCase();
-        final genderString = user.gender!.toLowerCase(); // Make sure it's in lowercase
-        final matchesName = user.name!.toLowerCase().contains(_nameFilter.toLowerCase());
+        final genderString = user.gender.toLowerCase(); // Make sure it's in lowercase
+        final matchesName = user.name.toLowerCase().contains(_nameFilter.toLowerCase());
         final matchesRole = roleString.contains(_roleFilter.toLowerCase());
         final matchesGender = _genderFilter.isEmpty || genderString == _genderFilter.toLowerCase();  // Strict match for gender
-        final matchesSalary = user.basicSalary! >= _minSalary && user.basicSalary! <= _maxSalary;
+        final matchesSalary = user.basicSalary >= _minSalary && user.basicSalary <= _maxSalary;
 
         return matchesName && matchesRole && matchesGender && matchesSalary;
       }).toList();

@@ -1,10 +1,10 @@
-import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:hr_and_pms/administration/model/User.dart';
+import 'package:hr_and_pms/administration/screens/UserProfileScreen.dart';
+import 'package:intl/intl.dart';
 import 'package:hr_and_pms/features/attendance/screens/AttendanceScreen.dart';
 import 'package:hr_and_pms/features/leave/screens/LeaveCreateScreen.dart';
-import 'package:intl/intl.dart'; // For formatting date and time
 import 'package:hr_and_pms/administration/authScreen/LoginScreen.dart';
-import 'package:hr_and_pms/administration/model/User.dart';
 import 'package:hr_and_pms/administration/service/AuthService.dart';
 
 class EmpDashboardScreen extends StatefulWidget {
@@ -17,7 +17,6 @@ class EmpDashboardScreen extends StatefulWidget {
 class _EmpDashboardScreenState extends State<EmpDashboardScreen> {
   int _selectedIndex = 0;
   User? _currentUser;
-  String _currentTime = '';
 
   // Welcome message and current time
   String getWelcomeMessage() {
@@ -31,232 +30,199 @@ class _EmpDashboardScreenState extends State<EmpDashboardScreen> {
     }
   }
 
-  String getCurrentDateTime() {
-    return DateFormat('EEEE, MMMM d, yyyy • h:mm a').format(DateTime.now());
-  }
-
-  final List<Widget> _screens = [
-    AttendanceScreen(),
-    LeaveCreateScreen(),
-    LoginScreen(),
-    Container(), // Placeholder for Feedback
-    Container(), // Placeholder for Logout
+  // Navigation items for the BottomNavigationBar
+  final List<Map<String, dynamic>> _navItems = [
+    {'icon': Icons.home, 'label': 'Home', 'screen': AttendanceScreen()},
+    {'icon': Icons.work_off, 'label': 'Leave', 'screen': LeaveCreateScreen()},
+    {'icon': Icons.feedback, 'label': 'Feedback', 'screen': Container()},
+    {'icon': Icons.person, 'label': 'Profile', 'screen': UserProfileScreen()},
+    {'icon': Icons.logout, 'label': 'Logout', 'screen': ()},
   ];
 
+  // Fetch the screens from the navigation items
+  List<Widget> get _screens =>
+      _navItems.map((item) => item['screen'] as Widget).toList();
+
+  // Fetch user and authentication state
   @override
   void initState() {
     super.initState();
     _fetchCurrentUser();
-    // _startClock();
+    _checkAuthentication();
   }
 
-  /// Fetch the currently logged-in user's details
   Future<void> _fetchCurrentUser() async {
-    final user = await AuthService().getUser(); // Assuming AuthService handles fetching the logged-in user
-    setState(() {
-      _currentUser = user;
-    });
+    try {
+      final user = await AuthService().getUser();
+      if (user != null) {
+        setState(() {
+          _currentUser = user;
+        });
+      } else {
+        print('No user data available');
+      }
+    } catch (e) {
+      print('Error fetching user data: $e');
+    }
   }
 
-  /// Start the real-time clock
-  // void _startClock() {
-  //   Timer.periodic(const Duration(seconds: 1), (timer) {
-  //     final now = DateTime.now();
-  //     final formattedTime = "${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}";
-  //     final formattedDate = "${now.day.toString().padLeft(2, '0')}/${now.month.toString().padLeft(2, '0')}/${now.year}";
-  //     setState(() {
-  //       _currentTime = "$formattedDate | $formattedTime";
-  //     });
-  //   });
-  // }
+  Future<void> _checkAuthentication() async {
+    if (!await AuthService().isLoggedIn()) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => LoginScreen()),
+      );
+    }
+  }
+
+  Future<void> _logout() async {
+    final confirm = await showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Logout'),
+        content: const Text('Are you sure you want to logout?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            child: const Text('Logout'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirm) {
+      await AuthService().logout();
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => LoginScreen()),
+      );
+    }
+  }
 
   void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
+    if (index == 4) {
+      _logout();
+    } else {
+      setState(() {
+        _selectedIndex = index;
+      });
+    }
+  }
+
+  // Build the live clock widget
+  Widget _buildClock() {
+    return StreamBuilder<DateTime>(
+      stream: Stream.periodic(const Duration(seconds: 1), (_) => DateTime.now()),
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          return Text(
+            DateFormat('EEEE, MMMM d, yyyy • h:mm:ss a').format(snapshot.data!),
+            style: const TextStyle(fontSize: 14, color: Colors.teal, fontWeight: FontWeight.bold),
+          );
+        }
+        return const CircularProgressIndicator();
+      },
+    );
+  }
+
+  Widget _buildDashboardGrid(BuildContext context) {
+    final List<Map<String, dynamic>> features = [
+      {'icon': Icons.access_time, 'label': 'Attendance', 'screen': AttendanceScreen()},
+      {'icon': Icons.date_range, 'label': 'Leave', 'screen': LeaveCreateScreen()},
+      {'icon': Icons.history, 'label': 'History', 'screen': Container()},
+      {'icon': Icons.history, 'label': 'Coming soon', 'screen': Container()},
+      {'icon': Icons.history, 'label': 'Coming soon', 'screen': Container()},
+      {'icon': Icons.history, 'label': 'Coming soon', 'screen': Container()},
+      {'icon': Icons.history, 'label': 'Coming soon', 'screen': Container()},
+      {'icon': Icons.history, 'label': 'Coming soon', 'screen': Container()},
+      {'icon': Icons.history, 'label': 'Coming soon', 'screen': Container()},
+      // Add more features as required
+    ];
+
+    return Expanded(
+      child: GridView.builder(
+        padding: const EdgeInsets.all(16),
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 2,
+          mainAxisSpacing: 16,
+          crossAxisSpacing: 16,
+          childAspectRatio: 1,
+        ),
+        itemCount: features.length,
+        itemBuilder: (context, index) {
+          return GestureDetector(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => features[index]['screen'],
+                ),
+              );
+            },
+            child: Card(
+              elevation: 4,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(features[index]['icon'], size: 40),
+                  const SizedBox(height: 8),
+                  Text(features[index]['label'], style: const TextStyle(fontSize: 16)),
+                ],
+              ),
+            ),
+          );
+        },
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'Employee Dashboard',
-          style: TextStyle(
-            fontSize: 24,
-            fontWeight: FontWeight.w600,
-            color: Colors.white,
-          ),
-        ),
-        backgroundColor: Colors.blueAccent,
+        title: const Text('Employee Dashboard', style: TextStyle( fontSize: 40,
+          fontWeight: FontWeight.bold,
+          color: Colors.white,),),
+        backgroundColor: Colors.teal,
         centerTitle: true,
       ),
-      body: _selectedIndex == 0
-          ? _buildDashboardGrid(context)
-          : _screens[_selectedIndex],
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _selectedIndex,
-        onTap: _onItemTapped,
-        backgroundColor: Colors.teal,
-        selectedItemColor: Colors.white,
-        unselectedItemColor: Colors.teal.shade100,
-        selectedFontSize: 14,
-        unselectedFontSize: 14,
-        showSelectedLabels: true,
-        showUnselectedLabels: true,
-        type: BottomNavigationBarType.fixed,
-        items: [
-          const BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
-          ),
-          const BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: 'Profile',
-          ),
-          const BottomNavigationBarItem(
-            icon: Icon(Icons.feedback),
-            label: 'Feedback',
-          ),
-          BottomNavigationBarItem(
-            icon: const Icon(Icons.logout),
-            label: 'Logout',
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildDashboardGrid(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10.0),
-          child: Row(
-            children: [
-              Expanded(
-                child: Text(
-                  '${getWelcomeMessage()}, ${_currentUser!.name}!',
-                  style: const TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.teal,
-                  ),
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  '${getWelcomeMessage()}, ${_currentUser?.name ?? 'Employee'}',
+                  style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w800, color: Colors.teal),
                 ),
-              ),
-              Text(
-                getCurrentDateTime(),
-                style: const TextStyle(fontSize: 14, color: Colors.grey),
-              ),
-              // Text(
-              //   _currentTime,
-              //   style: const TextStyle(
-              //     fontSize: 16,
-              //     fontWeight: FontWeight.w600,
-              //     color: Colors.grey,
-              //   ),
-              // ),
-            ],
-          ),
-        ),
-        Expanded(
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: GridView.builder(
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                crossAxisSpacing: 16,
-                mainAxisSpacing: 16,
-                childAspectRatio: 1,
-              ),
-              itemCount: 6,
-              itemBuilder: (context, index) {
-                return GestureDetector(
-                  onTap: () {
-                    // Navigate to respective feature screens
-                    switch (index) {
-                      case 0:
-                        Navigator.push(context, MaterialPageRoute(builder: (context) => AttendanceScreen()));
-                        break;
-                      case 1:
-                        Navigator.push(context, MaterialPageRoute(builder: (context) => LeaveCreateScreen()));
-                        break;
-                      default:
-                        break;
-                    }
-                  },
-                  child: Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(20),
-                      gradient: LinearGradient(
-                        colors: _getGradientColor(index),
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                      ),
-                    ),
-                    child: Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            _getIcon(index),
-                            size: 40,
-                            color: Colors.white,
-                          ),
-                          const SizedBox(height: 8),
-                          Text(
-                            _getLabel(index),
-                            textAlign: TextAlign.center,
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                );
-              },
+                _buildClock(),
+              ],
             ),
           ),
-        ),
-      ],
+          _buildDashboardGrid(context),
+        ],
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        backgroundColor: Colors.white,
+        selectedItemColor: Colors.teal,
+        unselectedItemColor: Colors.grey,
+        items: _navItems
+            .map((item) => BottomNavigationBarItem(
+          icon: Icon(item['icon']),
+          label: item['label'],
+        ))
+            .toList(),
+        currentIndex: _selectedIndex,
+        onTap: _onItemTapped,
+      ),
     );
-  }
-
-  String _getLabel(int index) {
-    switch (index) {
-      case 0:
-        return 'Attendance';
-      case 1:
-        return 'Leave';
-      default:
-        return 'Coming Soon';
-    }
-  }
-
-  IconData _getIcon(int index) {
-    switch (index) {
-      case 0:
-        return Icons.access_time;
-      case 1:
-        return Icons.work_off;
-      default:
-        return Icons.help;
-    }
-  }
-
-  List<Color> _getGradientColor(int index) {
-    switch (index) {
-      case 0:
-        return [Colors.blueAccent, Colors.lightBlueAccent];
-      case 1:
-        return [Colors.orangeAccent, Colors.deepOrangeAccent];
-      default:
-        return [Colors.grey, Colors.black26];
-    }
   }
 }

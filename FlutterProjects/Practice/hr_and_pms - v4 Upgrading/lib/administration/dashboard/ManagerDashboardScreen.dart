@@ -19,7 +19,6 @@ class ManagerDashboardScreen extends StatefulWidget {
 class _ManagerDashboardScreenState extends State<ManagerDashboardScreen> {
   int _selectedIndex = 0;
   User? _currentUser;
-  String _currentTime = '';
 
   // Welcome message and current time
   String getWelcomeMessage() {
@@ -55,11 +54,21 @@ class _ManagerDashboardScreenState extends State<ManagerDashboardScreen> {
 
   /// Fetch the currently logged-in user's details
   Future<void> _fetchCurrentUser() async {
-    final user = await AuthService().getUser(); // Assuming AuthService handles fetching the logged-in user
-    setState(() {
-      _currentUser = user;
-    });
+    try {
+      final user = await AuthService().getUser();
+      if (user != null) {
+        setState(() {
+          _currentUser = user;
+        });
+      } else {
+        // Handle no user found
+        print('No user data available');
+      }
+    } catch (e) {
+      print('Error fetching user data: $e');
+    }
   }
+
 
   /// Start the real-time clock
   // void _startClock() {
@@ -189,7 +198,7 @@ class _ManagerDashboardScreenState extends State<ManagerDashboardScreen> {
                         Navigator.push(context, MaterialPageRoute(builder: (context) => UserListScreen()));
                         break;
                         case 2:
-                        Navigator.push(context, MaterialPageRoute(builder: (context) => UserProfileScreen(userId: _currentUser)));
+                        Navigator.push(context, MaterialPageRoute(builder: (context) => UserProfileScreen()));
                         break;
                       default:
                         break;

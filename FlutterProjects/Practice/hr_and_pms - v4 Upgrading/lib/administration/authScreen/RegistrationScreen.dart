@@ -24,8 +24,8 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     ..text = 'test@gmail.com';
   final TextEditingController password = TextEditingController()
     ..text = '123456';
-  final TextEditingController confirmPassword = TextEditingController()
-    ..text = '123456';
+  // final TextEditingController confirmPassword = TextEditingController()
+  //   ..text = '123456';
   final TextEditingController cell = TextEditingController()
     ..text = '01700000000';
   final TextEditingController address = TextEditingController()
@@ -38,6 +38,9 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   String? selectedRole = "EMPLOYEE";
   bool isLoading = false;
   final _formKey = GlobalKey<FormState>();
+
+  bool _isPasswordVisible = false;
+  bool _isConfirmPasswordVisible = false;
 
   XFile? mobilePhoto;
   Uint8List? webPhoto;
@@ -105,33 +108,47 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   }
 
   Future<http.Response> _sendDataToBackend(Map<String, String> user) async {
-    const String url = 'http://localhost:8080/register';
-    var request = http.MultipartRequest('POST', Uri.parse(url));
+    try {
+      const String url = 'http://localhost:8080/register';
+      var request = http.MultipartRequest('POST', Uri.parse(url));
 
-    request.files.add(
-      http.MultipartFile.fromString(
-        'user',
-        jsonEncode(user),
-        contentType: MediaType('application', 'json'),
-      ),
-    );
+      request.files.add(
+        http.MultipartFile.fromString(
+          'user',
+          jsonEncode(user),
+          contentType: MediaType('application', 'json'),
+        ),
+      );
 
-    if (kIsWeb && webPhoto != null) {
-      request.files.add(http.MultipartFile.fromBytes(
-        'profilePhoto',
-        webPhoto!,
-        filename: 'upload.jpg',
-        contentType: MediaType('image', 'jpeg'),
-      ));
-    } else if (mobilePhoto != null) {
-      request.files.add(await http.MultipartFile.fromPath(
-        'profilePhoto',
-        mobilePhoto!.path,
-      ));
+      if (kIsWeb && webPhoto != null) {
+        request.files.add(http.MultipartFile.fromBytes(
+          'profilePhoto',
+          webPhoto!,
+          filename: 'upload.jpg',
+          contentType: MediaType('image', 'jpeg'),
+        ));
+      } else if (mobilePhoto != null) {
+        request.files.add(await http.MultipartFile.fromPath(
+          'profilePhoto',
+          mobilePhoto!.path,
+        ));
+      }
+
+      // Send the request and get response
+      final response = await request.send();
+      final responseBody = await http.Response.fromStream(response);
+
+      // final response = await request.send();
+      // return await http.Response.fromStream(response);
+
+      debugPrint("Response Status: ${responseBody.statusCode}");
+      debugPrint("Response Body: ${responseBody.body}");
+
+      return responseBody;
+    } catch (e) {
+      debugPrint("Error sending data: $e");
+      rethrow;
     }
-
-    final response = await request.send();
-    return await http.Response.fromStream(response);
   }
 
   @override
@@ -207,12 +224,11 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                             return null;
                           }),
                           const SizedBox(height: 20),
-                          _buildTextField(password, 'Password', Icons.lock,
-                              obscureText: true),
+                          _buildPasswordField(),
+                          // _buildTextField(password, 'Password', Icons.lock,
+                          //     obscureText: true),
                           const SizedBox(height: 20),
-                          _buildTextField(
-                              confirmPassword, 'Confirm Password', Icons.lock,
-                              obscureText: true),
+                          _buildConfirmPasswordField(),
                           const SizedBox(height: 20),
                           _buildTextField(cell, 'Cell Number', Icons.phone),
                           const SizedBox(height: 20),
@@ -221,10 +237,13 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                           DateTimeFormField(
                             decoration: InputDecoration(
                               labelText: "Date of Birth",
+                              labelStyle: TextStyle(color: Colors.teal),
                               hintText: selectedDOB == null
                                   ? "Select your birthday date"
                                   : "${selectedDOB!.year}-${selectedDOB!.month}-${selectedDOB!.day}",
-                              border: OutlineInputBorder(),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(25),
+                                borderSide: BorderSide(color: Colors.teal),),
                               prefixIcon: Icon(Icons.calendar_today,
                                   color: Colors.teal),
                             ),
@@ -249,11 +268,15 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                                 selectedGender = value;
                               });
                             },
-                            decoration: const InputDecoration(
+                            decoration: InputDecoration(
                               labelText: "Gender",
-                              border: OutlineInputBorder(),
+                              labelStyle: TextStyle(color: Colors.teal),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(25),
+                                borderSide: const BorderSide(color: Colors.teal),
+                              ),
                               prefixIcon:
-                                  Icon(Icons.people, color: Colors.teal),
+                                  const Icon(Icons.people, color: Colors.teal),
                             ),
                           ),
                           const SizedBox(height: 20),
@@ -268,16 +291,16 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                                     style: TextStyle(fontSize: 20)),
                                 Spacer(),
                                 ClipRRect(
-                                  borderRadius: BorderRadius.circular(10),
+                                  borderRadius: BorderRadius.circular(25),
                                   child: Container(
                                     decoration: BoxDecoration(
                                       color: Colors.grey[200],
-                                      borderRadius: BorderRadius.circular(10),
+                                      borderRadius: BorderRadius.circular(25),
                                       border: Border.all(
                                           color: Colors.teal, width: 2),
                                     ),
-                                    height: 80,
-                                    width: 100,
+                                    height: 100,
+                                    width: 200,
                                     // width: double.infinity,
                                     child: webPhoto != null
                                         ? Image.memory(webPhoto!,
@@ -306,7 +329,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                                     foregroundColor: Colors.white,
                                     shape: RoundedRectangleBorder(
                                         borderRadius:
-                                            BorderRadius.circular(10)),
+                                            BorderRadius.circular(25)),
                                     padding: const EdgeInsets.symmetric(
                                         vertical: 15, horizontal: 60),
                                   ),
@@ -352,6 +375,66 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     );
   }
 
+  Widget _buildPasswordField() {
+    return TextField(
+      controller: password,
+      decoration: InputDecoration(
+        labelText: "Password",
+        labelStyle: TextStyle(color: Colors.teal),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(25),
+          borderSide: BorderSide(color: Colors.teal),
+        ),
+        prefixIcon: Icon(Icons.lock, color: Colors.teal),
+        suffixIcon: IconButton(
+          icon: Icon(
+            _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+            color: Colors.teal,
+          ),
+          onPressed: () {
+            setState(() {
+              _isPasswordVisible = !_isPasswordVisible;
+            });
+          },
+        ),
+        contentPadding: EdgeInsets.symmetric(vertical: 16),
+        isDense: true,
+      ),
+      obscureText: !_isPasswordVisible,
+      style: TextStyle(color: Colors.black87),
+    );
+  }
+
+  Widget _buildConfirmPasswordField() {
+    return TextField(
+      controller: password,
+      decoration: InputDecoration(
+        labelText: "Confirm Password",
+        labelStyle: TextStyle(color: Colors.teal),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(25),
+          borderSide: BorderSide(color: Colors.teal),
+        ),
+        prefixIcon: Icon(Icons.lock, color: Colors.teal),
+        suffixIcon: IconButton(
+          icon: Icon(
+            _isConfirmPasswordVisible ? Icons.visibility : Icons.visibility_off,
+            color: Colors.teal,
+          ),
+          onPressed: () {
+            setState(() {
+              _isConfirmPasswordVisible = !_isConfirmPasswordVisible;
+            });
+          },
+        ),
+        contentPadding: EdgeInsets.symmetric(vertical: 16),
+        isDense: true,
+      ),
+      obscureText: !_isConfirmPasswordVisible,
+      style: TextStyle(color: Colors.black87),
+    );
+  }
+
   Widget _buildTextField(
       TextEditingController controller, String label, IconData icon,
       {bool obscureText = false, String? Function(String?)? validator}) {
@@ -360,13 +443,14 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
       obscureText: obscureText,
       decoration: InputDecoration(
         labelText: label,
+        labelStyle: TextStyle(color: Colors.teal),
         prefixIcon: Icon(icon, color: Colors.teal),
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(25),
         ),
         focusedBorder: OutlineInputBorder(
           borderSide: BorderSide(color: Colors.teal),
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(25),
         ),
       ),
       validator: validator ??
@@ -374,4 +458,5 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
               value == null || value.isEmpty ? "$label is required" : null,
     );
   }
+
 }

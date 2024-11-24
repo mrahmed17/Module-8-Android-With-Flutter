@@ -25,7 +25,7 @@ public class AdvanceSalaryController {
     }
 
     @PostMapping("/update")
-    public ResponseEntity<AdvanceSalary> saveAdvanceSalary(@RequestBody AdvanceSalary advanceSalary) {
+    public ResponseEntity<AdvanceSalary> updateAdvanceSalary(@RequestBody AdvanceSalary advanceSalary) {
         AdvanceSalary savedAdvanceSalary = advanceSalaryService.updateAdvanceSalary(advanceSalary);
         return ResponseEntity.status(HttpStatus.CREATED).body(savedAdvanceSalary);
     }

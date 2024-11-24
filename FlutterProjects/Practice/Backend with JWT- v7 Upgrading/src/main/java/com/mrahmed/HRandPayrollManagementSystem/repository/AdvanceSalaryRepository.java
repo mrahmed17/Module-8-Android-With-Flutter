@@ -1,6 +1,7 @@
 package com.mrahmed.HRandPayrollManagementSystem.repository;
 
 import com.mrahmed.HRandPayrollManagementSystem.entity.AdvanceSalary;
+import com.mrahmed.HRandPayrollManagementSystem.entity.Leave;
 import com.mrahmed.HRandPayrollManagementSystem.entity.RequestStatus;
 import com.mrahmed.HRandPayrollManagementSystem.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -19,7 +20,10 @@ public interface AdvanceSalaryRepository extends JpaRepository<AdvanceSalary, Lo
     @Query("SELECT a FROM AdvanceSalary a WHERE a.status = :status")
     List<AdvanceSalary> findByStatus(@Param("status") RequestStatus status);
 
-    List<AdvanceSalary> findByUserId(Long userId);
+    @Query("SELECT a FROM AdvanceSalary a WHERE a.user.id = :userId")
+    List<AdvanceSalary> findByUserId(@Param("userId") Long userId);
+
+//    List<AdvanceSalary> findByUserId(Long userId);
 
     @Query("SELECT a FROM AdvanceSalary a WHERE a.user.id = :userId AND a.status = 'APPROVED'")
     Optional<AdvanceSalary> findApprovedAdvanceSalaryByUserId(@Param("userId") Long userId);
