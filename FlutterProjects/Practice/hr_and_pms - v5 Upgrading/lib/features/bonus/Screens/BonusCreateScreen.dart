@@ -1,29 +1,68 @@
 import 'package:flutter/material.dart';
+import 'package:hr_and_pms/administration/model/Role.dart';
+import 'package:hr_and_pms/administration/model/User.dart';
+import 'package:hr_and_pms/administration/service/AuthService.dart';
 import 'package:hr_and_pms/features/bonus/model/Bonus.dart';
-import 'package:hr_and_pms/features/bonus/model/BonusType.dart'; // Ensure BonusType is imported
+import 'package:hr_and_pms/features/bonus/model/BonusType.dart';
 import 'package:hr_and_pms/features/bonus/service/BonusService.dart';
 
 class BonusCreateScreen extends StatefulWidget {
+  const BonusCreateScreen({Key? key}) : super(key: key);
+
   @override
-  _BonusCreateScreenState createState() => _BonusCreateScreenState();
+  State<BonusCreateScreen> createState() => _BonusCreateScreenState();
 }
 
 class _BonusCreateScreenState extends State<BonusCreateScreen> {
   final _formKey = GlobalKey<FormState>();
   final BonusService _bonusService = BonusService();
+  final AuthService _authService = AuthService();
 
   double _bonusAmount = 0.0;
   DateTime _bonusDate = DateTime.now();
   BonusType? _bonusType;
+  User? _selectedUser;
+  List<User> _employees = []; // To store fetched employees
   String _statusMessage = '';
 
   final TextEditingController _amountController = TextEditingController();
 
   @override
+  void initState() {
+    super.initState();
+    _fetchEmployees();
+  }
+
+  // Fetch all employees with the EMPLOYEE role
+  Future<void> _fetchEmployees() async {
+    try {
+      List<User>? users = await _authService.getUsersByRole(Role.EMPLOYEE);
+      if (users != null) {
+        setState(() {
+          _employees = users;
+        });
+        debugPrint("Fetched employees: ${_employees.map((e) => e.name).toList()}");
+      } else {
+        debugPrint("No employees found.");
+      }
+    } catch (e) {
+      debugPrint("Error fetching employees: $e");
+    }
+  }
+
+
+  // Future<void> _fetchEmployees() async {
+  //   List<User>? users = await _authService.getUsersByRole(Role.EMPLOYEE);
+  //   setState(() {
+  //     _employees = users ?? [];
+  //   });
+  // }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Create Bonus'),
+        title: const Text('Create Bonus'),
         backgroundColor: Colors.teal,
       ),
       body: Padding(
@@ -39,8 +78,8 @@ class _BonusCreateScreenState extends State<BonusCreateScreen> {
                   controller: _amountController,
                   decoration: InputDecoration(
                     labelText: 'Bonus Amount',
-                    labelStyle: TextStyle(color: Colors.teal),
-                    prefixIcon: Icon(Icons.attach_money, color: Colors.teal),
+                    labelStyle: const TextStyle(color: Colors.teal),
+                    prefixIcon: const Icon(Icons.attach_money, color: Colors.teal),
                     filled: true,
                     fillColor: Colors.teal[50],
                     border: OutlineInputBorder(
@@ -48,7 +87,7 @@ class _BonusCreateScreenState extends State<BonusCreateScreen> {
                       borderSide: BorderSide.none,
                     ),
                   ),
-                  keyboardType: TextInputType.numberWithOptions(decimal: true),
+                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
                   onChanged: (value) {
                     setState(() {
                       _bonusAmount = double.tryParse(value) ?? 0.0;
@@ -61,7 +100,7 @@ class _BonusCreateScreenState extends State<BonusCreateScreen> {
                     return null;
                   },
                 ),
-                SizedBox(height: 16),
+                const SizedBox(height: 16),
 
                 // Bonus Date Field
                 GestureDetector(
@@ -70,8 +109,8 @@ class _BonusCreateScreenState extends State<BonusCreateScreen> {
                     child: TextFormField(
                       decoration: InputDecoration(
                         labelText: 'Bonus Date',
-                        labelStyle: TextStyle(color: Colors.teal),
-                        prefixIcon: Icon(Icons.date_range, color: Colors.teal),
+                        labelStyle: const TextStyle(color: Colors.teal),
+                        prefixIcon: const Icon(Icons.date_range, color: Colors.teal),
                         filled: true,
                         fillColor: Colors.teal[50],
                         border: OutlineInputBorder(
@@ -80,9 +119,7 @@ class _BonusCreateScreenState extends State<BonusCreateScreen> {
                         ),
                       ),
                       controller: TextEditingController(
-                        text: _bonusDate != null
-                            ? _bonusDate.toLocal().toString().split(' ')[0]
-                            : '',
+                        text: _bonusDate.toLocal().toString().split(' ')[0],
                       ),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
@@ -93,13 +130,13 @@ class _BonusCreateScreenState extends State<BonusCreateScreen> {
                     ),
                   ),
                 ),
-                SizedBox(height: 16),
+                const SizedBox(height: 16),
 
                 // Bonus Type Dropdown
                 DropdownButtonFormField<BonusType>(
                   decoration: InputDecoration(
                     labelText: 'Bonus Type',
-                    labelStyle: TextStyle(color: Colors.teal),
+                    labelStyle: const TextStyle(color: Colors.teal),
                     filled: true,
                     fillColor: Colors.teal[50],
                     border: OutlineInputBorder(
@@ -126,33 +163,69 @@ class _BonusCreateScreenState extends State<BonusCreateScreen> {
                     return null;
                   },
                 ),
-                SizedBox(height: 24),
+                const SizedBox(height: 16),
+
+                // Employee Dropdown
+              DropdownButtonFormField<User>(
+                decoration: InputDecoration(
+                  labelText: 'Employee',
+                  labelStyle: const TextStyle(color: Colors.teal),
+                  filled: true,
+                  fillColor: Colors.teal[50],
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10.0),
+                    borderSide: BorderSide.none,
+                  ),
+                ),
+                value: _selectedUser,
+                items: _employees.isNotEmpty
+                    ? _employees.map((user) {
+                  return DropdownMenuItem<User>(
+                    value: user,
+                    child: Text(user.name),
+                  );
+                }).toList()
+                    : null,
+                onChanged: (User? newUser) {
+                  setState(() {
+                    _selectedUser = newUser;
+                  });
+                },
+                validator: (value) {
+                  if (value == null) {
+                    return 'Please select an employee';
+                  }
+                  return null;
+                },
+                hint: _employees.isEmpty ? Text('No employees available') : null,
+              ),
+              const SizedBox(height: 24),
 
                 // Submit Button
                 Center(
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.teal, // Teal button
-                      padding: EdgeInsets.symmetric(vertical: 16.0, horizontal: 32.0),
+                      backgroundColor: Colors.teal,
+                      padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 32.0),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10),
                       ),
                     ),
                     onPressed: _createBonus,
-                    child: Text(
+                    child: const Text(
                       'Create Bonus',
                       style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                     ),
                   ),
                 ),
-                SizedBox(height: 16),
+                const SizedBox(height: 16),
 
                 // Status Message
                 if (_statusMessage.isNotEmpty)
                   Center(
                     child: Text(
                       _statusMessage,
-                      style: TextStyle(
+                      style: const TextStyle(
                         color: Colors.green,
                         fontSize: 16,
                       ),
@@ -168,17 +241,18 @@ class _BonusCreateScreenState extends State<BonusCreateScreen> {
 
   // Date Picker for selecting date
   Future<void> _selectDate() async {
-    final DateTime picked = await showDatePicker(
+    final DateTime? picked = await showDatePicker(
       context: context,
       initialDate: _bonusDate,
       firstDate: DateTime(2000),
       lastDate: DateTime(2101),
-    ) ?? _bonusDate;
+    );
 
-    if (picked != null && picked != _bonusDate)
+    if (picked != null && picked != _bonusDate) {
       setState(() {
         _bonusDate = picked;
       });
+    }
   }
 
   // Method to create the bonus
@@ -191,20 +265,17 @@ class _BonusCreateScreenState extends State<BonusCreateScreen> {
       Bonus bonus = Bonus(
         bonusAmount: _bonusAmount,
         bonusDate: _bonusDate,
-        bonusType: _bonusType ?? BonusType.PERFORMANCE, // Default to PERFORMANCE
+        bonusType: _bonusType!,
+        user: _selectedUser!,
       );
 
       Bonus? createdBonus = await _bonusService.createBonus(bonus);
 
-      if (createdBonus != null) {
-        setState(() {
-          _statusMessage = 'Bonus created successfully!';
-        });
-      } else {
-        setState(() {
-          _statusMessage = 'Error creating bonus. Please try again.';
-        });
-      }
+      setState(() {
+        _statusMessage = createdBonus != null
+            ? 'Bonus created successfully!'
+            : 'Error creating bonus. Please try again.';
+      });
     }
   }
 }

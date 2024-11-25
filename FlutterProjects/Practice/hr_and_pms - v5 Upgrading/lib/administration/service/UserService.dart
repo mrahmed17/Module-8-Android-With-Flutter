@@ -9,7 +9,7 @@ import 'package:hr_and_pms/administration/model/Role.dart';
 
 class AuthService {
   final Dio _dio = Dio();
-  final String baseUrl = 'http://localhost:8080/api/auth';
+  final String baseUrl = 'http://localhost:8080';
 
   // Helper method to handle errors from Dio
   String _handleError(DioException e) {

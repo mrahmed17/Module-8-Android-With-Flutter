@@ -18,16 +18,25 @@ public class WebConfig implements WebMvcConfigurer {
                 .addResourceLocations("file:" + uploadDirectory + "/");
     }
 
+    // It is working but comment for full access
+//    @Override
+//    public void addCorsMappings(CorsRegistry registry) {
+//        registry.addMapping("/images/**")
+//                .allowedOrigins("http://localhost:8080, http://10.0.2.2:8080,http://localhost:4200, http://localhost:8081, http://127.0.0.1:8081")
+//                .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS");
+//    }
+
     @Override
     public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("/images/**")
-                .allowedOrigins("http://localhost:8080, http://localhost:4200, http://localhost:8081, http://127.0.0.1:8081")
-                .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS");
+        registry.addMapping("/**")
+                .allowedOrigins("http://localhost:8080, http://10.0.2.2:8080, http://localhost:4200, http://localhost:8081, http://127.0.0.1:8081")
+                .allowedMethods("GET", "POST", "PUT", "DELETE")
+                .allowedHeaders("*")
+                .allowCredentials(true);
     }
 
 
     //  My previous config
-
     /*  @Value("${upload.directory}")
     private String uploadDirectory;
 

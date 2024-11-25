@@ -6,8 +6,7 @@ class Bonus {
   int? id;
   double? bonusAmount;
   DateTime? bonusDate;
-  BonusType? bonusType;  // Enum for Performance, Annual, Festival, Promotional
-  Salary? salary;
+  BonusType? bonusType;
   User? user;
 
   Bonus({
@@ -15,7 +14,6 @@ class Bonus {
     this.bonusAmount,
     this.bonusDate,
     this.bonusType,
-    this.salary,
     this.user,
   });
 
@@ -27,10 +25,7 @@ class Bonus {
       bonusDate: json['bonusDate'] != null
           ? DateTime.tryParse(json['bonusDate'])
           : null,
-      bonusType: json['bonusType'] != null
-          ? BonusTypeExtension.fromString(json['bonusType'])
-          : null, // Use the extension method to get the enum from string
-      salary: json['salary'] != null ? Salary.fromJson(json['salary']) : null, // Deserialize Salary
+      bonusType: BonusTypeExtension.fromString(json['bonusType'] ?? ''),
       user: json['user'] != null ? User.fromJson(json['user']) : null, // Deserialize User
     );
   }
@@ -41,9 +36,8 @@ class Bonus {
       'id': id,
       'bonusAmount': bonusAmount,
       'bonusDate': bonusDate?.toIso8601String(),
-      'bonusType': bonusType?.toString(), // Ensure BonusType is serialized properly
-      'salary': salary?.toJson(), // Serialize Salary object
-      'user': user?.toJson(), // Serialize User object
+      'bonusType': bonusType?.toShortString().toUpperCase(),
+      'user': user?.toJson(),
     };
   }
 }
