@@ -47,6 +47,7 @@ public class Salary {
     private List<Attendance> overTime;
 
 
+
 //    double? medicare;
 //    double? insurance;
 //    double? transportAllowance;
@@ -61,13 +62,5 @@ public class Salary {
             return LeaveType.valueOf(key.replace("LeaveType.", ""));
         }
     }
-
-    public static class BonusTypeKeyDeserializer extends KeyDeserializer {
-        @Override
-        public Object deserializeKey(String key, DeserializationContext context) throws IOException {
-            return BonusType.valueOf(key.replace("BonusType.", ""));
-        }
-    }
-
 }
 

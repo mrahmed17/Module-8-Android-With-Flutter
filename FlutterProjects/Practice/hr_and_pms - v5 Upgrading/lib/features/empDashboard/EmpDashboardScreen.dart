@@ -122,7 +122,7 @@ class _EmpDashboardScreenState extends State<EmpDashboardScreen> {
         if (snapshot.hasData) {
           return Text(
             DateFormat('EEEE, MMMM d, yyyy • h:mm:ss a').format(snapshot.data!),
-            style: const TextStyle(fontSize: 14, color: Colors.teal, fontWeight: FontWeight.bold),
+            style: const TextStyle(fontSize: 14, color: Colors.black87, fontWeight: FontWeight.bold),
           );
         }
         return const CircularProgressIndicator();

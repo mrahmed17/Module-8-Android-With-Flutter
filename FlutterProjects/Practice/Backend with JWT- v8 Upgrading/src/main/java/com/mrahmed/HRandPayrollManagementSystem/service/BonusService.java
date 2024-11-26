@@ -34,6 +34,7 @@ public class BonusService {
         if (!isValidBonusType(bonus.getBonusType())) {
             throw new IllegalArgumentException("Invalid bonus type.");
         }
+
         User user = userRepository.findById(bonus.getUser().getId())
                 .orElseThrow(() -> new IllegalArgumentException("User not found with ID: " + bonus.getUser().getId()));
         bonus.setBonusDate(LocalDateTime.now());  // Automatically set the date for creation
@@ -89,9 +90,9 @@ public class BonusService {
         return bonusRepository.countBonusesForUserInYear(userId, year);
     }
 
-//    private boolean isValidBonusType(String bonusType) {
-//        return "Performance".equalsIgnoreCase(bonusType) || "Annual".equalsIgnoreCase(bonusType)
-//                || "Festival".equalsIgnoreCase(bonusType) || "Promotional".equalsIgnoreCase(bonusType);
-//    }
+    private boolean isValidBonusType(String bonusType) {
+        return "Performance".equalsIgnoreCase(bonusType) || "Annual".equalsIgnoreCase(bonusType)
+                || "Festival".equalsIgnoreCase(bonusType) || "Promotional".equalsIgnoreCase(bonusType);
+    }
 
 }

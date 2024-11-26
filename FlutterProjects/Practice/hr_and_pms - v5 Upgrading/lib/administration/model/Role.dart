@@ -1,10 +1,10 @@
-enum Role { ADMIN, MANAGER, EMPLOYEE }
+enum Role { admin, manager, employee }
 
 extension RoleExtension on Role {
     static Role fromString(String roleString) {
     return Role.values.firstWhere(
-          (role) => role.toString().split('.').last.toUpperCase() == roleString.toUpperCase(),
-      orElse: () => Role.EMPLOYEE,
+          (role) => role.toString().split('.').last.toLowerCase() == roleString.toLowerCase(),
+      orElse: () => Role.employee,
     );
   }
 

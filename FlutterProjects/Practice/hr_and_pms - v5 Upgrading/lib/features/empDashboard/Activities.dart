@@ -28,18 +28,18 @@ class ActivityList extends StatelessWidget {
       physics: NeverScrollableScrollPhysics(),
       children: [
         ActivityItem(
-          avatar: Image.asset('assets/img/user.jpg'),
-          name: 'Lesley Grauer',
+          avatar: Image.asset('assets/images/profile_demo/profile.png'),
+          name: 'Shabab Ahmed',
           action: 'added new task',
-          task: 'Hospital Administration',
+          task: 'Bonus Accept',
           time: '4 mins ago',
         ),
         ActivityItem(
           avatar: Text('L'),
-          name: 'Jeffery Lalor',
+          name: 'Raju Ahmed',
           action: 'added',
           extraUsers: ['Loren Gatlin', 'Tarah Shropshire'],
-          task: 'Patient appointment booking',
+          task: 'Leave Application',
           time: '6 mins ago',
         ),
         // Add more ActivityItems here...
@@ -107,7 +107,7 @@ class NotificationBox extends StatelessWidget {
           content: 'Lorem ipsum dolor sit amet, consectetur adipiscing',
         ),
         MessageItem(
-          author: 'Shabab',
+          author: 'Najmul',
           time: '2:38 PM, 1 Dec',
           content: 'Lorem ipsum dolor sit amet, consectetur adipiscing',
           isNew: true,

@@ -24,6 +24,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     ..text = 'mrahmed1796@gmail.com';
   final TextEditingController password = TextEditingController()
     ..text = '123456';
+
   // final TextEditingController confirmPassword = TextEditingController()
   //   ..text = '123456';
   final TextEditingController cell = TextEditingController()
@@ -243,7 +244,8 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                                   : "${selectedDOB!.year}-${selectedDOB!.month}-${selectedDOB!.day}",
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(25),
-                                borderSide: BorderSide(color: Colors.teal),),
+                                borderSide: BorderSide(color: Colors.teal),
+                              ),
                               prefixIcon: Icon(Icons.calendar_today,
                                   color: Colors.teal),
                             ),
@@ -273,7 +275,8 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                               labelStyle: TextStyle(color: Colors.teal),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(25),
-                                borderSide: const BorderSide(color: Colors.teal),
+                                borderSide:
+                                    const BorderSide(color: Colors.teal),
                               ),
                               prefixIcon:
                                   const Icon(Icons.people, color: Colors.teal),
@@ -299,8 +302,8 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                                       border: Border.all(
                                           color: Colors.teal, width: 2),
                                     ),
-                                    height: 100,
-                                    width: 200,
+                                    height: 80,
+                                    width: 100,
                                     // width: double.infinity,
                                     child: webPhoto != null
                                         ? Image.memory(webPhoto!,
@@ -346,7 +349,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                                     builder: (context) => LoginScreen()),
                               );
                             },
-                            child: Row(
+                            child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 Text(
@@ -458,5 +461,4 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
               value == null || value.isEmpty ? "$label is required" : null,
     );
   }
-
 }

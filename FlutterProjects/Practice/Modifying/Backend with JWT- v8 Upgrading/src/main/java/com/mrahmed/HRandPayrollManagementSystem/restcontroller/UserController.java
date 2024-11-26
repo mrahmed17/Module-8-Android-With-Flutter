@@ -1,9 +1,6 @@
 package com.mrahmed.HRandPayrollManagementSystem.restcontroller;
 
-import com.mrahmed.HRandPayrollManagementSystem.entity.AuthenticationResponse;
-import com.mrahmed.HRandPayrollManagementSystem.entity.Role;
 import com.mrahmed.HRandPayrollManagementSystem.entity.User;
-import com.mrahmed.HRandPayrollManagementSystem.service.AuthService;
 import com.mrahmed.HRandPayrollManagementSystem.service.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -23,7 +20,6 @@ import java.time.LocalDate;
 @RequestMapping("/api/auth")
 public class UserController {
 
-    private final AuthService authService;
     private final UserService userService;
 
     // ===== User Management Endpoints =====
@@ -77,7 +73,7 @@ public class UserController {
         return ResponseEntity.ok(users);
     }
 
-    @GetMapping("/getUsersWithSalaryGreaterThanOrEqual")
+    @GetMapping("/salary/greaterThanOrEqual")
     public ResponseEntity<Page<User>> getUsersWithSalaryGreaterThanOrEqual(
             @RequestParam double salary,
             @RequestParam(defaultValue = "0") int page,
@@ -87,7 +83,7 @@ public class UserController {
         return ResponseEntity.ok(users);
     }
 
-    @GetMapping("/getUsersWithSalaryLessThanOrEqual")
+    @GetMapping("/salary/lessThanOrEqual")
     public ResponseEntity<Page<User>> getUsersWithSalaryLessThanOrEqual(
             @RequestParam double salary,
             @RequestParam(defaultValue = "0") int page,
@@ -116,21 +112,5 @@ public class UserController {
         Page<User> users = userService.getUsersByJoinedDate(joinedDate, PageRequest.of(page, size));
         return ResponseEntity.ok(users);
     }
-
-    @PostMapping("/forgot-password")
-    public ResponseEntity<String> forgotPassword(@RequestParam String email) {
-        authService.forgotPassword(email);
-        return ResponseEntity.ok("Password reset link sent to email");
-    }
-
-    @PostMapping("/reset-password")
-    public ResponseEntity<String> resetPassword(
-            @RequestParam String token,
-            @RequestParam String newPassword
-    ) {
-        String response = authService.resetPassword(token, newPassword);
-        return ResponseEntity.ok(response);
-    }
-
 
 }

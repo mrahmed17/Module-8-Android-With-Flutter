@@ -48,5 +48,4 @@ public interface UserRepository extends JpaRepository<User, Long> {
     // Find all employees with pagination
     @Query("SELECT u FROM User u WHERE u.role = 'EMPLOYEE'")
     Page<User> findAllEmployees(Pageable pageable);
-
 }

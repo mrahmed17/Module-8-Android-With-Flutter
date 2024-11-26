@@ -12,7 +12,7 @@ class AttendanceScreen extends StatefulWidget {
 }
 
 class _AttendanceScreenState extends State<AttendanceScreen> {
-  final AttendanceService _attendanceService = AttendanceService(); // Service initialized here
+  final AttendanceService _attendanceService = AttendanceService();
   final _formKey = GlobalKey<FormState>();
   DateTime? _clockInTime;
   DateTime? _clockOutTime;
@@ -26,7 +26,6 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
     _loadUser();
   }
 
-  /// Fetch the authenticated user details
   Future<void> _loadUser() async {
     setState(() {
       _isLoading = true;
@@ -42,7 +41,6 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
     }
   }
 
-  /// Show notification using SnackBar
   void _showNotification(String message, {bool isSuccess = true}) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -52,7 +50,6 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
     );
   }
 
-  /// Handle check-in action
   Future<void> _checkIn() async {
     if (_currentUser == null) return;
     setState(() {
@@ -75,7 +72,6 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
     }
   }
 
-  /// Handle check-out action
   Future<void> _checkOut() async {
     if (_currentUser == null) return;
     setState(() {
@@ -101,74 +97,138 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Attendance System',
+        title: const Text(
+          'Attendance System',
           style: TextStyle(
             fontSize: 24,
-            fontWeight: FontWeight.w600,
+            fontWeight: FontWeight.bold,
             color: Colors.white,
           ),
         ),
         backgroundColor: Colors.teal,
         centerTitle: true,
+        elevation: 4,
       ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
-          : Padding(
+          : Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Colors.teal.shade100, Colors.teal.shade50],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          ),
+        ),
         padding: const EdgeInsets.all(16.0),
         child: Form(
           key: _formKey,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Text(
-                'Welcome, ${_currentUser?.name ?? 'User'}!',
-                style: const TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.teal
+              Card(
+                elevation: 4,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(15),
                 ),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 20),
-              ListTile(
-                title: const Text('Clock-In Time'),
-                subtitle: Text(
-                  _clockInTime != null ? _clockInTime!.toString() : 'Not checked in yet',
-                ),
-              ),
-              ListTile(
-                title: const Text('Clock-Out Time'),
-                subtitle: Text(
-                  _clockOutTime != null ? _clockOutTime!.toString() : 'Not checked out yet',
-                ),
-              ),
-              ListTile(
-                title: const Text('Late Check-In'),
-                subtitle: Text(
-                  _lateCheckIn != null ? (_lateCheckIn! ? 'Yes' : 'No') : 'Not checked in yet',
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    children: [
+                      Text(
+                        'Welcome, ${_currentUser?.name ?? 'User'}!',
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.teal.shade700,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: 20),
+                      _buildDetailTile(
+                        title: 'Clock-In Time',
+                        value: _clockInTime != null
+                            ? _clockInTime!.toString()
+                            : 'Not checked in yet',
+                        icon: Icons.access_time,
+                      ),
+                      const SizedBox(height: 10),
+                      _buildDetailTile(
+                        title: 'Clock-Out Time',
+                        value: _clockOutTime != null
+                            ? _clockOutTime!.toString()
+                            : 'Not checked out yet',
+                        icon: Icons.exit_to_app,
+                      ),
+                      const SizedBox(height: 10),
+                      _buildDetailTile(
+                        title: 'Late Check-In',
+                        value: _lateCheckIn != null
+                            ? (_lateCheckIn! ? 'Yes' : 'No')
+                            : 'Not checked in yet',
+                        icon: Icons.warning,
+                      ),
+                    ],
+                  ),
                 ),
               ),
               const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: _checkIn,
                 style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.teal.shade400,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(30),
+                  ),
                   padding: const EdgeInsets.symmetric(vertical: 16.0),
-                  backgroundColor: Colors.green[100],
                 ),
-                child: const Text('Check In'),
+                child: const Text(
+                  'Check In',
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: Colors.white,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 16),
               ElevatedButton(
                 onPressed: _checkOut,
                 style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.red.shade400,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(30),
+                  ),
                   padding: const EdgeInsets.symmetric(vertical: 16.0),
-                  backgroundColor: Colors.red[100],
                 ),
-                child: const Text('Check Out'),
+                child: const Text(
+                  'Check Out',
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: Colors.white,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
               ),
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildDetailTile({required String title, required String value, required IconData icon}) {
+    return ListTile(
+      leading: Icon(icon, color: Colors.teal),
+      title: Text(
+        title,
+        style: const TextStyle(
+          fontWeight: FontWeight.bold,
+          fontSize: 16,
+        ),
+      ),
+      subtitle: Text(
+        value,
+        style: const TextStyle(fontSize: 14),
       ),
     );
   }

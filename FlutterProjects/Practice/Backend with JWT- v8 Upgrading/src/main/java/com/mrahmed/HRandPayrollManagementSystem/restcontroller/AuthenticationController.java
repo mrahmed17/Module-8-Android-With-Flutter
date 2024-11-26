@@ -20,46 +20,50 @@ import java.time.LocalDate;
 @RestController
 @AllArgsConstructor
 @CrossOrigin("*")
-@RequestMapping("/api/auth")
 public class AuthenticationController {
 
     private final AuthService authService;
     private final UserService userService;
 
-    // ===== Registration Endpoints =====
-
     @PostMapping("/register/admin")
     public ResponseEntity<AuthenticationResponse> registerAdmin(
             @RequestPart User user,
             @RequestPart(required = false) MultipartFile profilePhoto) {
-        return handleRegistration(user, Role.ADMIN, profilePhoto);
+        try {
+            AuthenticationResponse response = authService.registerUser(user, Role.ADMIN, profilePhoto);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new AuthenticationResponse("Error during admin registration: " + e.getMessage()));
+        }
     }
 
     @PostMapping("/register/manager")
     public ResponseEntity<AuthenticationResponse> registerManager(
             @RequestPart User user,
             @RequestPart(required = false) MultipartFile profilePhoto) {
-        return handleRegistration(user, Role.MANAGER, profilePhoto);
+        try {
+            AuthenticationResponse response = authService.registerUser(user, Role.MANAGER, profilePhoto);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new AuthenticationResponse("Error during manager registration: " + e.getMessage()));
+        }
     }
 
     @PostMapping("/register/employee")
     public ResponseEntity<AuthenticationResponse> registerEmployee(
             @RequestPart User user,
             @RequestPart(required = false) MultipartFile profilePhoto) {
-        return handleRegistration(user, Role.EMPLOYEE, profilePhoto);
-    }
-
-    private ResponseEntity<AuthenticationResponse> handleRegistration(User user, Role role, MultipartFile profilePhoto) {
         try {
-            AuthenticationResponse response = authService.registerUser(user, role, profilePhoto);
+            AuthenticationResponse response = authService.registerUser(user, Role.EMPLOYEE, profilePhoto);
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new AuthenticationResponse("Registration error: " + e.getMessage()));
+                    .body(new AuthenticationResponse("Error during employee registration: " + e.getMessage()));
         }
     }
 
-    // ===== Authentication Endpoints =====
 
     @PostMapping("/login")
     public ResponseEntity<AuthenticationResponse> login(@RequestBody User request) {
@@ -73,16 +77,120 @@ public class AuthenticationController {
         return ResponseEntity.ok(response);
     }
 
+
+    @GetMapping("/me")
+    public ResponseEntity<User> getLoggedInUserDetails() {
+        try {
+            User user = authService.getLoggedInUser();
+            return ResponseEntity.ok(user);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+        }
+    }
+
+    @GetMapping("/find/{id}")
+    public ResponseEntity<User> findUserById(@PathVariable Long id) {
+        try {
+            User user = userService.findUserById(id);
+            return ResponseEntity.ok(user);
+        } catch (RuntimeException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @PutMapping("/update/{id}")
+    public ResponseEntity<String> updateUser(
+            @PathVariable Long id,
+            @RequestPart("user") User user,
+            @RequestPart(value = "profilePhoto", required = false) MultipartFile profilePhoto
+    ) {
+        try {
+            userService.updateUser(id, user, profilePhoto);
+            return new ResponseEntity<>("User updated successfully.", HttpStatus.OK);
+        } catch (IOException e) {
+            return new ResponseEntity<>("Failed to update user: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @GetMapping("/getAllManagers")
+    public ResponseEntity<Page<User>> getAllManagers(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        Page<User> managers = userService.getAllManagers(PageRequest.of(page, size));
+        return ResponseEntity.ok(managers);
+    }
+
+    @GetMapping("/getAllEmployees")
+    public ResponseEntity<Page<User>> getAllEmployees(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        Page<User> employees = userService.getAllEmployees(PageRequest.of(page, size));
+        return ResponseEntity.ok(employees);
+    }
+
+    @GetMapping("/getUsersWithSalaryGreaterThanOrEqual")
+    public ResponseEntity<Page<User>> getUsersWithSalaryGreaterThanOrEqual(
+            @RequestParam double salary,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        Page<User> users = userService.getUsersWithSalaryGreaterThanOrEqual(salary, PageRequest.of(page, size));
+        return ResponseEntity.ok(users);
+    }
+
+    @GetMapping("/getUsersWithSalaryLessThanOrEqual")
+    public ResponseEntity<Page<User>> getUsersWithSalaryLessThanOrEqual(
+            @RequestParam double salary,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        Page<User> users = userService.getUsersWithSalaryLessThanOrEqual(salary, PageRequest.of(page, size));
+        return ResponseEntity.ok(users);
+    }
+
+    @GetMapping("/searchUsersByName")
+    public ResponseEntity<Page<User>> searchUsersByName(
+            @RequestParam String name,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        Page<User> users = userService.searchUsersByName(name, PageRequest.of(page, size));
+        return ResponseEntity.ok(users);
+    }
+
+    @GetMapping("/getUsersByGender")
+    public ResponseEntity<Page<User>> getUsersByGender(
+            @RequestParam String gender,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        Page<User> users = userService.getUsersByGender(gender, PageRequest.of(page, size));
+        return ResponseEntity.ok(users);
+    }
+
+    @GetMapping("/getUsersByJoinedDate")
+    public ResponseEntity<Page<User>> getUsersByJoinedDate(
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate joinedDate,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        Page<User> users = userService.getUsersByJoinedDate(joinedDate, PageRequest.of(page, size));
+        return ResponseEntity.ok(users);
+    }
+
     @PostMapping("/forgot-password")
     public ResponseEntity<String> forgotPassword(@RequestParam String email) {
         authService.forgotPassword(email);
-        return ResponseEntity.ok("Password reset link sent to email.");
+        return ResponseEntity.ok("Password reset link sent to email");
     }
 
     @PostMapping("/reset-password")
     public ResponseEntity<String> resetPassword(
             @RequestParam String token,
-            @RequestParam String newPassword) {
+            @RequestParam String newPassword
+    ) {
         String response = authService.resetPassword(token, newPassword);
         return ResponseEntity.ok(response);
     }

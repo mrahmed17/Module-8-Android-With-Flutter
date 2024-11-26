@@ -90,6 +90,25 @@ public class AuthService {
         return new AuthenticationResponse(jwt, role + " registration was successful", null);
     }
 
+
+    public User getLoggedInUser() {
+        String username = getLoggedInUsername();
+        if (username == null) {
+            throw new RuntimeException("No authenticated user found");
+        }
+        return userRepository.findByEmail(username)
+                .orElseThrow(() -> new RuntimeException("User not found with email: " + username));
+    }
+
+    private String getLoggedInUsername() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.isAuthenticated()) {
+            return authentication.getName(); // Usually email
+        }
+        return null; // No user logged in
+    }
+
+
     // Method to authenticate a user
     public AuthenticationResponse authenticate(User request) {
 

@@ -25,7 +25,7 @@ public class Bonus {
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    private BonusType bonusType;
+    private BonusType bonusType;  // Performance, Annual, Festival, Promotional
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "salary_id")

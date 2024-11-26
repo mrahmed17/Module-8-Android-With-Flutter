@@ -131,20 +131,20 @@ class _LoginScreenState extends State<LoginScreen> {
                           SizedBox(height: 20),
                           _buildPasswordField(),
                           SizedBox(height: 20),
-                      Align(
-                        alignment: Alignment.centerRight,
-                        child: TextButton(
-                            onPressed: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) =>
-                                        ForgotPasswordScreen()),
-                              );
-                            },
-                            child: const Text(
-                              "Forget Password?",
-                              style: TextStyle(color: Colors.red),
+                          Align(
+                            alignment: Alignment.centerRight,
+                            child: TextButton(
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          ForgotPasswordScreen()),
+                                );
+                              },
+                              child: const Text(
+                                "Forget Password?",
+                                style: TextStyle(color: Colors.red),
                               ),
                             ),
                           ),
@@ -180,7 +180,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                     builder: (context) => RegistrationScreen()),
                               );
                             },
-                            child: Row(
+                            child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 Text(

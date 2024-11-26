@@ -9,7 +9,7 @@ import 'package:hr_and_pms/administration/model/Role.dart';
 
 class AuthService {
   final Dio _dio = Dio();
-  final String baseUrl = 'http://localhost:8080/api/auth';
+  final String baseUrl = 'http://localhost:8080';
 
   // Helper method to handle errors from Dio
   String _handleError(DioException e) {
@@ -131,39 +131,39 @@ class AuthService {
   }
 
 
-  // // Method to fetch logged-in user details
-  // Future<User?> getLoggedInUserDetails() async {
-  //   try {
-  //     // Retrieve the token from SharedPreferences
-  //     SharedPreferences prefs = await SharedPreferences.getInstance();
-  //     String? authToken = prefs.getString('authToken');
-  //
-  //     if (authToken == null) {
-  //       // No token found, user is not authenticated
-  //       return null;
-  //     }
-  //
-  //     // Set up the request headers
-  //     final headers = {
-  //       'Content-Type': 'application/json',
-  //       'Authorization': 'Bearer $authToken',  // Add token to Authorization header
-  //     };
-  //
-  //     // Send GET request to fetch the logged-in user details
-  //     final response = await _dio.get('$baseUrl/me', options: Options(headers: headers));
-  //
-  //     if (response.statusCode == 200) {
-  //       // Parse the response body and return the user
-  //       return User.fromJson(response.data);
-  //     } else {
-  //       print('Failed to get user details: ${response.data}');
-  //       return null;
-  //     }
-  //   } on DioException catch (e) {
-  //     print('Error fetching user details: ${_handleError(e)}');
-  //     return null;
-  //   }
-  // }
+  // Method to fetch logged-in user details
+  Future<User?> getLoggedInUserDetails() async {
+    try {
+      // Retrieve the token from SharedPreferences
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String? authToken = prefs.getString('authToken');
+
+      if (authToken == null) {
+        // No token found, user is not authenticated
+        return null;
+      }
+
+      // Set up the request headers
+      final headers = {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $authToken',  // Add token to Authorization header
+      };
+
+      // Send GET request to fetch the logged-in user details
+      final response = await _dio.get('$baseUrl/me', options: Options(headers: headers));
+
+      if (response.statusCode == 200) {
+        // Parse the response body and return the user
+        return User.fromJson(response.data);
+      } else {
+        print('Failed to get user details: ${response.data}');
+        return null;
+      }
+    } on DioException catch (e) {
+      print('Error fetching user details: ${_handleError(e)}');
+      return null;
+    }
+  }
 
   Future<bool> forgotPassword(String email) async {
     final url = Uri.parse('$baseUrl/forgot-password');
@@ -190,7 +190,7 @@ class AuthService {
     try {
       final formData = await _prepareUserDataForm(user, profilePhoto);
       final response = await _dio.put(
-        '$baseUrl/update/$id',
+        '$baseUrl/api/users/update/$id',
         data: formData,
       );
 
@@ -222,7 +222,7 @@ class AuthService {
   // Get user by ID
   Future<User?> getUserById(int id) async {
     try {
-      final response = await _dio.get('$baseUrl/find/$id');
+      final response = await _dio.get('$baseUrl/api/users/find/$id');
       return response.statusCode == 200 ? User.fromJson(response.data) : null;
     } on DioException catch (e) {
       throw Exception(_handleError(e));
@@ -232,7 +232,7 @@ class AuthService {
   // Get all users
   Future<List<User>> getAllUsers() async {
     try {
-      final response = await _dio.get('$baseUrl/all');
+      final response = await _dio.get('$baseUrl/api/users/all');
       if (response.statusCode == 200) {
         return (response.data as List)
             .map((userJson) => User.fromJson(userJson))
