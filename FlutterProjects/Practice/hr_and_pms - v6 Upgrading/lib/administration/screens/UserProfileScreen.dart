@@ -48,7 +48,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
               child: CircleAvatar(
                 radius: 60,
                 backgroundImage: (user!['profilePhoto'] != null && user!['profilePhoto'].isNotEmpty)
-                    ? NetworkImage("http://192.168.x.x:8080/uploadDirectory/profilePhotos/${user!['profilePhoto']}")
+                    ? NetworkImage("http://localhost:8080/uploadDirectory/images/profilePhotos/${user!['profilePhoto']}")
                     : const AssetImage('assets/images/profile_demo/profile.png') as ImageProvider,
                 onBackgroundImageError: (exception, stackTrace) {
                   print("Failed to load image: $exception");

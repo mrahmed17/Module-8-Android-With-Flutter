@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:hr_and_pms/administration/model/User.dart';
 import 'package:hr_and_pms/administration/service/AuthService.dart';
 import 'package:hr_and_pms/features/bonus/model/Bonus.dart';
+import 'package:hr_and_pms/features/bonus/model/BonusType.dart';
 import 'package:hr_and_pms/features/bonus/service/BonusService.dart';
 
 class CreateBonusScreen extends StatefulWidget {
@@ -13,9 +14,10 @@ class CreateBonusScreen extends StatefulWidget {
 }
 
 class _CreateBonusScreenState extends State<CreateBonusScreen> {
-  final _formKey = GlobalKey()<FormState>;
+  final _formKey = GlobalKey<FormState>();
   double? _bonusAmount;
   User? _selectedEmployee;
+  BonusType? _selectedBonusType;
   final AuthService _authService = AuthService();
   final BonusService _bonusService = BonusService();
   List<User> _employees = [];
@@ -26,10 +28,8 @@ class _CreateBonusScreenState extends State<CreateBonusScreen> {
     _fetchEmployees();
   }
 
-  // Method to fetch the list of employees (users) from the AuthService
   Future<void> _fetchEmployees() async {
     try {
-      // Fetch users (employees) using AuthService
       _employees = await _authService.getAllUsers();
       setState(() {});
     } catch (e) {
@@ -37,29 +37,27 @@ class _CreateBonusScreenState extends State<CreateBonusScreen> {
     }
   }
 
-  // Method to create a bonus
   Future<void> _createBonus() async {
     if (_formKey.currentState?.validate() ?? false) {
       _formKey.currentState?.save();
 
-      if (_selectedEmployee == null) {
+      if (_selectedEmployee == null || _selectedBonusType == null) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Please select an employee'),
+            content: Text('Please select all required fields'),
             backgroundColor: Colors.red,
           ),
         );
         return;
       }
 
-      // Create Bonus object
       Bonus bonus = Bonus(
         bonusAmount: _bonusAmount,
+        bonusType: _selectedBonusType, // Assign selected BonusType
         user: _selectedEmployee,
       );
 
       try {
-        // Create bonus by calling BonusService
         await _bonusService.createBonus(bonus);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -67,7 +65,7 @@ class _CreateBonusScreenState extends State<CreateBonusScreen> {
             backgroundColor: Colors.green,
           ),
         );
-        Navigator.pop(context); // Go back after creating bonus
+        Navigator.pop(context);
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -95,7 +93,6 @@ class _CreateBonusScreenState extends State<CreateBonusScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                // Icon Section
                 Center(
                   child: CircleAvatar(
                     radius: 40,
@@ -109,7 +106,6 @@ class _CreateBonusScreenState extends State<CreateBonusScreen> {
                 ),
                 const SizedBox(height: 24),
 
-                // Select Employee Dropdown
                 DropdownButtonFormField<User>(
                   decoration: InputDecoration(
                     labelText: 'Select Employee',
@@ -138,7 +134,6 @@ class _CreateBonusScreenState extends State<CreateBonusScreen> {
                 ),
                 const SizedBox(height: 20),
 
-                // Bonus Amount Input Field
                 TextFormField(
                   decoration: InputDecoration(
                     labelText: 'Bonus Amount',
@@ -166,10 +161,10 @@ class _CreateBonusScreenState extends State<CreateBonusScreen> {
                 ),
                 const SizedBox(height: 20),
 
-                // Reason Input Field
-                TextFormField(
+                // Bonus Type Dropdown
+                DropdownButtonFormField<BonusType>(
                   decoration: InputDecoration(
-                    labelText: 'Reason',
+                    labelText: 'Bonus Type',
                     labelStyle: TextStyle(color: Colors.teal),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12.0),
@@ -178,11 +173,23 @@ class _CreateBonusScreenState extends State<CreateBonusScreen> {
                       borderRadius: BorderRadius.circular(12.0),
                       borderSide: BorderSide(color: Colors.teal, width: 2.0),
                     ),
-                    prefixIcon: Icon(Icons.note, color: Colors.teal),
-                  ),),
+                  ),
+                  items: BonusType.values.map((type) {
+                    return DropdownMenuItem(
+                      value: type,
+                      child: Text(type.toShortString()),
+                    );
+                  }).toList(),
+                  onChanged: (value) {
+                    setState(() {
+                      _selectedBonusType = value;
+                    });
+                  },
+                  validator: (value) =>
+                  value == null ? 'Please select a bonus type' : null,
+                ),
                 const SizedBox(height: 30),
 
-                // Submit Button
                 ElevatedButton(
                   onPressed: _createBonus,
                   style: ElevatedButton.styleFrom(

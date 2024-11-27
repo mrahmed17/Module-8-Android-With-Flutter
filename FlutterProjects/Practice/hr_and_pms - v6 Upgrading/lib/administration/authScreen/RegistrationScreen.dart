@@ -305,7 +305,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                                       ),
                                       height: 80,
                                       width: 100,
-                                      // width: double.infinity,
+                                      // width: int.infinity,
                                       child: webPhoto != null
                                           ? Image.memory(webPhoto!,
                                               fit: BoxFit.cover)

@@ -19,7 +19,7 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.teal,
       ),
       // home: AllDepartmentViewScreen(),
-      // home: SplashScreen(),
+      home: SplashScreen(),
       // home: AdvanceSalaryFilterScreen(),
       // home: AdvanceSalaryStatusScreen(userId: 3),
       // home: CreateAdvanceSalaryScreen(),
@@ -34,7 +34,7 @@ class MyApp extends StatelessWidget {
       // home: AdminDashboardScreen(),
       // home: UserListScreen(),
       // home: RegistrationScreen(),
-      home: LoginScreen(),
+      // home: LoginScreen(),
     );
   }
 }

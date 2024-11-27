@@ -139,14 +139,6 @@ class AuthService {
     }
   }
 
-
-  // Future<User?> getUser() async {
-  //   SharedPreferences prefs = await SharedPreferences.getInstance();
-  //   String? userJson = prefs.getString('user');
-  //   User? user = User.fromJson(jsonDecode(userJson!));
-  //   return user;
-  // }
-
   Future<String?> getUserRole() async {
     SharedPreferences preferences = await SharedPreferences.getInstance();
     print(preferences.getString('userRole'));
@@ -179,7 +171,7 @@ class AuthService {
     try {
       final formData = await _prepareUserDataForm(user, profilePhoto);
       final response = await _dio.put(
-        '$baseUrl/api/users/update/$id',
+        '$baseUrl/update/$id',
         data: formData,
       );
 
@@ -211,7 +203,7 @@ class AuthService {
   // Get user by ID
   Future<User?> getUserById(int id) async {
     try {
-      final response = await _dio.get('$baseUrl/api/users/find/$id');
+      final response = await _dio.get('$baseUrl/find/$id');
       return response.statusCode == 200 ? User.fromJson(response.data) : null;
     } on DioException catch (e) {
       throw Exception(_handleError(e));
@@ -221,7 +213,7 @@ class AuthService {
   // Get all users
   Future<List<User>> getAllUsers() async {
     try {
-      final response = await _dio.get('$baseUrl/api/users/all');
+      final response = await _dio.get('$baseUrl/all');
       if (response.statusCode == 200) {
         return (response.data as List)
             .map((userJson) => User.fromJson(userJson))
@@ -245,7 +237,7 @@ class AuthService {
   }
 
   // Filtered user search methods
-  Future<List<User>> getUsersWithSalaryGreaterThanOrEqual(double salary,
+  Future<List<User>> getUsersWithSalaryGreaterThanOrEqual(int salary,
       {int page = 0, int size = 10}) async {
     try {
       final response = await _dio.get(
@@ -260,7 +252,7 @@ class AuthService {
     }
   }
 
-  Future<List<User>> getUsersWithSalaryLessThanOrEqual(double salary,
+  Future<List<User>> getUsersWithSalaryLessThanOrEqual(int salary,
       {int page = 0, int size = 10}) async {
     try {
       final response = await _dio.get(

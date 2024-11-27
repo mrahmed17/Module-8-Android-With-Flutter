@@ -36,9 +36,9 @@ class _PayslipPageState extends State<PayslipPage> {
   void _calculateSalary() {
     setState(() {
       basicSalary = double.tryParse(_basicSalaryController.text) ?? 6500;
-      houseRentAllowance = basicSalary * 0.08; // Example: 8% of basic salary
-      conveyance = basicSalary * 0.05; // Example: 5% of basic salary
-      otherAllowance = basicSalary * 0.02; // Example: 2% of basic salary
+      houseRentAllowance = basicSalary * 0.08;
+      conveyance = basicSalary * 0.05;
+      otherAllowance = basicSalary * 0.02;
 
       totalEarnings = basicSalary + houseRentAllowance + conveyance + otherAllowance;
 

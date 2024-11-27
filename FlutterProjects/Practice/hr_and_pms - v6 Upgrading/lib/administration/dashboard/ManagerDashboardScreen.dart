@@ -5,6 +5,7 @@ import 'package:hr_and_pms/features/attendance/screens/AttendanceReportScreen.da
 import 'package:hr_and_pms/features/bonus/Screens/CreateBonusScreen.dart';
 import 'package:hr_and_pms/features/bonus/Screens/BonusManagementScreen.dart';
 import 'package:hr_and_pms/features/leave/screens/LeaveManagementScreen.dart';
+import 'package:hr_and_pms/features/salary/screens/SalaryCreateScreen.dart';
 import 'package:intl/intl.dart';
 import 'package:hr_and_pms/administration/authScreen/LoginScreen.dart';
 import 'package:hr_and_pms/administration/service/AuthService.dart';
@@ -135,10 +136,10 @@ class _ManagerDashboardScreenState extends State<ManagerDashboardScreen> {
     final List<Map<String, dynamic>> features = [
       {'icon': Icons.access_time, 'label': 'Attendance Management', 'screen': AttendanceReportScreen()},
       {'icon': Icons.manage_history_outlined, 'label': 'Leave Management', 'screen': LeaveManagementScreen()},
-      {'icon': Icons.currency_exchange_sharp, 'label': 'Advance Management', 'screen':AdvanceSalaryManagementScreen()},
+      {'icon': Icons.money, 'label': 'Advance Management', 'screen':AdvanceSalaryManagementScreen()},
       {'icon': Icons.currency_exchange, 'label': 'Create Bonus', 'screen': CreateBonusScreen()},
       {'icon': Icons.currency_exchange_rounded, 'label': 'Bonus Management', 'screen': BonusManagementScreen()},
-      {'icon': Icons.history, 'label': 'Coming soon', 'screen': Container()},
+      {'icon': Icons.money, 'label': 'Salary Create', 'screen': SalaryCreateScreen()},
       {'icon': Icons.history, 'label': 'Coming soon', 'screen': Container()},
       {'icon': Icons.history, 'label': 'Coming soon', 'screen': Container()},
       {'icon': Icons.history, 'label': 'Coming soon', 'screen': Container()},
