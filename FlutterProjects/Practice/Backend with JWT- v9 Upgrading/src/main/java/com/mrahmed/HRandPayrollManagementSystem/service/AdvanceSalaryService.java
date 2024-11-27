@@ -24,8 +24,8 @@ public class AdvanceSalaryService {
         User user = userRepository.findById(advanceSalary.getUser().getId())
                 .orElseThrow(() -> new IllegalArgumentException("User not found with ID: " + advanceSalary.getUser().getId()));
         advanceSalary.setUser(user);
-        advanceSalary.setAdvanceDate(LocalDateTime.now()); // Automatically set the date
-        advanceSalary.setStatus(RequestStatus.PENDING);    // Default status is PENDING
+        advanceSalary.setAdvanceDate(LocalDateTime.now());
+        advanceSalary.setStatus(RequestStatus.PENDING);
         return advanceSalaryRepository.save(advanceSalary);
     }
 

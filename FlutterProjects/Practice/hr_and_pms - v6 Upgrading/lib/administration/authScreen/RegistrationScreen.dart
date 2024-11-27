@@ -28,7 +28,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   // final TextEditingController confirmPassword = TextEditingController()
   //   ..text = '123456';
   final TextEditingController cell = TextEditingController()
-    ..text = '01700009999';
+    ..text = '01700000000';
   final TextEditingController address = TextEditingController()
     ..text = 'Dhaka, Bangladesh';
   final TextEditingController basicSalary = TextEditingController()

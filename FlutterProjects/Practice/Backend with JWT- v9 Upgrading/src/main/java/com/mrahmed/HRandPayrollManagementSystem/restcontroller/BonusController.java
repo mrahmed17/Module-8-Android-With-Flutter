@@ -1,7 +1,10 @@
 package com.mrahmed.HRandPayrollManagementSystem.restcontroller;
 
 import com.mrahmed.HRandPayrollManagementSystem.entity.Bonus;
+import com.mrahmed.HRandPayrollManagementSystem.entity.BonusType;
+import com.mrahmed.HRandPayrollManagementSystem.entity.User;
 import com.mrahmed.HRandPayrollManagementSystem.repository.BonusRepository;
+import com.mrahmed.HRandPayrollManagementSystem.repository.UserRepository;
 import com.mrahmed.HRandPayrollManagementSystem.service.BonusService;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,16 +27,42 @@ public class BonusController {
     private BonusService bonusService;
     @Autowired
     private BonusRepository bonusRepository;
+    @Autowired
+    private UserRepository userRepository;
 
     // Create a new Bonus
-    @PostMapping("/create")
-    public ResponseEntity<Bonus> createBonus(@RequestBody Bonus bonus) {
+//    @PostMapping("/assign")
+//    public ResponseEntity<Bonus> assignBonus(@RequestBody Bonus bonus) {
+//        try {
+//            return ResponseEntity.ok(bonusService.assignBonusToEmployee(bonus));
+//        } catch (IllegalArgumentException ex) {
+//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+//        }
+//    }
+
+    // Create a new Bonus
+    @PostMapping("/assign")
+    public ResponseEntity<Bonus> assignBonus(@RequestBody Bonus bonusRequest) {
         try {
-            return ResponseEntity.ok(bonusService.saveBonus(bonus));
+            // Create a new Bonus object from the request
+            Bonus bonus = new Bonus();
+            User employee = userRepository.findById(bonusRequest.getId())
+                    .orElseThrow(() -> new IllegalArgumentException("Employee not found with ID: " + bonusRequest.getId()));
+
+            bonus.setUser(employee);
+            bonus.setBonusAmount(bonusRequest.getBonusAmount());
+            bonus.setBonusDate(LocalDateTime.now());
+            bonus.setBonusType(BonusType.PERFORMANCE);  // Assuming PERFORMANCE bonus type
+
+            // Save the bonus
+            Bonus savedBonus = bonusRepository.save(bonus);
+            return ResponseEntity.ok(savedBonus);
         } catch (IllegalArgumentException ex) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         }
     }
+
+
 
     // Update a Bonus
     @PutMapping("/update/{id}")
@@ -67,11 +96,18 @@ public class BonusController {
     }
 
     // Get all Bonuses
-    @GetMapping("/all")
+    @GetMapping("/allBonuses")
     public ResponseEntity<List<Bonus>> getAllBonuses(@RequestParam(defaultValue = "0") int page,
                                                      @RequestParam(defaultValue = "10") int size) {
         Pageable pageable = PageRequest.of(page, size);
         return ResponseEntity.ok(bonusRepository.findAll(pageable).getContent());
+    }
+
+    @GetMapping("/employees")
+    public ResponseEntity<List<Bonus>> getAllEmployees() {
+        System.out.println("Fetching all employees bonuses");
+        List<Bonus> bonuses = bonusService.getAllEmployees();
+        return ResponseEntity.ok(bonuses);
     }
 
     // Get total bonus for a user
@@ -107,14 +143,13 @@ public class BonusController {
         return ResponseEntity.ok(bonusService.countBonusesForUserInYear(userId, year));
     }
 
-    // Get bonuses for a user (by User ID)
     @GetMapping("/user/{userId}")
     public ResponseEntity<List<Bonus>> getBonusesByUser(@PathVariable Long userId) {
-        List<Bonus> bonuses = bonusRepository.findBonusesByUserId(userId);
-        if (bonuses.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-        }
-        return ResponseEntity.ok(bonuses);
+        List<Bonus> bonuses = bonusService.getBonusesByUser(userId);
+        return bonuses.isEmpty()
+                ? ResponseEntity.status(HttpStatus.NOT_FOUND).body(null)
+                : ResponseEntity.ok(bonuses);
     }
+
 
 }

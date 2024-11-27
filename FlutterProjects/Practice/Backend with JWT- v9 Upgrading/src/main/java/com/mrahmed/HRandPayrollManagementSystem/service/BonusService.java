@@ -1,15 +1,10 @@
 package com.mrahmed.HRandPayrollManagementSystem.service;
 
-import com.mrahmed.HRandPayrollManagementSystem.entity.AdvanceSalary;
-import com.mrahmed.HRandPayrollManagementSystem.entity.Bonus;
-import com.mrahmed.HRandPayrollManagementSystem.entity.BonusType;
-import com.mrahmed.HRandPayrollManagementSystem.entity.User;
+import com.mrahmed.HRandPayrollManagementSystem.entity.*;
 import com.mrahmed.HRandPayrollManagementSystem.repository.BonusRepository;
 import com.mrahmed.HRandPayrollManagementSystem.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -24,23 +19,17 @@ public class BonusService {
     @Autowired
     private UserRepository userRepository;
 
-    // Refactored to use enum-based validation
-    private boolean isValidBonusType(BonusType bonusType) {
-        return bonusType != null; // Enum ensures all types are valid
-    }
 
-    // Create a new Bonus
-    public Bonus saveBonus(Bonus bonus) {
-        if (!isValidBonusType(bonus.getBonusType())) {
-            throw new IllegalArgumentException("Invalid bonus type.");
-        }
-
-        User user = userRepository.findById(bonus.getUser().getId())
-                .orElseThrow(() -> new IllegalArgumentException("User not found with ID: " + bonus.getUser().getId()));
-        bonus.setBonusDate(LocalDateTime.now());  // Automatically set the date for creation
-        bonus.setUser(user);
-        return bonusRepository.save(bonus);
-    }
+//    // Create a new Bonus
+//    public Bonus assignBonusToEmployee(Bonus bonus) {
+//        User employee = userRepository.findById(bonus.getUser().getId())
+//                .orElseThrow(() -> new IllegalArgumentException("Employee not found with ID: " + bonus.getUser().getId()));
+//
+//        bonus.setUser(employee);
+//        bonus.setBonusDate(LocalDateTime.now());
+//        bonus.setBonusType(BonusType.PERFORMANCE);
+//        return bonusRepository.save(bonus);
+//    }
 
     // Update an existing Bonus
     public Bonus updateBonus(Long id, Bonus updatedBonus) {
@@ -64,10 +53,19 @@ public class BonusService {
         }
     }
 
+    // get All Employees
+    public List<Bonus> getAllEmployees() {
+        return bonusRepository.findBonusesByUserRole(Role.EMPLOYEE);
+    }
+
     // Get Bonus by ID
     public Bonus getBonusById(Long id) {
         return bonusRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Bonus not found with ID: " + id));
+    }
+
+    public List<Bonus> getBonusesByUser(Long userId) {
+        return bonusRepository.findBonusesByUserId(userId);
     }
 
     // Get total bonus for a user
@@ -90,9 +88,5 @@ public class BonusService {
         return bonusRepository.countBonusesForUserInYear(userId, year);
     }
 
-    private boolean isValidBonusType(String bonusType) {
-        return "Performance".equalsIgnoreCase(bonusType) || "Annual".equalsIgnoreCase(bonusType)
-                || "Festival".equalsIgnoreCase(bonusType) || "Promotional".equalsIgnoreCase(bonusType);
-    }
 
 }

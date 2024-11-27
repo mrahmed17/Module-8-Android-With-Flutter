@@ -1,26 +1,22 @@
 import 'dart:convert';
 import 'package:hr_and_pms/features/bonus/model/Bonus.dart';
-import 'package:http/http.dart'
-    as http; // Make sure to define the User model in Flutter
+import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 
 class BonusService {
-  static const String baseUrl =
-      'http://localhost:8080/api/bonuses'; // Replace with your backend API URL
+  static const String baseUrl = 'http://localhost:8080/api/bonuses';
 
-  // Method to create a bonus
   Future<Bonus?> createBonus(Bonus bonus) async {
     try {
       final response = await http.post(
-        Uri.parse('$baseUrl/create'),
+        Uri.parse('$baseUrl/assign'),
         headers: {'Content-Type': 'application/json'},
         body: json.encode(bonus.toJson()),
       );
-
       if (response.statusCode == 200) {
         return Bonus.fromJson(json.decode(response.body));
       } else {
-        // Handle error here
+        print("Failed to create bonus: ${response.body}");
         return null;
       }
     } catch (e) {
@@ -29,7 +25,6 @@ class BonusService {
     }
   }
 
-  // Method to update an existing bonus
   Future<Bonus?> updateBonus(int id, Bonus bonus) async {
     try {
       final response = await http.put(
@@ -37,11 +32,10 @@ class BonusService {
         headers: {'Content-Type': 'application/json'},
         body: json.encode(bonus.toJson()),
       );
-
       if (response.statusCode == 200) {
         return Bonus.fromJson(json.decode(response.body));
       } else {
-        // Handle error here
+        print("Failed to update bonus: ${response.body}");
         return null;
       }
     } catch (e) {
@@ -54,7 +48,6 @@ class BonusService {
   Future<bool> deleteBonus(int id) async {
     try {
       final response = await http.delete(Uri.parse('$baseUrl/delete/$id'));
-
       return response.statusCode == 200;
     } catch (e) {
       print("Error deleting bonus: $e");
@@ -70,7 +63,7 @@ class BonusService {
       if (response.statusCode == 200) {
         return Bonus.fromJson(json.decode(response.body));
       } else {
-        // Handle error here
+        print("Error fetching bonus by ID: ${response.body}");
         return null;
       }
     } catch (e) {
@@ -79,21 +72,8 @@ class BonusService {
     }
   }
 
-  // Method to get bonuses for a specific user
   Future<List<Bonus>> getBonusesByUser(int userId) async {
-    try {
-      final response = await http.get(Uri.parse('$baseUrl/user/$userId'));
-
-      if (response.statusCode == 200) {
-        List<dynamic> data = json.decode(response.body);
-        return data.map((bonusJson) => Bonus.fromJson(bonusJson)).toList();
-      } else {
-        return [];
-      }
-    } catch (e) {
-      print("Error fetching bonuses for user: $e");
-      return [];
-    }
+    return _fetchBonuses('$baseUrl/user/$userId');
   }
 
   // Method to get the total bonus for a user
@@ -112,28 +92,31 @@ class BonusService {
     }
   }
 
-  // Method to get bonuses between two dates
-  Future<List<Bonus>> getBonusesBetweenDates(
-      DateTime startDate, DateTime endDate) async {
+  Future<List<Bonus>> getAllBonuses(int page, int size) async {
     try {
-      final String startDateStr =
-          DateFormat('yyyy-MM-ddTHH:mm:ss').format(startDate);
-      final String endDateStr =
-          DateFormat('yyyy-MM-ddTHH:mm:ss').format(endDate);
-
       final response = await http.get(
-        Uri.parse(
-            '$baseUrl/between?startDate=$startDateStr&endDate=$endDateStr'),
+        Uri.parse('$baseUrl/allBonuses?page=$page&size=$size'),
       );
-
       if (response.statusCode == 200) {
         List<dynamic> data = json.decode(response.body);
         return data.map((bonusJson) => Bonus.fromJson(bonusJson)).toList();
       } else {
+        print("Error fetching bonuses: ${response.body}");
         return [];
       }
     } catch (e) {
-      print("Error fetching bonuses between dates: $e");
+      print("Error fetching bonuses: $e");
+      return [];
+    }
+  }
+
+  Future<List<Bonus>> getBonusesBetweenDates(DateTime startDate, DateTime endDate) async {
+    try {
+      final startDateStr = DateFormat('yyyy-MM-ddTHH:mm:ss').format(startDate);
+      final endDateStr = DateFormat('yyyy-MM-ddTHH:mm:ss').format(endDate);
+      return _fetchBonuses('$baseUrl/between?startDate=$startDateStr&endDate=$endDateStr');
+    } catch (e) {
+      print("Error formatting dates: $e");
       return [];
     }
   }
@@ -171,6 +154,26 @@ class BonusService {
     } catch (e) {
       print("Error counting bonuses for user in year: $e");
       return 0;
+    }
+  }
+
+  Future<List<Bonus>> getAllEmployees() async {
+    return _fetchBonuses('$baseUrl/employees');
+  }
+
+  Future<List<Bonus>> _fetchBonuses(String url) async {
+    try {
+      final response = await http.get(Uri.parse(url));
+      if (response.statusCode == 200) {
+        List<dynamic> data = json.decode(response.body);
+        return data.map((bonusJson) => Bonus.fromJson(bonusJson)).toList();
+      } else {
+        print("Failed to fetch data: ${response.reasonPhrase}");
+        return [];
+      }
+    } catch (e) {
+      print("Error fetching data: $e");
+      return [];
     }
   }
 }

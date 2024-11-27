@@ -1,63 +1,77 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:hr_and_pms/administration/model/User.dart';
 import 'package:hr_and_pms/administration/service/AuthService.dart';
-import 'package:hr_and_pms/features/advanceSalary/model/AdvanceSalary.dart';
-import 'package:hr_and_pms/features/advanceSalary/service/AdvanceSalaryService.dart';
-import 'package:hr_and_pms/features/leave/model/RequestStatus.dart';
-import '../../../administration/model/User.dart';
+import 'package:hr_and_pms/features/bonus/model/Bonus.dart';
+import 'package:hr_and_pms/features/bonus/service/BonusService.dart';
 
-class ApplyAdvanceSalaryScreen extends StatefulWidget {
-  const ApplyAdvanceSalaryScreen({super.key});
+class CreateBonusScreen extends StatefulWidget {
+  const CreateBonusScreen({super.key});
 
   @override
-  _ApplyAdvanceSalaryScreenState createState() =>
-      _ApplyAdvanceSalaryScreenState();
+  _CreateBonusScreenState createState() => _CreateBonusScreenState();
 }
 
-class _ApplyAdvanceSalaryScreenState extends State<ApplyAdvanceSalaryScreen> {
-  final _formKey = GlobalKey<FormState>();
-  double? _amount;
-  String? _reason;
-  User? user;
-  final RequestStatus _requestStatus = RequestStatus.PENDING;
-  final AdvanceSalaryService _advanceSalaryService = AdvanceSalaryService();
+class _CreateBonusScreenState extends State<CreateBonusScreen> {
+  final _formKey = GlobalKey()<FormState>;
+  double? _bonusAmount;
+  User? _selectedEmployee;
+  final AuthService _authService = AuthService();
+  final BonusService _bonusService = BonusService();
+  List<User> _employees = [];
 
+  @override
+  void initState() {
+    super.initState();
+    _fetchEmployees();
+  }
 
-  Future<void> _saveAdvanceSalaryRequest() async {
+  // Method to fetch the list of employees (users) from the AuthService
+  Future<void> _fetchEmployees() async {
+    try {
+      // Fetch users (employees) using AuthService
+      _employees = await _authService.getAllUsers();
+      setState(() {});
+    } catch (e) {
+      print("Error fetching employees: $e");
+    }
+  }
+
+  // Method to create a bonus
+  Future<void> _createBonus() async {
     if (_formKey.currentState?.validate() ?? false) {
       _formKey.currentState?.save();
 
-      final user = await AuthService().getUser();
-      if (user == null) {
+      if (_selectedEmployee == null) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Unable to fetch user details'),
+            content: Text('Please select an employee'),
             backgroundColor: Colors.red,
           ),
         );
         return;
       }
 
-      AdvanceSalary advanceSalary = AdvanceSalary(
-        advanceAmount: _amount,
-        reason: _reason,
-        advanceDate: DateTime.now(),
-        status: _requestStatus,
-        user: user,
+      // Create Bonus object
+      Bonus bonus = Bonus(
+        bonusAmount: _bonusAmount,
+        user: _selectedEmployee,
       );
 
       try {
-        await _advanceSalaryService.applyAdvanceSalary(advanceSalary);
+        // Create bonus by calling BonusService
+        await _bonusService.createBonus(bonus);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Advance salary request submitted successfully'),
+            content: Text('Bonus created successfully'),
             backgroundColor: Colors.green,
           ),
         );
-        Navigator.pop(context);
+        Navigator.pop(context); // Go back after creating bonus
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Failed to submit request: $e'),
+            content: Text('Failed to create bonus: $e'),
             backgroundColor: Colors.red,
           ),
         );
@@ -65,12 +79,11 @@ class _ApplyAdvanceSalaryScreenState extends State<ApplyAdvanceSalaryScreen> {
     }
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Request Advance Salary'),
+        title: const Text('Create Bonus'),
         backgroundColor: Colors.teal,
         centerTitle: true,
       ),
@@ -88,7 +101,7 @@ class _ApplyAdvanceSalaryScreenState extends State<ApplyAdvanceSalaryScreen> {
                     radius: 40,
                     backgroundColor: Colors.teal[100],
                     child: Icon(
-                      Icons.monetization_on,
+                      Icons.money,
                       size: 40,
                       color: Colors.teal[700],
                     ),
@@ -96,10 +109,39 @@ class _ApplyAdvanceSalaryScreenState extends State<ApplyAdvanceSalaryScreen> {
                 ),
                 const SizedBox(height: 24),
 
-                // Amount Input Field
+                // Select Employee Dropdown
+                DropdownButtonFormField<User>(
+                  decoration: InputDecoration(
+                    labelText: 'Select Employee',
+                    labelStyle: TextStyle(color: Colors.teal),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12.0),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12.0),
+                      borderSide: BorderSide(color: Colors.teal, width: 2.0),
+                    ),
+                  ),
+                  items: _employees.map((user) {
+                    return DropdownMenuItem(
+                      value: user,
+                      child: Text(user.name ?? 'No name'),
+                    );
+                  }).toList(),
+                  onChanged: (value) {
+                    setState(() {
+                      _selectedEmployee = value;
+                    });
+                  },
+                  validator: (value) =>
+                  value == null ? 'Please select an employee' : null,
+                ),
+                const SizedBox(height: 20),
+
+                // Bonus Amount Input Field
                 TextFormField(
                   decoration: InputDecoration(
-                    labelText: 'Amount',
+                    labelText: 'Bonus Amount',
                     labelStyle: TextStyle(color: Colors.teal),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12.0),
@@ -111,10 +153,10 @@ class _ApplyAdvanceSalaryScreenState extends State<ApplyAdvanceSalaryScreen> {
                     prefixIcon: Icon(Icons.attach_money, color: Colors.teal),
                   ),
                   keyboardType: TextInputType.number,
-                  onSaved: (value) => _amount = double.tryParse(value!),
+                  onSaved: (value) => _bonusAmount = double.tryParse(value!),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'Please enter an amount';
+                      return 'Please enter a bonus amount';
                     }
                     if (double.tryParse(value) == null) {
                       return 'Enter a valid number';
@@ -137,17 +179,12 @@ class _ApplyAdvanceSalaryScreenState extends State<ApplyAdvanceSalaryScreen> {
                       borderSide: BorderSide(color: Colors.teal, width: 2.0),
                     ),
                     prefixIcon: Icon(Icons.note, color: Colors.teal),
-                  ),
-                  maxLines: 3,
-                  onSaved: (value) => _reason = value,
-                  validator: (value) =>
-                  value?.isEmpty ?? true ? 'Please enter a reason' : null,
-                ),
+                  ),),
                 const SizedBox(height: 30),
 
                 // Submit Button
                 ElevatedButton(
-                  onPressed: _saveAdvanceSalaryRequest,
+                  onPressed: _createBonus,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.teal,
                     padding: const EdgeInsets.symmetric(vertical: 16.0),
@@ -156,7 +193,7 @@ class _ApplyAdvanceSalaryScreenState extends State<ApplyAdvanceSalaryScreen> {
                     ),
                   ),
                   child: const Text(
-                    'Submit Request',
+                    'Create Bonus',
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,

@@ -60,9 +60,9 @@ public class AuthService {
     }
 
     // One method for all roles registration
-    public AuthenticationResponse registerUser(User user, Role role, MultipartFile profilePhoto) throws IOException {
+    public AuthenticationResponse registerEmployee(User user, MultipartFile profilePhoto) throws IOException {
         if (userRepository.findByEmail(user.getUsername()).isPresent()) {
-            return new AuthenticationResponse(null, role + " already exists", null);
+            return new AuthenticationResponse(null,  "Employee already exists", null);
         }
 
         if (profilePhoto != null && !profilePhoto.isEmpty()) {
@@ -71,14 +71,14 @@ public class AuthService {
         }
 
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        user.setRole(role);
+        user.setRole(Role.valueOf("EMPLOYEE"));
         user.setActive(false);
 
         // Set default leave balance (e.g., 25 days total. On these days 15 days sick and 10 days reserve for a year leave types)
         Map<LeaveType, Integer> defaultLeaveBalance = new HashMap<>();
-        defaultLeaveBalance.put(LeaveType.SICK, 15); // Example for paid leave
-        defaultLeaveBalance.put(LeaveType.UNPAID, 0); // Example for unpaid leave
-        defaultLeaveBalance.put(LeaveType.RESERVE, 10); // Example for unpaid leave
+        defaultLeaveBalance.put(LeaveType.SICK, 15);
+        defaultLeaveBalance.put(LeaveType.UNPAID, 30);
+        defaultLeaveBalance.put(LeaveType.RESERVE, 10);
         user.setLeaveBalance(defaultLeaveBalance);
 
         userRepository.save(user);
@@ -87,7 +87,37 @@ public class AuthService {
         saveUserToken(jwt, user);
         sendActivationEmail(user);
 
-        return new AuthenticationResponse(jwt, role + " registration was successful", null);
+        return new AuthenticationResponse(jwt, "Employee registration is successful", null);
+    }
+
+    public AuthenticationResponse registerAdmin(User user) {
+        if (userRepository.findByEmail(user.getUsername()).isPresent()) {
+            return new AuthenticationResponse(null, "Admin already exists", null);
+        }
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        user.setRole(Role.valueOf("ADMIN"));
+        user.setLock(false);
+        user.setActive(true);
+        userRepository.save(user);
+        String jwt = jwtService.generateToken(user);
+        saveUserToken(jwt, user);
+
+        return new AuthenticationResponse(jwt, "Admin registration is successful", null);
+    }
+
+    public AuthenticationResponse registerManager(User user) {
+        if (userRepository.findByEmail(user.getUsername()).isPresent()) {
+            return new AuthenticationResponse(null, "Manager already exists", null);
+        }
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        user.setRole(Role.valueOf("MANAGER"));
+        user.setLock(false);
+        user.setActive(true);
+        userRepository.save(user);
+        String jwt = jwtService.generateToken(user);
+        saveUserToken(jwt, user);
+
+        return new AuthenticationResponse(jwt, "Manager registration is successful", null);
     }
 
 
@@ -105,7 +135,7 @@ public class AuthService {
         if (authentication != null && authentication.isAuthenticated()) {
             return authentication.getName(); // Usually email
         }
-        return null; // No user logged in
+        return null;
     }
 
 

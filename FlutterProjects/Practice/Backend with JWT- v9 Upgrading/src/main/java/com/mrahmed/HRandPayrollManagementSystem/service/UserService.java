@@ -31,30 +31,6 @@ public class UserService implements UserDetailsService {
     }
 
 
-//    @Value("${upload.directory}")
-//    private String uploadDir;
-
-
-//    public String saveProfileImage(MultipartFile file, String fullName) throws IOException {
-//        Path uploadPath = Paths.get(uploadDir, "profilePhotos");
-//        if (!Files.exists(uploadPath)) {
-//            Files.createDirectories(uploadPath);
-//        }
-//        String originalFilename = file.getOriginalFilename();
-//        String fileExtension = (originalFilename != null && originalFilename.contains("."))
-//                ? originalFilename.substring(originalFilename.lastIndexOf("."))
-//                : "";
-//        String sanitizedFullName = fullName.replaceAll("[^a-zA-Z0-9]", "_");
-//        if (sanitizedFullName.length() > 25) {
-//            sanitizedFullName = sanitizedFullName.substring(0, 25);
-//        }
-//        String uniqueFilename = sanitizedFullName + "_" + UUID.randomUUID() + fileExtension;
-//        Path filePath = uploadPath.resolve(uniqueFilename);
-//        Files.copy(file.getInputStream(), filePath);
-//        return uniqueFilename;
-//    }
-
-
     public User findUserById(Long id) {
         return userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("User Not Found"));

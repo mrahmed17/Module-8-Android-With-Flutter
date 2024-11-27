@@ -117,16 +117,28 @@ class AuthService {
     return preferences.getString('authToken');
   }
 
-  Future<Map<String, dynamic>?> getUser() async {
+  // Future<Map<String, dynamic>?> getUser() async {
+  //   SharedPreferences prefs = await SharedPreferences.getInstance();
+  //   String? userJson = prefs.getString('user');
+  //
+  //   if (userJson != null) {
+  //     return jsonDecode(userJson);
+  //   } else {
+  //     return null;
+  //   }
+  // }
+
+  Future<User?> getUser() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? userJson = prefs.getString('user');
 
     if (userJson != null) {
-      return jsonDecode(userJson);
+      return User.fromJson(jsonDecode(userJson)); // Convert JSON to User object
     } else {
       return null;
     }
   }
+
 
   // Future<User?> getUser() async {
   //   SharedPreferences prefs = await SharedPreferences.getInstance();

@@ -31,7 +31,7 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
       _isLoading = true;
     });
     try {
-      _currentUser = (await AuthService().getUser()) as User?;
+      _currentUser = (await AuthService().getUser());
     } catch (e) {
       _showNotification('Failed to load user: $e', isSuccess: false);
     } finally {

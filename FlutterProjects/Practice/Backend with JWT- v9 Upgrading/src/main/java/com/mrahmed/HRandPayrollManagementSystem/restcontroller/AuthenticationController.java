@@ -26,11 +26,9 @@ public class AuthenticationController {
     private final UserService userService;
 
     @PostMapping("/register/admin")
-    public ResponseEntity<AuthenticationResponse> registerAdmin(
-            @RequestPart User user,
-            @RequestPart(required = false) MultipartFile profilePhoto) {
+    public ResponseEntity<AuthenticationResponse> registerAdmin(@RequestPart User user) {
         try {
-            AuthenticationResponse response = authService.registerUser(user, Role.ADMIN, profilePhoto);
+            AuthenticationResponse response = authService.registerAdmin(user);
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -39,11 +37,9 @@ public class AuthenticationController {
     }
 
     @PostMapping("/register/manager")
-    public ResponseEntity<AuthenticationResponse> registerManager(
-            @RequestPart User user,
-            @RequestPart(required = false) MultipartFile profilePhoto) {
+    public ResponseEntity<AuthenticationResponse> registerManager(@RequestPart User user) {
         try {
-            AuthenticationResponse response = authService.registerUser(user, Role.MANAGER, profilePhoto);
+            AuthenticationResponse response = authService.registerManager(user);
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -56,7 +52,7 @@ public class AuthenticationController {
             @RequestPart User user,
             @RequestPart(required = false) MultipartFile profilePhoto) {
         try {
-            AuthenticationResponse response = authService.registerUser(user, Role.EMPLOYEE, profilePhoto);
+            AuthenticationResponse response = authService.registerEmployee(user, profilePhoto);
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -130,7 +126,7 @@ public class AuthenticationController {
         return ResponseEntity.ok(employees);
     }
 
-    @GetMapping("/getUsersWithSalaryGreaterThanOrEqual")
+    @GetMapping("/salary/greaterThanOrEqual")
     public ResponseEntity<Page<User>> getUsersWithSalaryGreaterThanOrEqual(
             @RequestParam double salary,
             @RequestParam(defaultValue = "0") int page,
@@ -140,7 +136,7 @@ public class AuthenticationController {
         return ResponseEntity.ok(users);
     }
 
-    @GetMapping("/getUsersWithSalaryLessThanOrEqual")
+    @GetMapping("/salary/lessThanOrEqual")
     public ResponseEntity<Page<User>> getUsersWithSalaryLessThanOrEqual(
             @RequestParam double salary,
             @RequestParam(defaultValue = "0") int page,

@@ -10,6 +10,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -45,7 +46,4 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Query("SELECT u FROM User u WHERE u.joinedDate = :joinedDate")
     Page<User> findByJoinedDate(@Param("joinedDate") LocalDate joinedDate, Pageable pageable);
 
-    // Find all employees with pagination
-    @Query("SELECT u FROM User u WHERE u.role = 'EMPLOYEE'")
-    Page<User> findAllEmployees(Pageable pageable);
 }
