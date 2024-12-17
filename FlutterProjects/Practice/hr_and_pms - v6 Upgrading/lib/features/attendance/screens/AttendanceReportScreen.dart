@@ -1,8 +1,7 @@
-import 'package:flutter/material.dart';
-import 'package:hr_and_pms/administration/service/AuthService.dart';
+import 'package:flutter/material.dart';import 'package:hr_and_pms/administration/service/UserService.dart';
 import 'package:hr_and_pms/features/attendance/service/AttendanceService.dart';
 import 'package:hr_and_pms/features/attendance/model/AttendanceModel.dart';
-import 'package:hr_and_pms/administration/model/User.dart'; // Assume User model exists
+import 'package:hr_and_pms/administration/model/User.dart';
 
 class AttendanceReportScreen extends StatefulWidget {
   const AttendanceReportScreen({super.key});
@@ -13,7 +12,7 @@ class AttendanceReportScreen extends StatefulWidget {
 
 class _AttendanceReportScreenState extends State<AttendanceReportScreen> {
   late AttendanceService _attendanceService;
-  late AuthService _authService;
+  late UserService _userService;
   List<User> _employees = [];
   User? _selectedEmployee;
 
@@ -28,7 +27,7 @@ class _AttendanceReportScreenState extends State<AttendanceReportScreen> {
   void initState() {
     super.initState();
     _attendanceService = AttendanceService();
-    _authService = AuthService(); // Assume this service fetches employees
+    _userService = UserService();
     _fetchEmployees();
   }
 
@@ -36,7 +35,7 @@ class _AttendanceReportScreenState extends State<AttendanceReportScreen> {
   Future<void> _fetchEmployees() async {
     setState(() => _isLoading = true);
     try {
-      final employees = await _authService.getAllUsers();
+      final employees = await _userService.getAllEmployees();
       setState(() {
         _employees = employees;
         _selectedEmployee = employees.isNotEmpty ? employees.first : null;

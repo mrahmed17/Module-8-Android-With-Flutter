@@ -39,6 +39,7 @@ class _SalaryCreateScreenState extends State<SalaryCreateScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Salary created successfully!')),
         );
+        _userIdController.clear(); // Clear the user ID field after success
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Failed to create salary.')),
@@ -110,11 +111,27 @@ class _SalaryCreateScreenState extends State<SalaryCreateScreen> {
                 ),
                 const SizedBox(height: 10),
                 Text(
-                  'User ID: ${_createdSalary?.userId}',
+                  'User ID: ${_createdSalary?.id}',
                   style: const TextStyle(fontSize: 16),
                 ),
                 Text(
-                  'Total Salary: \$${_createdSalary?.totalSalary?.toStringAsFixed(2) ?? "N/A"}',
+                  'Net Salary: \$${_createdSalary?.netSalary.toStringAsFixed(2) ?? "N/A"}',
+                  style: const TextStyle(fontSize: 16),
+                ),
+                Text(
+                  'Tax: \$${_createdSalary?.tax.toStringAsFixed(2) ?? "N/A"}',
+                  style: const TextStyle(fontSize: 16),
+                ),
+                Text(
+                  'Provident Fund: \$${_createdSalary?.providentFund.toStringAsFixed(2) ?? "N/A"}',
+                  style: const TextStyle(fontSize: 16),
+                ),
+                // Text(
+                //   'Total Salary: \$${_createdSalary?.totalSalary?.toStringAsFixed(2) ?? "N/A"}',
+                //   style: const TextStyle(fontSize: 16),
+                // ),
+                Text(
+                  'Payment Date: ${_createdSalary?.paymentDate.toLocal().toString().split(' ')[0]}',
                   style: const TextStyle(fontSize: 16),
                 ),
               ],

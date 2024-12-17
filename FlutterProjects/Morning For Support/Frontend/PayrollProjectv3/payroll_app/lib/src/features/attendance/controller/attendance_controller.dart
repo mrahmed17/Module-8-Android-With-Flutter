@@ -1,6 +1,9 @@
 import 'dart:convert';
 
 import 'package:payroll_app/src/features/attendance/model/attendance.dart';
+import 'package:payroll_app/src/features/core/controllers/profile_controller/profile_controller.dart';
+import 'package:payroll_app/src/features/employee/controller/employee_controller.dart';
+import 'package:payroll_app/src/features/employee/model/employee.dart';
 import 'package:http/http.dart' as http;
 
 class AttendanceController {

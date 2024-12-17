@@ -6,7 +6,6 @@ import com.mrahmed.HRandPayrollManagementSystem.entity.User;
 import com.mrahmed.HRandPayrollManagementSystem.repository.BonusRepository;
 import com.mrahmed.HRandPayrollManagementSystem.repository.UserRepository;
 import com.mrahmed.HRandPayrollManagementSystem.service.BonusService;
-import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -42,15 +41,15 @@ public class BonusController {
 
     // Create a new Bonus
     @PostMapping("/assign")
-    public ResponseEntity<Bonus> assignBonus(@RequestBody Bonus bonusRequest) {
+    public ResponseEntity<Bonus> assignBonus(@RequestBody Bonus assignBonus) {
         try {
             // Create a new Bonus object from the request
             Bonus bonus = new Bonus();
-            User employee = userRepository.findById(bonusRequest.getId())
-                    .orElseThrow(() -> new IllegalArgumentException("Employee not found with ID: " + bonusRequest.getId()));
+            User employee = userRepository.findById(assignBonus.getId())
+                    .orElseThrow(() -> new IllegalArgumentException("Employee not found with ID: " + assignBonus.getId()));
 
             bonus.setUser(employee);
-            bonus.setBonusAmount(bonusRequest.getBonusAmount());
+            bonus.setBonusAmount(assignBonus.getBonusAmount());
             bonus.setBonusDate(LocalDateTime.now());
             bonus.setBonusType(BonusType.PERFORMANCE);  // Assuming PERFORMANCE bonus type
 

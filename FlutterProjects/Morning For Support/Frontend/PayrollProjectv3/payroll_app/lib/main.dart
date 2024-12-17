@@ -8,6 +8,7 @@ import 'package:payroll_app/src/features/bonus/screen/bonus_screen.dart';
 import 'package:payroll_app/src/features/core/screens/dashboard/dashboard.dart';
 import 'package:payroll_app/src/features/leave/screen/leave_screen.dart';
 import 'package:payroll_app/src/repository/authentication/authentication_repository.dart';
+import 'package:payroll_app/src/routing/route.dart';
 import 'package:payroll_app/src/utils/theme/theme.dart';
 
 void main() async {

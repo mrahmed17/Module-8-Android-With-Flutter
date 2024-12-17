@@ -6,7 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -24,11 +26,14 @@ public class PaySlipService {
     @Autowired
     private AttendanceRepository attendanceRepository;
 
+    @Autowired
+    private UserRepository userRepository;
+
     // Method to generate payslip for an employee
     public String generatePaySlip(long userId) {
         // Fetch the Salary for the User
         Optional<Salary> salaryOpt = salaryRepository.findByUserId(userId);
-        if (!salaryOpt.isPresent()) {
+        if (salaryOpt.isEmpty()) {
             return "Salary record not found for user with ID: " + userId;
         }
         Salary salary = salaryOpt.get();
@@ -67,5 +72,38 @@ public class PaySlipService {
 
         return paySlip.toString();
     }
+
+    public Map<String, Object> getUserPayslipData(long userId) {
+        Map<String, Object> response = new HashMap<>();
+
+        // Fetch user details
+        Optional<User> userOpt = userRepository.findById(userId);
+        if (userOpt.isEmpty()) {
+            throw new RuntimeException("User not found with ID: " + userId);
+        }
+        User user = userOpt.get();
+        response.put("user", user);
+
+        // Fetch salary details
+        Optional<Salary> salaryOpt = salaryRepository.findByUserId(userId);
+        if (salaryOpt.isPresent()) {
+            Salary salary = salaryOpt.get();
+            response.put("salary", salary);
+
+            // Fetch related bonuses, leaves, and attendance (overtime)
+            response.put("bonuses", bonusRepository.findBySalaryId(salary.getId()));
+            response.put("leaves", leaveRepository.findBySalaryId(salary.getId()));
+            response.put("overtime", attendanceRepository.findBySalaryId(salary.getId()));
+        } else {
+            response.put("salary", null);
+            response.put("bonuses", List.of());
+            response.put("leaves", List.of());
+            response.put("overtime", List.of());
+        }
+
+        return response;
+    }
+
+
 
 }

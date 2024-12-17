@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:hr_and_pms/administration/model/User.dart';
+import 'package:hr_and_pms/administration/authScreen/LoginScreen.dart';
 import 'package:hr_and_pms/administration/screens/UserProfileScreen.dart';
+import 'package:hr_and_pms/administration/service/AuthService.dart';
 import 'package:hr_and_pms/features/advanceSalary/Screens/ApplyAdvanceSalaryScreen.dart';
-import 'package:intl/intl.dart';
 import 'package:hr_and_pms/features/attendance/screens/AttendanceScreen.dart';
 import 'package:hr_and_pms/features/leave/screens/ApplyLeaveScreen.dart';
-import 'package:hr_and_pms/administration/authScreen/LoginScreen.dart';
-import 'package:hr_and_pms/administration/service/AuthService.dart';
+import 'package:intl/intl.dart';
+
 
 class EmpDashboardScreen extends StatefulWidget {
-  const EmpDashboardScreen({super.key});
+  const EmpDashboardScreen({Key? key}) : super(key: key);
 
   @override
   _EmpDashboardScreenState createState() => _EmpDashboardScreenState();
@@ -17,34 +17,8 @@ class EmpDashboardScreen extends StatefulWidget {
 
 class _EmpDashboardScreenState extends State<EmpDashboardScreen> {
   int _selectedIndex = 0;
-  User? _currentUser;
+  String? _currentUserName;
 
-  // Welcome message and current time
-  String getWelcomeMessage() {
-    final hour = DateTime.now().hour;
-    if (hour < 12) {
-      return 'Good Morning';
-    } else if (hour < 17) {
-      return 'Good Afternoon';
-    } else {
-      return 'Good Evening';
-    }
-  }
-
-  // Navigation items for the BottomNavigationBar
-  final List<Map<String, dynamic>> _navItems = [
-    {'icon': Icons.home, 'label': 'Home', 'screen': ()},
-    {'icon': Icons.work_off, 'label': 'Leave', 'screen': ()},
-    {'icon': Icons.feedback, 'label': 'Feedback', 'screen': ()},
-    {'icon': Icons.person, 'label': 'Profile', 'screen': ()},
-    {'icon': Icons.logout, 'label': 'Logout', 'screen': ()},
-  ];
-
-  // Fetch the screens from the navigation items
-  List<Widget> get _screens =>
-      _navItems.map((item) => item['screen'] as Widget).toList();
-
-  // Fetch user and authentication state
   @override
   void initState() {
     super.initState();
@@ -55,13 +29,9 @@ class _EmpDashboardScreenState extends State<EmpDashboardScreen> {
   Future<void> _fetchCurrentUser() async {
     try {
       final user = await AuthService().getUser();
-      if (user != null) {
-        setState(() {
-          _currentUser = user as User?;
-        });
-      } else {
-        print('No user data available');
-      }
+      setState(() {
+        _currentUserName = user?.name ?? 'Employee';
+      });
     } catch (e) {
       print('Error fetching user data: $e');
     }
@@ -80,16 +50,18 @@ class _EmpDashboardScreenState extends State<EmpDashboardScreen> {
     final confirm = await showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Logout'),
+        title: const Text('Logout Confirmation'),
         content: const Text('Are you sure you want to logout?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('Cancel'),
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.white),
+            child: const Text('Cancel', style: TextStyle(color: Colors.teal),),
           ),
           TextButton(
             onPressed: () => Navigator.of(context).pop(true),
-            child: const Text('Logout'),
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.white),
+            child: const Text('Logout', style: TextStyle(color: Colors.redAccent),),
           ),
         ],
       ),
@@ -114,7 +86,17 @@ class _EmpDashboardScreenState extends State<EmpDashboardScreen> {
     }
   }
 
-  // Build the live clock widget
+  String getWelcomeMessage() {
+    final hour = DateTime.now().hour;
+    if (hour < 12) {
+      return 'Good Morning';
+    } else if (hour < 17) {
+      return 'Good Afternoon';
+    } else {
+      return 'Good Evening';
+    }
+  }
+
   Widget _buildClock() {
     return StreamBuilder<DateTime>(
       stream: Stream.periodic(const Duration(seconds: 1), (_) => DateTime.now()),
@@ -122,7 +104,7 @@ class _EmpDashboardScreenState extends State<EmpDashboardScreen> {
         if (snapshot.hasData) {
           return Text(
             DateFormat('EEEE, MMMM d, yyyy • h:mm:ss a').format(snapshot.data!),
-            style: const TextStyle(fontSize: 14, color: Colors.black87, fontWeight: FontWeight.bold),
+            style: const TextStyle(fontSize: 14, color: Colors.deepOrange, fontWeight: FontWeight.bold),
           );
         }
         return const CircularProgressIndicator();
@@ -134,48 +116,61 @@ class _EmpDashboardScreenState extends State<EmpDashboardScreen> {
     final List<Map<String, dynamic>> features = [
       {'icon': Icons.access_time, 'label': 'Attendance', 'screen': AttendanceScreen()},
       {'icon': Icons.date_range, 'label': 'Apply Leave', 'screen': ApplyLeaveScreen()},
-      {'icon': Icons.money, 'label': 'Apply Advance', 'screen': ApplyAdvanceSalaryScreen()},
+      {'icon': Icons.money, 'label': 'Advance Salary', 'screen': ApplyAdvanceSalaryScreen()},
       {'icon': Icons.person, 'label': 'Profile', 'screen': UserProfileScreen()},
-      {'icon': Icons.history, 'label': 'Coming soon', 'screen': Container()},
-      {'icon': Icons.history, 'label': 'Coming soon', 'screen': Container()},
-      {'icon': Icons.history, 'label': 'Coming soon', 'screen': Container()},
-      {'icon': Icons.history, 'label': 'Coming soon', 'screen': Container()},
-      {'icon': Icons.history, 'label': 'Coming soon', 'screen': Container()},
-      {'icon': Icons.history, 'label': 'Coming soon', 'screen': Container()},
-      // Add more features as required
+      {'icon': Icons.history, 'label': 'Salary History', 'screen': null},
+      {'icon': Icons.file_present, 'label': 'Payslip', 'screen': null},
     ];
 
-    return Expanded(
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
       child: GridView.builder(
-        padding: const EdgeInsets.all(16),
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 2,
-          mainAxisSpacing: 16,
-          crossAxisSpacing: 16,
-          childAspectRatio: 1,
-        ),
+        shrinkWrap: true,
+        physics: const NeverScrollableScrollPhysics(),
         itemCount: features.length,
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 3, // 3 icons per row
+          crossAxisSpacing: 16.0,
+          mainAxisSpacing: 16.0,
+        ),
         itemBuilder: (context, index) {
+          final feature = features[index];
           return GestureDetector(
             onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => features[index]['screen'],
-                ),
-              );
+              if (feature['screen'] != null) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => feature['screen']),
+                );
+              }
             },
-            child: Card(
-              elevation: 4,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(features[index]['icon'], size: 40),
-                  const SizedBox(height: 8),
-                  Text(features[index]['label'], style: const TextStyle(fontSize: 16)),
-                ],
-              ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                  width: 70,
+                  height: 70,
+                  decoration: BoxDecoration(
+                    color: Colors.teal.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: Colors.teal, width: 1),
+                  ),
+                  child: Icon(
+                    feature['icon'],
+                    size: 40,
+                    color: Colors.teal,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  feature['label'],
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ],
             ),
           );
         },
@@ -187,41 +182,45 @@ class _EmpDashboardScreenState extends State<EmpDashboardScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Employee Dashboard', style: TextStyle( fontSize: 30,
-          fontWeight: FontWeight.bold,
-          color: Colors.white,),),
+        title: const Text(
+          'Employee Dashboard',
+          style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold, color: Colors.white),
+        ),
         backgroundColor: Colors.teal,
         centerTitle: true,
       ),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  '${getWelcomeMessage()}, ${_currentUser?.name ?? 'Employee'}',
-                  style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w800, color: Colors.teal),
-                ),
-                _buildClock(),
-              ],
+      body: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    '${getWelcomeMessage()}, ${_currentUserName ?? 'Employee'}',
+                    style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w800, color: Colors.teal),
+                  ),
+                  _buildClock(),
+                ],
+              ),
             ),
-          ),
-          _buildDashboardGrid(context),
-        ],
+            _buildDashboardGrid(context),
+          ],
+        ),
       ),
       bottomNavigationBar: BottomNavigationBar(
         backgroundColor: Colors.white,
         selectedItemColor: Colors.teal,
         unselectedItemColor: Colors.grey,
-        items: _navItems
-            .map((item) => BottomNavigationBarItem(
-          icon: Icon(item['icon']),
-          label: item['label'],
-        ))
-            .toList(),
+        items: [
+          const BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
+          const BottomNavigationBarItem(icon: Icon(Icons.work_off), label: 'Leave'),
+          const BottomNavigationBarItem(icon: Icon(Icons.feedback), label: 'Feedback'),
+          const BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
+          const BottomNavigationBarItem(icon: Icon(Icons.logout), label: 'Logout'),
+        ],
         currentIndex: _selectedIndex,
         onTap: _onItemTapped,
       ),

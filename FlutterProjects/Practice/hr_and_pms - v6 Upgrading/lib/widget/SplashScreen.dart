@@ -27,7 +27,7 @@ class _SplashScreenState extends State<SplashScreen> {
     bool loggedIn = await AuthService().isLoggedIn();
     if (loggedIn) {
       // Navigate to the home/empDashboard Screens
-      Navigator.pushReplacementNamed(context, '/empDashboard');
+      Navigator.pushReplacementNamed(context, '/empDashboardScreen');
     } else {
       // Stay on the login Screens
       Navigator.pushReplacementNamed(context, '/home');

@@ -1,49 +1,94 @@
 import 'dart:convert';
-import 'package:dio/dio.dart';
+import 'dart:io';
 import 'package:jwt_decode/jwt_decode.dart';
+import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
+import 'package:http_parser/http_parser.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:image_picker_web/image_picker_web.dart';
 import 'package:hr_and_pms/administration/model/User.dart';
-import 'package:hr_and_pms/administration/model/Role.dart';
 
 class AuthService {
-  final Dio _dio = Dio();
   final String baseUrl = 'http://localhost:8080';
 
-  // Helper method to handle errors from Dio
-  String _handleError(DioException e) {
-    return e.response?.data?['message'] ?? 'Error: ${e.message}';
+  // Generic registration method with multipart support
+  Future<http.Response> registerUser({
+    required Map<String, dynamic> userData,
+    required String role,
+    XFile? mobilePhoto,
+    Uint8List? webPhoto,
+  }) async {
+    try {
+      // Build URL dynamically based on role
+      final String url = "$baseUrl/register/${role.toLowerCase()}";
+      var request = http.MultipartRequest('POST', Uri.parse(url));
+
+      // Add JSON user data as a multipart field
+      request.files.add(
+        http.MultipartFile.fromString(
+          'user',
+          jsonEncode(userData),
+          contentType: MediaType('application', 'json'),
+        ),
+      );
+
+      // Add profile photo (if provided)
+      if (webPhoto != null) {
+        request.files.add(
+          http.MultipartFile.fromBytes(
+            'profilePhoto',
+            webPhoto,
+            filename: 'upload.jpg',
+            contentType: MediaType('image', 'jpeg'),
+          ),
+        );
+      } else if (mobilePhoto != null) {
+        request.files.add(
+          await http.MultipartFile.fromPath(
+            'profilePhoto',
+            mobilePhoto.path,
+          ),
+        );
+      }
+
+      // Send request
+      final response = await request.send();
+      return await http.Response.fromStream(response);
+    } catch (e) {
+      debugPrint("Error during registration: $e");
+      rethrow;
+    }
   }
 
   // Register a user (admin, manager, employee)
-  Future<bool> register(Map<String, dynamic> user, String role) async {
-    try {
-      final url = Uri.parse('$baseUrl/register/$role');
-      final headers = {'Content-Type': 'application/json'};
-      final body = jsonEncode(user);
-
-      final response = await http.post(url, headers: headers, body: body);
-
-      if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
-        String token = data['token'];
-
-        // Save the token and role in SharedPreferences
-        SharedPreferences preferences = await SharedPreferences.getInstance();
-        await preferences.setString('authToken', token);
-        await preferences.setString('userRole', role);
-
-        return true;
-      } else {
-        print('Registration failed: ${response.body}');
-        return false;
-      }
-    } catch (e) {
-      print('Error: $e');
-      return false;
-    }
-  }
+  // Future<bool> register(Map<String, dynamic> user, String role) async {
+  //   try {
+  //     final url = Uri.parse('$baseUrl/register/$role');
+  //     final headers = {'Content-Type': 'application/json'};
+  //     final body = jsonEncode(user);
+  //
+  //     final response = await http.post(url, headers: headers, body: body);
+  //
+  //     if (response.statusCode == 200) {
+  //       final data = jsonDecode(response.body);
+  //       String token = data['token'];
+  //
+  //       // Save the token and role in SharedPreferences
+  //       SharedPreferences preferences = await SharedPreferences.getInstance();
+  //       await preferences.setString('authToken', token);
+  //       await preferences.setString('userRole', role);
+  //
+  //       return true;
+  //     } else {
+  //       print('Registration failed: ${response.body}');
+  //       return false;
+  //     }
+  //   } catch (e) {
+  //     print('Error: $e');
+  //     return false;
+  //   }
+  // }
 
   Future<bool> login(String email, String password) async {
     try {
@@ -68,10 +113,6 @@ class AuthService {
         await preferences.setString('userRole', role);
         await preferences.setString('user', jsonEncode(user));
 
-        // For getting login usr profile data
-        // Line from Nusrat
-        // await preferences.setString('user', jsonEncode(data['user']));
-
         return true;
       } else {
         print('Failed to login: ${response.body}');
@@ -84,10 +125,28 @@ class AuthService {
   }
 
   Future<void> logout() async {
-    SharedPreferences preferences = await SharedPreferences.getInstance();
-    await preferences.remove('authToken');
-    await preferences.remove('userRole');
+    try {
+      String? token = await getToken();
+      if (token != null) {
+        final url = Uri.parse('$baseUrl/logout');
+        final headers = {'Content-Type': 'application/json'};
+        final body = jsonEncode({'token': token});
+
+        await http.post(url, headers: headers, body: body);
+      }
+
+      SharedPreferences preferences = await SharedPreferences.getInstance();
+      await preferences.clear();
+    } catch (e) {
+      print('Error during logout: $e');
+    }
   }
+
+  // Future<void> logout() async {
+  //   SharedPreferences preferences = await SharedPreferences.getInstance();
+  //   await preferences.remove('authToken');
+  //   await preferences.remove('userRole');
+  // }
 
   Future<bool> isLoggedIn() async {
     String? token = await getToken();
@@ -110,6 +169,24 @@ class AuthService {
       }
     }
     return true;
+  }
+
+  /// Get User Profile
+  Future<User?> getUserProfile(String email) async {
+    try {
+      final url = Uri.parse('$baseUrl/profile?email=$email');
+      final response = await http.get(url);
+
+      if (response.statusCode == 200) {
+        return User.fromJson(jsonDecode(response.body));
+      } else {
+        print('Failed to fetch profile: ${response.body}');
+        return null;
+      }
+    } catch (e) {
+      print('Error fetching profile: $e');
+      return null;
+    }
   }
 
   Future<String?> getToken() async {
@@ -145,188 +222,6 @@ class AuthService {
     return preferences.getString('userRole');
   }
 
-  Future<bool> forgotPassword(String email) async {
-    final url = Uri.parse('$baseUrl/forgot-password');
-    final headers = {'Content-Type': 'application/json'};
-    final body = jsonEncode({'email': email});
-
-    try {
-      final response = await http.post(url, headers: headers, body: body);
-
-      if (response.statusCode == 200) {
-        return true; // Reset link sent successfully
-      } else {
-        print('Failed to send reset link: ${response.body}');
-        return false;
-      }
-    } catch (e) {
-      print('Error: $e');
-      return false;
-    }
-  }
-
-  // Update user profile with optional profile photo
-  Future<String> updateUserProfile(
-      int id, User user, XFile? profilePhoto) async {
-    try {
-      final formData = await _prepareUserDataForm(user, profilePhoto);
-      final response = await _dio.put(
-        '$baseUrl/update/$id',
-        data: formData,
-      );
-
-      return response.statusCode == 200
-          ? 'User updated successfully.'
-          : 'Failed to update user: ${response.statusMessage}';
-    } on DioException catch (e) {
-      return _handleError(e);
-    }
-  }
-
-  // Helper method to prepare user data with profile photo if available
-  Future<FormData> _prepareUserDataForm(User user, XFile? profilePhoto) async {
-    final formData = FormData();
-    formData.fields.add(MapEntry('user', jsonEncode(user.toJson())));
-
-    if (profilePhoto != null) {
-      final bytes = await profilePhoto.readAsBytes();
-      formData.files.add(
-        MapEntry(
-          'profilePhoto',
-          MultipartFile.fromBytes(bytes, filename: profilePhoto.name),
-        ),
-      );
-    }
-    return formData;
-  }
-
-  // Get user by ID
-  Future<User?> getUserById(int id) async {
-    try {
-      final response = await _dio.get('$baseUrl/find/$id');
-      return response.statusCode == 200 ? User.fromJson(response.data) : null;
-    } on DioException catch (e) {
-      throw Exception(_handleError(e));
-    }
-  }
-
-  // Get all users
-  Future<List<User>> getAllUsers() async {
-    try {
-      final response = await _dio.get('$baseUrl/all');
-      if (response.statusCode == 200) {
-        return (response.data as List)
-            .map((userJson) => User.fromJson(userJson))
-            .toList();
-      } else {
-        return Future.error('Failed to load users: ${response.statusMessage}');
-      }
-    } on DioException catch (e) {
-      return Future.error(_handleError(e));
-    }
-  }
-
-  // Find user by email
-  Future<User?> getUserByEmail(String email) async {
-    try {
-      final response = await _dio.get('$baseUrl/email/$email');
-      return response.statusCode == 200 ? User.fromJson(response.data) : null;
-    } on DioException catch (e) {
-      throw Exception(_handleError(e));
-    }
-  }
-
-  // Filtered user search methods
-  Future<List<User>> getUsersWithSalaryGreaterThanOrEqual(int salary,
-      {int page = 0, int size = 10}) async {
-    try {
-      final response = await _dio.get(
-        '$baseUrl/salary/greaterThanOrEqual',
-        queryParameters: {'salary': salary, 'page': page, 'size': size},
-      );
-      return (response.data['content'] as List)
-          .map((userJson) => User.fromJson(userJson))
-          .toList();
-    } on DioException catch (e) {
-      throw Exception(_handleError(e));
-    }
-  }
-
-  Future<List<User>> getUsersWithSalaryLessThanOrEqual(int salary,
-      {int page = 0, int size = 10}) async {
-    try {
-      final response = await _dio.get(
-        '$baseUrl/salary/lessThanOrEqual',
-        queryParameters: {'salary': salary, 'page': page, 'size': size},
-      );
-      return (response.data['content'] as List)
-          .map((userJson) => User.fromJson(userJson))
-          .toList();
-    } on DioException catch (e) {
-      throw Exception(_handleError(e));
-    }
-  }
-
-  Future<List<User>> getUsersByRole(Role role,
-      {int page = 0, int size = 10}) async {
-    try {
-      final response = await _dio.get(
-        '$baseUrl/role/${role.name}',
-        queryParameters: {'page': page, 'size': size},
-      );
-      return (response.data['content'] as List)
-          .map((userJson) => User.fromJson(userJson))
-          .toList();
-    } on DioException catch (e) {
-      throw Exception(_handleError(e));
-    }
-  }
-
-  Future<List<User>> searchUsersByName(String name,
-      {int page = 0, int size = 10}) async {
-    try {
-      final response = await _dio.get(
-        '$baseUrl/search/name/$name',
-        queryParameters: {'page': page, 'size': size},
-      );
-      return (response.data['content'] as List)
-          .map((userJson) => User.fromJson(userJson))
-          .toList();
-    } on DioException catch (e) {
-      throw Exception(_handleError(e));
-    }
-  }
-
-  Future<List<User>> getUsersByGender(String gender,
-      {int page = 0, int size = 10}) async {
-    try {
-      final response = await _dio.get(
-        '$baseUrl/gender/$gender',
-        queryParameters: {'page': page, 'size': size},
-      );
-      return (response.data['content'] as List)
-          .map((userJson) => User.fromJson(userJson))
-          .toList();
-    } on DioException catch (e) {
-      throw Exception(_handleError(e));
-    }
-  }
-
-  Future<List<User>> getUsersByJoinedDate(String joinedDate,
-      {int page = 0, int size = 10}) async {
-    try {
-      final response = await _dio.get(
-        '$baseUrl/joinedDate/$joinedDate',
-        queryParameters: {'page': page, 'size': size},
-      );
-      return (response.data['content'] as List)
-          .map((userJson) => User.fromJson(userJson))
-          .toList();
-    } on DioException catch (e) {
-      throw Exception(_handleError(e));
-    }
-  }
-
   Future<bool> hasRole(List<String> roles) async {
     String? role = await getUserRole();
     return role != null && roles.contains(role);
@@ -343,4 +238,47 @@ class AuthService {
   Future<bool> isEmployee() async {
     return await hasRole(['EMPLOYEE']);
   }
+
+  /// Forgot Password
+  Future<bool> forgotPassword(String email) async {
+    try {
+      final url = Uri.parse('$baseUrl/forgot-password');
+      final headers = {'Content-Type': 'application/json'};
+      final body = jsonEncode({'email': email});
+
+      final response = await http.post(url, headers: headers, body: body);
+
+      if (response.statusCode == 200) {
+        return true; // Reset link sent successfully
+      } else {
+        print('Failed to send reset link: ${response.body}');
+        return false;
+      }
+    } catch (e) {
+      print('Error during forgot password: $e');
+      return false;
+    }
+  }
+
+  /// Reset Password
+  Future<bool> resetPassword(String token, String newPassword) async {
+    try {
+      final url = Uri.parse('$baseUrl/reset-password');
+      final headers = {'Content-Type': 'application/json'};
+      final body = jsonEncode({'token': token, 'newPassword': newPassword});
+
+      final response = await http.post(url, headers: headers, body: body);
+
+      if (response.statusCode == 200) {
+        return true;
+      } else {
+        print('Failed to reset password: ${response.body}');
+        return false;
+      }
+    } catch (e) {
+      print('Error during reset password: $e');
+      return false;
+    }
+  }
+
 }

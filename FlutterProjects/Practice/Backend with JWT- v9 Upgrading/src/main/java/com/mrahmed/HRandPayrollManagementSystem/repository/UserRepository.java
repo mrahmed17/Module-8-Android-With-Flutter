@@ -6,8 +6,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -24,26 +22,31 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     // Find users by role with pagination
     @Query("SELECT u FROM User u WHERE u.role = :role")
-    Page<User> findAllByRole(@Param("role") Role role, Pageable pageable);
+    List<User> findAllByRole(@Param("role") Role role);
 
     // Find users with salary greater than or equal to a certain amount with pagination
     @Query("SELECT u FROM User u WHERE u.basicSalary >= :salary")
-    Page<User> findUsersWithSalaryGreaterThanOrEqual(@Param("salary") double salary, Pageable pageable);
+    List<User> findUsersWithSalaryGreaterThanOrEqual(@Param("salary") double salary);
 
     // Find users with salary less than or equal to a certain amount with pagination
     @Query("SELECT u FROM User u WHERE u.basicSalary <= :salary")
-    Page<User> findUsersWithSalaryLessThanOrEqual(@Param("salary") double salary, Pageable pageable);
+    List<User> findUsersWithSalaryLessThanOrEqual(@Param("salary") double salary );
 
-    // Search user records by full name or part of the name with pagination
-    @Query("SELECT u FROM User u WHERE LOWER(u.name) LIKE LOWER(CONCAT('%', :name, '%'))")
-    Page<User> findByFullNameContaining(@Param("name") String name, Pageable pageable);
-
-    // Search user records by gender with pagination
-    @Query("SELECT u FROM User u WHERE u.gender = :gender")
-    Page<User> findByGender(@Param("gender") String gender, Pageable pageable);
+//    // Search user records by full name or part of the name with pagination
+//    @Query("SELECT u FROM User u WHERE LOWER(u.name) LIKE LOWER(CONCAT('%', :name, '%'))")
+//    List<User> findByFullNameContaining(@Param("name") String name );
+//
+//    // Search user records by gender with pagination
+//    @Query("SELECT u FROM User u WHERE u.gender = :gender")
+//    List<User> findByGender(@Param("gender") String gender );
 
     // Search user records by joined date with pagination
     @Query("SELECT u FROM User u WHERE u.joinedDate = :joinedDate")
-    Page<User> findByJoinedDate(@Param("joinedDate") LocalDate joinedDate, Pageable pageable);
+    List<User> findByJoinedDate(@Param("joinedDate") LocalDate joinedDate );
+
+    // Dynamic filtering  query
+    @Query("SELECT u FROM User u WHERE LOWER(u.name) LIKE LOWER(CONCAT('%', :name, '%')) AND u.gender = :gender")
+    List<User> findEmployeesByFilters(@Param("name") String name, @Param("gender") String gender);
+
 
 }

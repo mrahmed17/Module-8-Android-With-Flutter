@@ -10,8 +10,6 @@ import jakarta.mail.MessagingException;
 import lombok.AllArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -59,6 +57,14 @@ public class AuthService {
         tokenRepository.saveAll(validTokens);
     }
 
+    public void revokeToken(String token) {
+        Token existingToken = tokenRepository.findByToken(token)
+                .orElseThrow(() -> new RuntimeException("Token not found"));
+        existingToken.setLoggedOut(true);
+        tokenRepository.save(existingToken);
+    }
+
+
     // One method for all roles registration
     public AuthenticationResponse registerEmployee(User user, MultipartFile profilePhoto) throws IOException {
         if (userRepository.findByEmail(user.getUsername()).isPresent()) {
@@ -90,9 +96,14 @@ public class AuthService {
         return new AuthenticationResponse(jwt, "Employee registration is successful", null);
     }
 
-    public AuthenticationResponse registerAdmin(User user) {
+    public AuthenticationResponse registerAdmin(User user, MultipartFile profilePhoto) throws IOException {
         if (userRepository.findByEmail(user.getUsername()).isPresent()) {
             return new AuthenticationResponse(null, "Admin already exists", null);
+        }
+
+        if (profilePhoto != null && !profilePhoto.isEmpty()) {
+            String profilePhotoPath = userService.saveProfileImage(profilePhoto, user.getName());
+            user.setProfilePhoto(profilePhotoPath);
         }
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.setRole(Role.valueOf("ADMIN"));
@@ -105,10 +116,16 @@ public class AuthService {
         return new AuthenticationResponse(jwt, "Admin registration is successful", null);
     }
 
-    public AuthenticationResponse registerManager(User user) {
+    public AuthenticationResponse registerManager(User user, MultipartFile profilePhoto) throws IOException {
         if (userRepository.findByEmail(user.getUsername()).isPresent()) {
             return new AuthenticationResponse(null, "Manager already exists", null);
         }
+
+        if (profilePhoto != null && !profilePhoto.isEmpty()) {
+            String profilePhotoPath = userService.saveProfileImage(profilePhoto, user.getName());
+            user.setProfilePhoto(profilePhotoPath);
+        }
+
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.setRole(Role.valueOf("MANAGER"));
         user.setLock(false);
@@ -119,25 +136,6 @@ public class AuthService {
 
         return new AuthenticationResponse(jwt, "Manager registration is successful", null);
     }
-
-
-    public User getLoggedInUser() {
-        String username = getLoggedInUsername();
-        if (username == null) {
-            throw new RuntimeException("No authenticated user found");
-        }
-        return userRepository.findByEmail(username)
-                .orElseThrow(() -> new RuntimeException("User not found with email: " + username));
-    }
-
-    private String getLoggedInUsername() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication != null && authentication.isAuthenticated()) {
-            return authentication.getName(); // Usually email
-        }
-        return null;
-    }
-
 
     // Method to authenticate a user
     public AuthenticationResponse authenticate(User request) {

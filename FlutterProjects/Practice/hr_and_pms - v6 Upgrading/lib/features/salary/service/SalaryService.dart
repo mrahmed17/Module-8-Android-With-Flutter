@@ -10,7 +10,9 @@ class SalaryService {
   Future<Salary?> calculateAndSaveSalary(int userId) async {
     final url = Uri.parse('$baseUrl/calculate/$userId');
     try {
-      final response = await http.post(url);
+      final response = await http.post(url, headers: {
+        'Content-Type': 'application/json',
+      },);
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         final data = jsonDecode(response.body);

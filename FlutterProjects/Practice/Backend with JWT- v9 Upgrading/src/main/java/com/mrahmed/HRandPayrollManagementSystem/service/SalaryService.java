@@ -35,43 +35,51 @@ public class SalaryService {
         return salaryRepository.save(salary);
     }
 
-    public Salary calculateSalary(Long userId) {
+    public Salary calculateSalary(Salary salaryId) {
         // Fetch user
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+        User user = userRepository.findById(salaryId.getId())
+                .orElseThrow(() -> new IllegalArgumentException("User not found with ID" + salaryId.getId()));
 
         double basicSalary = user.getBasicSalary();
+        System.out.println("Basic Salary: " + basicSalary);
 
         // 1. Deduct Advance Salary
         double totalAdvance = advanceSalaryRepository.findByUserAndIsPaidTrue(user)
                 .stream()
                 .mapToDouble(AdvanceSalary::getAdvanceAmount)
                 .sum();
+        System.out.println("Total Advance: " + totalAdvance);
 
         // 2. Add Bonuses
         double totalBonus = bonusRepository.findByUserAndSalaryIsNull(user)
                 .stream()
                 .mapToDouble(Bonus::getBonusAmount)
                 .sum();
+        System.out.println("Total Bonus: " + totalBonus);
 
         // 3. Add Overtime Payments
         double overtimePayment = attendanceRepository.findByUserAndSalaryIsNull(user)
                 .stream()
                 .mapToDouble(this::calculateOvertimePayment)
                 .sum();
+        System.out.println("Total Overtime: " + overtimePayment);
 
         // 4. Deduct Leave Deductions
         double leaveDeduction = leaveRepository.findByUserAndSalaryIsNull(user)
                 .stream()
                 .mapToDouble(leave -> calculateLeaveDeduction(leave, basicSalary / 30)) // Assuming 30 days in a month
                 .sum();
+        System.out.println("Total Leave Deduction: " + leaveDeduction);
 
         // 5. Apply Taxes and Provident Fund
         double tax = calculateTax(basicSalary); // Example: Flat rate or tiered system
         double providentFund = calculateProvidentFund(basicSalary); // Example: 10% of basic salary
+        System.out.println("Total Tax: " + tax);
+        System.out.println("Total Provident Fund: " + providentFund);
 
         // Calculate net salary
         double netSalary = basicSalary - totalAdvance + totalBonus + overtimePayment - leaveDeduction - tax - providentFund;
+        System.out.println("Net Salary: " + netSalary);
 
         // Create Salary entity
         Salary salary = new Salary();

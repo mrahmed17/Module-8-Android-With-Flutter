@@ -1,6 +1,7 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/cupertino.dart';
 
+import '../../../../constants/colors.dart';
 import '../../../../constants/image_strings.dart';
 
 class CarouselDashboard extends StatelessWidget {

@@ -1,18 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:pdf/widgets.dart' as pw; // for PDF generation
-// for rootBundle
 import 'package:path_provider/path_provider.dart'; // for getting file paths
 import 'dart:io';
 import 'package:csv/csv.dart';
 
-class PayslipPage extends StatefulWidget {
-  const PayslipPage({super.key});
+class PaySlipScreen extends StatefulWidget {
+  const PaySlipScreen({super.key});
 
   @override
-  _PayslipPageState createState() => _PayslipPageState();
+  _PaySlipScreenState createState() => _PaySlipScreenState();
 }
 
-class _PayslipPageState extends State<PayslipPage> {
+class _PaySlipScreenState extends State<PaySlipScreen> {
   final TextEditingController _basicSalaryController = TextEditingController();
   double basicSalary = 6500;
   double houseRentAllowance = 0.0;
@@ -161,10 +160,10 @@ class _PayslipPageState extends State<PayslipPage> {
         build: (pw.Context context) => pw.Column(
           crossAxisAlignment: pw.CrossAxisAlignment.start,
           children: [
-            pw.Text("Payslip for September 2024"),
+            pw.Text("Payslip for November 2024"),
             pw.SizedBox(height: 16),
-            pw.Text("Employee Name: Albina Simonis"),
-            pw.Text("Position: Nurse"),
+            pw.Text("Employee Name: Rezvi"),
+            pw.Text("Position: IT Officer"),
             pw.Text("Employee ID: NS-0001"),
             pw.SizedBox(height: 16),
             pw.Text("Earnings:"),
@@ -207,21 +206,22 @@ class HeaderSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Image.asset('assets/img/logo-dark.png', height: 60),
+        Image.asset('assets/images/carousel/bonus.jpg', height: 100, width: 200,),
         SizedBox(height: 8.0),
         Text(
-          'PreClinic',
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          'Kormi Seba',
+          style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold, color: Colors.teal),
+          textAlign: TextAlign.center,
         ),
-        Text('3864 Quiet Valley Lane,'),
-        Text('Sherman Oaks, CA, 91403'),
+        Text('38, IsDB Bhavan, Agargaon'),
+        Text('North Dhaka, Dhaka, Bangladesh'),
         SizedBox(height: 16.0),
         Text(
-          'Payslip for the month of September 2024',
+          'Payslip for the month of $DateTime',
           style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
         ),
         SizedBox(height: 4.0),
-        Text('Payslip #49029 | Salary Month: August, 2024'),
+        Text('Payslip #49029 | Salary Month: November, 2024'),
       ],
     );
   }
@@ -240,12 +240,12 @@ class EmployeeDetails extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Albina Simonis',
+              'Rezvi',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
-            Text('Nurse'),
+            Text('IT Officer'),
             Text('Employee ID: NS-0001'),
-            Text('Joining Date: 7 May 2023'),
+            Text('Joining Date: 7 June, 2024'),
           ],
         ),
       ),
@@ -271,14 +271,59 @@ class EarningsTable extends StatelessWidget {
               'Earnings',
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
-            SizedBox(height: 8.0),
             Table(
+              border: TableBorder.all(),
               children: [
-                TableRow(children: [Text("Basic Salary"), Text(basicSalary.toString())]),
-                TableRow(children: [Text("House Rent Allowance (H.R.A.)"), Text(houseRentAllowance.toString())]),
-                TableRow(children: [Text("Conveyance"), Text(conveyance.toString())]),
-                TableRow(children: [Text("Other Allowance"), Text(otherAllowance.toString())]),
-                TableRow(children: [Text("Total Earnings"), Text(totalEarnings.toString())]),
+                TableRow(children: [
+                  TableCell(child: Padding(
+                    padding: EdgeInsets.all(8.0),
+                    child: Text('Basic Salary', style: TextStyle(fontSize: 14)),
+                  )),
+                  TableCell(child: Padding(
+                    padding: EdgeInsets.all(8.0),
+                    child: Text('\$' + basicSalary.toString(), style: TextStyle(fontSize: 14)),
+                  )),
+                ]),
+                TableRow(children: [
+                  TableCell(child: Padding(
+                    padding: EdgeInsets.all(8.0),
+                    child: Text('House Rent Allowance (H.R.A.)', style: TextStyle(fontSize: 14)),
+                  )),
+                  TableCell(child: Padding(
+                    padding: EdgeInsets.all(8.0),
+                    child: Text('\$' + houseRentAllowance.toString(), style: TextStyle(fontSize: 14)),
+                  )),
+                ]),
+                TableRow(children: [
+                  TableCell(child: Padding(
+                    padding: EdgeInsets.all(8.0),
+                    child: Text('Conveyance', style: TextStyle(fontSize: 14)),
+                  )),
+                  TableCell(child: Padding(
+                    padding: EdgeInsets.all(8.0),
+                    child: Text('\$' + conveyance.toString(), style: TextStyle(fontSize: 14)),
+                  )),
+                ]),
+                TableRow(children: [
+                  TableCell(child: Padding(
+                    padding: EdgeInsets.all(8.0),
+                    child: Text('Other Allowance', style: TextStyle(fontSize: 14)),
+                  )),
+                  TableCell(child: Padding(
+                    padding: EdgeInsets.all(8.0),
+                    child: Text('\$' + otherAllowance.toString(), style: TextStyle(fontSize: 14)),
+                  )),
+                ]),
+                TableRow(children: [
+                  TableCell(child: Padding(
+                    padding: EdgeInsets.all(8.0),
+                    child: Text('Total Earnings', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
+                  )),
+                  TableCell(child: Padding(
+                    padding: EdgeInsets.all(8.0),
+                    child: Text('\$' + totalEarnings.toString(), style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
+                  )),
+                ]),
               ],
             ),
           ],
@@ -306,14 +351,59 @@ class DeductionsTable extends StatelessWidget {
               'Deductions',
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
-            SizedBox(height: 8.0),
             Table(
+              border: TableBorder.all(),
               children: [
-                TableRow(children: [Text("Tax Deducted at Source (T.D.S.)"), Text(tds.toString())]),
-                TableRow(children: [Text("Provident Fund"), Text(providentFund.toString())]),
-                TableRow(children: [Text("ESI"), Text(esi.toString())]),
-                TableRow(children: [Text("Loan"), Text(loan.toString())]),
-                TableRow(children: [Text("Total Deductions"), Text(totalDeductions.toString())]),
+                TableRow(children: [
+                  TableCell(child: Padding(
+                    padding: EdgeInsets.all(8.0),
+                    child: Text('Tax Deducted at Source (T.D.S.)', style: TextStyle(fontSize: 14)),
+                  )),
+                  TableCell(child: Padding(
+                    padding: EdgeInsets.all(8.0),
+                    child: Text('\$' + tds.toString(), style: TextStyle(fontSize: 14)),
+                  )),
+                ]),
+                TableRow(children: [
+                  TableCell(child: Padding(
+                    padding: EdgeInsets.all(8.0),
+                    child: Text('Provident Fund', style: TextStyle(fontSize: 14)),
+                  )),
+                  TableCell(child: Padding(
+                    padding: EdgeInsets.all(8.0),
+                    child: Text('\$' + providentFund.toString(), style: TextStyle(fontSize: 14)),
+                  )),
+                ]),
+                TableRow(children: [
+                  TableCell(child: Padding(
+                    padding: EdgeInsets.all(8.0),
+                    child: Text('ESI', style: TextStyle(fontSize: 14)),
+                  )),
+                  TableCell(child: Padding(
+                    padding: EdgeInsets.all(8.0),
+                    child: Text('\$' + esi.toString(), style: TextStyle(fontSize: 14)),
+                  )),
+                ]),
+                TableRow(children: [
+                  TableCell(child: Padding(
+                    padding: EdgeInsets.all(8.0),
+                    child: Text('Loan', style: TextStyle(fontSize: 14)),
+                  )),
+                  TableCell(child: Padding(
+                    padding: EdgeInsets.all(8.0),
+                    child: Text('\$' + loan.toString(), style: TextStyle(fontSize: 14)),
+                  )),
+                ]),
+                TableRow(children: [
+                  TableCell(child: Padding(
+                    padding: EdgeInsets.all(8.0),
+                    child: Text('Total Deductions', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
+                  )),
+                  TableCell(child: Padding(
+                    padding: EdgeInsets.all(8.0),
+                    child: Text('\$' + totalDeductions.toString(), style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
+                  )),
+                ]),
               ],
             ),
           ],
@@ -343,8 +433,8 @@ class NetSalary extends StatelessWidget {
             ),
             SizedBox(height: 8.0),
             Text(
-              '\$$netSalary',
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              '\$' + netSalary.toString(),
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
           ],
         ),

@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
+import 'package:payroll_app/src/features/core/controllers/profile_controller/profile_controller.dart';
 import 'package:payroll_app/src/features/employee/controller/employee_controller.dart';
 import 'package:payroll_app/src/features/employee/model/employee.dart';
 import 'package:payroll_app/src/repository/authentication/authentication_repository.dart';

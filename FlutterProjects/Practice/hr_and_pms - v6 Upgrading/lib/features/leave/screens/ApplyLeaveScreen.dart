@@ -38,7 +38,7 @@ class _ApplyLeaveScreenState extends State<ApplyLeaveScreen> {
       }
 
       if (_startDate!.isBefore(DateTime.now())) {
-        _showSnackBar('Start date cannot be in the past', Colors.red);
+        _showSnackBar('Start date cannot be in the present', Colors.red);
         return;
       }
 
@@ -62,7 +62,8 @@ class _ApplyLeaveScreenState extends State<ApplyLeaveScreen> {
         _showSnackBar('Leave request submitted successfully', Colors.green);
         Navigator.pop(context, true);
       } catch (e) {
-        _showSnackBar('Failed to submit leave request: ${e.toString()}', Colors.red);
+        _showSnackBar(
+            'Failed to submit leave request: ${e.toString()}', Colors.red);
       } finally {
         setState(() => _isLoading = false);
       }
@@ -81,7 +82,8 @@ class _ApplyLeaveScreenState extends State<ApplyLeaveScreen> {
       appBar: AppBar(
         title: const Text(
           'Request Leave',
-          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white),
+          style: TextStyle(
+              fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white),
         ),
         backgroundColor: Colors.teal,
         centerTitle: true,
@@ -124,21 +126,27 @@ class _ApplyLeaveScreenState extends State<ApplyLeaveScreen> {
                           TextFormField(
                             decoration: InputDecoration(
                               labelText: 'Reason',
-                              prefixIcon: const Icon(Icons.edit, color: Colors.teal),
-                              labelStyle: const TextStyle(fontSize: 16, color: Colors.teal),
+                              prefixIcon:
+                                  const Icon(Icons.edit, color: Colors.teal),
+                              labelStyle: const TextStyle(
+                                  fontSize: 16, color: Colors.teal),
                               enabledBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(15),
-                                borderSide: const BorderSide(color: Colors.teal),
+                                borderSide:
+                                    const BorderSide(color: Colors.teal),
                               ),
                               focusedBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(15),
-                                borderSide: const BorderSide(color: Colors.teal, width: 2),
+                                borderSide: const BorderSide(
+                                    color: Colors.teal, width: 2),
                               ),
                             ),
                             onSaved: (value) => _reason = value,
                             validator: (value) {
-                              if (value == null || value.isEmpty) return 'Please enter a reason';
-                              if (value.length > 250) return 'Reason should not exceed 250 characters';
+                              if (value == null || value.isEmpty)
+                                return 'Please enter a reason';
+                              if (value.length > 250)
+                                return 'Reason should not exceed 250 characters';
                               return null;
                             },
                           ),
@@ -149,9 +157,11 @@ class _ApplyLeaveScreenState extends State<ApplyLeaveScreen> {
                               _startDate != null
                                   ? DateFormat('yyyy-MM-dd').format(_startDate!)
                                   : 'Select Start Date',
-                              style: const TextStyle(fontSize: 16, color: Colors.black54),
+                              style: const TextStyle(
+                                  fontSize: 16, color: Colors.black54),
                             ),
-                            trailing: const Icon(Icons.date_range, color: Colors.teal),
+                            trailing: const Icon(Icons.date_range,
+                                color: Colors.teal),
                             onTap: () async {
                               DateTime? picked = await showDatePicker(
                                 context: context,
@@ -171,13 +181,17 @@ class _ApplyLeaveScreenState extends State<ApplyLeaveScreen> {
                               _endDate != null
                                   ? DateFormat('yyyy-MM-dd').format(_endDate!)
                                   : 'Select End Date',
-                              style: const TextStyle(fontSize: 16, color: Colors.black54),
+                              style: const TextStyle(
+                                  fontSize: 16, color: Colors.black54),
                             ),
-                            trailing: const Icon(Icons.date_range, color: Colors.teal),
+                            trailing: const Icon(Icons.date_range,
+                                color: Colors.teal),
                             onTap: () async {
+                              DateTime initialDate =
+                                  _endDate ?? _startDate ?? DateTime.now();
                               DateTime? picked = await showDatePicker(
                                 context: context,
-                                initialDate: _endDate ?? DateTime.now(),
+                                initialDate: initialDate,
                                 firstDate: _startDate ?? DateTime.now(),
                                 lastDate: DateTime(2100),
                               );
@@ -185,6 +199,17 @@ class _ApplyLeaveScreenState extends State<ApplyLeaveScreen> {
                                 setState(() => _endDate = picked);
                               }
                             },
+                            // onTap: () async {
+                            //   DateTime? picked = await showDatePicker(
+                            //     context: context,
+                            //     initialDate: _endDate ?? DateTime.now(),
+                            //     firstDate: _startDate ?? DateTime.now(),
+                            //     lastDate: DateTime(2100),
+                            //   );
+                            //   if (picked != null) {
+                            //     setState(() => _endDate = picked);
+                            //   }
+                            // },
                           ),
                           const Divider(color: Colors.teal),
                           const SizedBox(height: 16),
@@ -194,7 +219,9 @@ class _ApplyLeaveScreenState extends State<ApplyLeaveScreen> {
                             onChanged: (LeaveType? newValue) {
                               setState(() => _leaveType = newValue);
                             },
-                            items: LeaveType.values.map<DropdownMenuItem<LeaveType>>((LeaveType value) {
+                            items: LeaveType.values
+                                .map<DropdownMenuItem<LeaveType>>(
+                                    (LeaveType value) {
                               return DropdownMenuItem<LeaveType>(
                                 value: value,
                                 child: Text(value.toShortString()),
@@ -202,18 +229,24 @@ class _ApplyLeaveScreenState extends State<ApplyLeaveScreen> {
                             }).toList(),
                             decoration: InputDecoration(
                               labelText: 'Leave Type',
-                              prefixIcon: const Icon(Icons.category, color: Colors.teal),
-                              labelStyle: const TextStyle(fontSize: 16, color: Colors.teal),
+                              prefixIcon: const Icon(Icons.category,
+                                  color: Colors.teal),
+                              labelStyle: const TextStyle(
+                                  fontSize: 16, color: Colors.teal),
                               enabledBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(15),
-                                borderSide: const BorderSide(color: Colors.teal),
+                                borderSide:
+                                    const BorderSide(color: Colors.teal),
                               ),
                               focusedBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(15),
-                                borderSide: const BorderSide(color: Colors.teal, width: 2),
+                                borderSide: const BorderSide(
+                                    color: Colors.teal, width: 2),
                               ),
                             ),
-                            validator: (value) => value == null ? 'Please select a leave type' : null,
+                            validator: (value) => value == null
+                                ? 'Please select a leave type'
+                                : null,
                           ),
                           const SizedBox(height: 20),
                           ElevatedButton(
@@ -227,7 +260,8 @@ class _ApplyLeaveScreenState extends State<ApplyLeaveScreen> {
                             ),
                             child: const Text(
                               'Submit Leave Request',
-                              style: TextStyle(fontSize: 18, color: Colors.white),
+                              style:
+                                  TextStyle(fontSize: 18, color: Colors.white),
                             ),
                           ),
                         ],

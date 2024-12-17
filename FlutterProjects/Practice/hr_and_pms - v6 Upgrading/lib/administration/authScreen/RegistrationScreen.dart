@@ -10,6 +10,7 @@ import 'package:http/http.dart' as http;
 import 'package:flutter/foundation.dart';
 import 'package:image_picker_web/image_picker_web.dart';
 
+
 class RegistrationScreen extends StatefulWidget {
   const RegistrationScreen({super.key});
 
@@ -184,7 +185,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Image.asset(
-                      'assets/images/profile_demo/profile.png',
+                      'assets/images/carousel/hr management.jpg',
                       height: 200,
                       width: 200,
                       fit: BoxFit.cover,

@@ -190,7 +190,7 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
                   ),
                 ),
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 135),
               ElevatedButton(
                 onPressed: _checkOut,
                 style: ElevatedButton.styleFrom(

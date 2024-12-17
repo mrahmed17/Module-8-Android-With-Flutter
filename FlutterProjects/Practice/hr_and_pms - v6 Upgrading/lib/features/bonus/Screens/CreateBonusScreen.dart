@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:hr_and_pms/administration/model/User.dart';
-import 'package:hr_and_pms/administration/service/AuthService.dart';
+import 'package:hr_and_pms/administration/service/UserService.dart';
 import 'package:hr_and_pms/features/bonus/model/Bonus.dart';
 import 'package:hr_and_pms/features/bonus/model/BonusType.dart';
 import 'package:hr_and_pms/features/bonus/service/BonusService.dart';
@@ -18,7 +18,7 @@ class _CreateBonusScreenState extends State<CreateBonusScreen> {
   double? _bonusAmount;
   User? _selectedEmployee;
   BonusType? _selectedBonusType;
-  final AuthService _authService = AuthService();
+  final UserService _userService = UserService();
   final BonusService _bonusService = BonusService();
   List<User> _employees = [];
 
@@ -30,7 +30,7 @@ class _CreateBonusScreenState extends State<CreateBonusScreen> {
 
   Future<void> _fetchEmployees() async {
     try {
-      _employees = await _authService.getAllUsers();
+      _employees = await _userService.getAllEmployees();
       setState(() {});
     } catch (e) {
       print("Error fetching employees: $e");

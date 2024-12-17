@@ -1,14 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:hr_and_pms/administration/model/User.dart';
+import 'package:hr_and_pms/administration/screens/UserListScreen.dart';
+import 'package:hr_and_pms/administration/screens/UserProfileScreen.dart';
 import 'package:hr_and_pms/features/advanceSalary/Screens/AdvanceSalaryManagementScreen.dart';
 import 'package:hr_and_pms/features/attendance/screens/AttendanceReportScreen.dart';
 import 'package:hr_and_pms/features/bonus/Screens/CreateBonusScreen.dart';
 import 'package:hr_and_pms/features/bonus/Screens/BonusManagementScreen.dart';
 import 'package:hr_and_pms/features/leave/screens/LeaveManagementScreen.dart';
+import 'package:hr_and_pms/features/paySlip/screens/CreatePaySlipScreen.dart';
+import 'package:hr_and_pms/features/paySlip/screens/PaySlipScreen.dart';
+import 'package:hr_and_pms/features/salary/screens/SalaryCalculationScreen.dart';
 import 'package:hr_and_pms/features/salary/screens/SalaryCreateScreen.dart';
-import 'package:intl/intl.dart';
 import 'package:hr_and_pms/administration/authScreen/LoginScreen.dart';
 import 'package:hr_and_pms/administration/service/AuthService.dart';
+import 'package:hr_and_pms/features/salary/screens/SalaryReportManagementScreen.dart';
+import 'package:hr_and_pms/notification/NotificationScreen.dart';
 
 class ManagerDashboardScreen extends StatefulWidget {
   const ManagerDashboardScreen({super.key});
@@ -18,10 +24,12 @@ class ManagerDashboardScreen extends StatefulWidget {
 }
 
 class _ManagerDashboardScreenState extends State<ManagerDashboardScreen> {
-  int _selectedIndex = 0;
   User? _currentUser;
+  int _selectedIndex = 0;
 
-  // Welcome message and current time
+  final List<Widget> _screens = [];
+
+  // Welcome message based on time
   String getWelcomeMessage() {
     final hour = DateTime.now().hour;
     if (hour < 12) {
@@ -33,39 +41,28 @@ class _ManagerDashboardScreenState extends State<ManagerDashboardScreen> {
     }
   }
 
-  // Navigation items for the BottomNavigationBar
-  final List<Map<String, dynamic>> _navItems = [
-    {'icon': Icons.home, 'label': 'Home', 'screen': ()},
-    {'icon': Icons.work_off, 'label': 'Leave', 'screen': ()},
-    {'icon': Icons.feedback, 'label': 'Feedback', 'screen': ()},
-    {'icon': Icons.person, 'label': 'Profile', 'screen': ()},
-    {'icon': Icons.logout, 'label': 'Logout', 'screen': ()},
-  ];
-
-  // Fetch the screens from the navigation items
-  List<Widget> get _screens =>
-      _navItems.map((item) => item['screen'] as Widget).toList();
-
-  // Fetch user and authentication state
   @override
   void initState() {
     super.initState();
     _fetchCurrentUser();
     _checkAuthentication();
+    _screens.addAll([
+      ManagerDashboardScreenContent(parentContext: context),
+      const UserProfileScreen(),
+      const NotificationScreen(),
+    ]);
   }
 
   Future<void> _fetchCurrentUser() async {
     try {
       final user = await AuthService().getUser();
-      if (user != null) {
-        setState(() {
-          _currentUser = user as User?;
-        });
-      } else {
-        print('No user data available');
-      }
+      setState(() {
+        _currentUser = user as User?;
+      });
     } catch (e) {
-      print('Error fetching user data: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error fetching user data: $e')),
+      );
     }
   }
 
@@ -79,35 +76,45 @@ class _ManagerDashboardScreenState extends State<ManagerDashboardScreen> {
   }
 
   Future<void> _logout() async {
-    final confirm = await showDialog(
+    final result = await showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Logout'),
-        content: const Text('Are you sure you want to logout?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('Cancel'),
-          ),
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(true),
-            child: const Text('Logout'),
-          ),
-        ],
-      ),
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Logout Confirmation'),
+          content: const Text('Are you sure you want to log out?'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context, false),
+              style: ElevatedButton.styleFrom(backgroundColor: Colors.white),
+              child: const Text(
+                'Cancel',
+                style: TextStyle(color: Colors.teal),
+              ),
+            ),
+            ElevatedButton(
+              onPressed: () => Navigator.pop(context, true),
+              style: ElevatedButton.styleFrom(backgroundColor: Colors.white),
+              child: const Text(
+                'Logout',
+                style: TextStyle(color: Colors.redAccent),
+              ),
+            ),
+          ],
+        );
+      },
     );
 
-    if (confirm) {
+    if (result == true) {
       await AuthService().logout();
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => LoginScreen()),
+        MaterialPageRoute(builder: (context) => const LoginScreen()),
       );
     }
   }
 
   void _onItemTapped(int index) {
-    if (index == 4) {
+    if (index == 3) {
       _logout();
     } else {
       setState(() {
@@ -116,116 +123,213 @@ class _ManagerDashboardScreenState extends State<ManagerDashboardScreen> {
     }
   }
 
-  // Build the live clock widget
-  Widget _buildClock() {
-    return StreamBuilder<DateTime>(
-      stream: Stream.periodic(const Duration(seconds: 1), (_) => DateTime.now()),
-      builder: (context, snapshot) {
-        if (snapshot.hasData) {
-          return Text(
-            DateFormat('EEEE, MMMM d, yyyy • h:mm:ss a').format(snapshot.data!),
-            style: const TextStyle(fontSize: 14, color: Colors.teal, fontWeight: FontWeight.bold),
-          );
-        }
-        return const CircularProgressIndicator();
-      },
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text(
+          'Manager Dashboard',
+          style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
+        ),
+        backgroundColor: Colors.teal,
+        centerTitle: true,
+      ),
+      body: _screens[_selectedIndex],
+      bottomNavigationBar: BottomNavigationBar(
+        backgroundColor: Colors.white,
+        selectedItemColor: Colors.teal,
+        unselectedItemColor: Colors.grey,
+        currentIndex: _selectedIndex,
+        onTap: _onItemTapped,
+        items: const [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.dashboard),
+            label: 'Dashboard',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person),
+            label: 'Profile',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.doorbell_outlined),
+            label: 'Notification',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.logout),
+            label: 'Logout',
+          ),
+        ],
+      ),
     );
   }
+}
 
-  Widget _buildDashboardGrid(BuildContext context) {
-    final List<Map<String, dynamic>> features = [
-      {'icon': Icons.access_time, 'label': 'Attendance Management', 'screen': AttendanceReportScreen()},
-      {'icon': Icons.manage_history_outlined, 'label': 'Leave Management', 'screen': LeaveManagementScreen()},
-      {'icon': Icons.money, 'label': 'Advance Management', 'screen':AdvanceSalaryManagementScreen()},
-      {'icon': Icons.currency_exchange, 'label': 'Create Bonus', 'screen': CreateBonusScreen()},
-      {'icon': Icons.currency_exchange_rounded, 'label': 'Bonus Management', 'screen': BonusManagementScreen()},
-      {'icon': Icons.money, 'label': 'Salary Create', 'screen': SalaryCreateScreen()},
-      {'icon': Icons.history, 'label': 'Coming soon', 'screen': Container()},
-      {'icon': Icons.history, 'label': 'Coming soon', 'screen': Container()},
-      {'icon': Icons.history, 'label': 'Coming soon', 'screen': Container()},
-      {'icon': Icons.history, 'label': 'Coming soon', 'screen': Container()},
-      // Add more features as required
-    ];
+class ManagerDashboardScreenContent extends StatelessWidget {
+  final BuildContext parentContext;
 
-    return Expanded(
-      child: GridView.builder(
+  const ManagerDashboardScreenContent({super.key, required this.parentContext});
+
+  Widget _buildAnimatedFeatureCard({
+    required IconData icon,
+    required String label,
+    required String subtitle,
+    required Color color,
+    required Widget screen,
+  }) {
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          parentContext, // Use the parent context
+          MaterialPageRoute(builder: (context) => screen),
+        );
+      },
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 300),
+        margin: const EdgeInsets.symmetric(vertical: 8),
         padding: const EdgeInsets.all(16),
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 2,
-          mainAxisSpacing: 16,
-          crossAxisSpacing: 16,
-          childAspectRatio: 1,
-        ),
-        itemCount: features.length,
-        itemBuilder: (context, index) {
-          return GestureDetector(
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => features[index]['screen'],
-                ),
-              );
-            },
-            child: Card(
-              elevation: 4,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(features[index]['icon'], size: 40),
-                  const SizedBox(height: 8),
-                  Text(features[index]['label'], style: const TextStyle(fontSize: 16)),
-                ],
-              ),
+        decoration: BoxDecoration(
+          color: color.withOpacity(0.1),
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: color.withOpacity(0.2),
+              blurRadius: 8,
+              offset: const Offset(2, 4),
             ),
-          );
-        },
+          ],
+        ),
+        child: Row(
+          children: [
+            CircleAvatar(
+              radius: 30,
+              backgroundColor: color.withOpacity(0.8),
+              child: Icon(icon, size: 30, color: Colors.white),
+            ),
+            const SizedBox(width: 16),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  label,
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: color,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  subtitle,
+                  style: const TextStyle(
+                    fontSize: 14,
+                    color: Colors.grey,
+                  ),
+                ),
+              ],
+            ),
+            const Spacer(),
+            Icon(Icons.arrow_forward_ios, size: 16, color: color),
+          ],
+        ),
       ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Manager Dashboard', style: TextStyle( fontSize: 30,
-          fontWeight: FontWeight.bold,
-          color: Colors.white,),),
-        backgroundColor: Colors.teal,
-        centerTitle: true,
-      ),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  '${getWelcomeMessage()}, ${_currentUser?.name ?? 'Manager'}',
-                  style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w800, color: Colors.teal),
-                ),
-                _buildClock(),
-              ],
-            ),
-          ),
-          _buildDashboardGrid(context),
-        ],
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: Colors.white,
-        selectedItemColor: Colors.teal,
-        unselectedItemColor: Colors.grey,
-        items: _navItems
-            .map((item) => BottomNavigationBarItem(
-          icon: Icon(item['icon']),
-          label: item['label'],
-        ))
-            .toList(),
-        currentIndex: _selectedIndex,
-        onTap: _onItemTapped,
+    final List<Map<String, dynamic>> features = [
+      {
+        'icon': Icons.access_time,
+        'label': 'Employee Management',
+        'subtitle': 'View All Employee',
+        'color': Colors.cyan,
+        'screen': UserListScreen(),
+      },{
+        'icon': Icons.access_time,
+        'label': 'Attendance Management',
+        'subtitle': 'View attendance reports',
+        'color': Colors.teal,
+        'screen': AttendanceReportScreen(),
+      },
+      {
+        'icon': Icons.manage_history_outlined,
+        'label': 'Leave Management',
+        'subtitle': 'Manage leave requests',
+        'color': Colors.orange,
+        'screen': LeaveManagementScreen(),
+      },
+      {
+        'icon': Icons.money,
+        'label': 'Advance Management',
+        'subtitle': 'Manage advance salary',
+        'color': Colors.blue,
+        'screen': AdvanceSalaryManagementScreen(),
+      },
+      {
+        'icon': Icons.currency_exchange,
+        'label': 'Create Bonus',
+        'subtitle': 'Add employee bonuses',
+        'color': Colors.green,
+        'screen': CreateBonusScreen(),
+      },
+      {
+        'icon': Icons.currency_exchange_rounded,
+        'label': 'Bonus Report',
+        'subtitle': 'View or update bonuses',
+        'color': Colors.purple,
+        'screen': BonusManagementScreen(),
+      },
+      {
+        'icon': Icons.money,
+        'label': 'Create Salary',
+        'subtitle': 'Generate salaries',
+        'color': Colors.red,
+        'screen': SalaryCreateScreen(),
+      },
+      {
+        'icon': Icons.money,
+        'label': 'Salary Report',
+        'subtitle': 'Salaries History',
+        'color': Colors.green,
+        'screen': SalaryReportManagementScreen(),
+      },
+      {
+        'icon': Icons.money,
+        'label': 'Create Payslip',
+        'subtitle': 'Generate Payslip',
+        'color': Colors.teal,
+        'screen': PaySlipScreen(),
+      },
+      {
+        'icon': Icons.money,
+        'label': 'Calculate Salary',
+        'subtitle': 'Generate salaries',
+        'color': Colors.indigo,
+        'screen': SalaryCalculationScreen(),
+      },
+      {
+        'icon': Icons.newspaper,
+        'label': 'Create Salary',
+        'subtitle': 'Generate salaries',
+        'color': Colors.deepOrangeAccent,
+        'screen': CreatePaySlipScreen(),
+      },
+    ];
+
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: ListView.builder(
+        itemCount: features.length,
+        itemBuilder: (context, index) {
+          final feature = features[index];
+          return _buildAnimatedFeatureCard(
+            icon: feature['icon'],
+            label: feature['label'],
+            subtitle: feature['subtitle'],
+            color: feature['color'],
+            screen: feature['screen'],
+          );
+        },
       ),
     );
   }

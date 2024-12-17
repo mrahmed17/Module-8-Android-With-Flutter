@@ -9,13 +9,12 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.io.IOException;
+import java.util.List;
 
 @Service
 public class UserService implements UserDetailsService {
@@ -26,14 +25,15 @@ public class UserService implements UserDetailsService {
     @Autowired
     private PhotoService photoService;
 
-    public String saveProfileImage(MultipartFile file, String fullName) throws IOException {
-        return photoService.savePhoto(file, fullName, "profilePhotos");
+    // Load user by username for Spring Security
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        return userRepository.findByEmail(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with this username: " + username));
     }
 
-
-    public User findUserById(Long id) {
-        return userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("User Not Found"));
+    public String saveProfileImage(MultipartFile file, String fullName) throws IOException {
+        return photoService.savePhoto(file, fullName, "profilePhotos");
     }
 
     // update registration user
@@ -56,48 +56,50 @@ public class UserService implements UserDetailsService {
         userRepository.save(existingUser);
     }
 
-    // Fetch all managers with pagination
-    public Page<User> getAllManagers(Pageable pageable) {
-        return userRepository.findAllByRole(Role.MANAGER, pageable);
+    public User findUserById(Long id) {
+        return userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("User Not Found"));
     }
 
-    // Fetch all employees with pagination
-    public Page<User> getAllEmployees(Pageable pageable) {
-        return userRepository.findAllByRole(Role.EMPLOYEE, pageable);
+    // Fetch all managers with 
+    public List<User> getAllManagers() {
+        return userRepository.findAllByRole(Role.MANAGER);
     }
 
-
-    // Load user by username for Spring Security
-    @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return userRepository.findByEmail(username)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found with this username: " + username));
+    // Fetch all employees with 
+    public List<User> getAllEmployees() {
+        return userRepository.findAllByRole(Role.EMPLOYEE);
+    }
+//
+//    // Search users by a partial or full name match
+//    public List<User> searchUsersByName(String name ) {
+//        return userRepository.findByFullNameContaining(name);
+//    }
+//
+//    // Fetch users by gender with
+//    public List<User> getUsersByGender(String gender) {
+//        return userRepository.findByGender(gender);
+//    }
+//
+    // Fetch users by gender and name with
+    public List<User> getEmployeesByFilters(String name, String gender) {
+        return userRepository.findEmployeesByFilters(name, gender);
     }
 
+    // Fetch users by joined date with 
+    public List<User> getUsersByJoinedDate(LocalDate joinedDate ) {
+        return userRepository.findByJoinedDate(joinedDate);
+    }
 
     // Fetch users with a basic salary greater than or equal to a specified amount
-    public Page<User> getUsersWithSalaryGreaterThanOrEqual(double salary, Pageable pageable) {
-        return userRepository.findUsersWithSalaryGreaterThanOrEqual(salary, pageable);
+    public List<User> getUsersWithSalaryGreaterThanOrEqual(double salary) {
+        return userRepository.findUsersWithSalaryGreaterThanOrEqual(salary);
     }
 
     // Fetch users with a basic salary less than or equal to a specified amount
-    public Page<User> getUsersWithSalaryLessThanOrEqual(double salary, Pageable pageable) {
-        return userRepository.findUsersWithSalaryLessThanOrEqual(salary, pageable);
+    public List<User> getUsersWithSalaryLessThanOrEqual(double salary ) {
+        return userRepository.findUsersWithSalaryLessThanOrEqual(salary);
     }
 
-    // Search users by a partial or full name match
-    public Page<User> searchUsersByName(String name, Pageable pageable) {
-        return userRepository.findByFullNameContaining(name, pageable);
-    }
-
-    // Fetch users by gender with pagination
-    public Page<User> getUsersByGender(String gender, Pageable pageable) {
-        return userRepository.findByGender(gender, pageable);
-    }
-
-    // Fetch users by joined date with pagination
-    public Page<User> getUsersByJoinedDate(LocalDate joinedDate, Pageable pageable) {
-        return userRepository.findByJoinedDate(joinedDate, pageable);
-    }
 
 }

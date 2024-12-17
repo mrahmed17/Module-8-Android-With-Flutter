@@ -33,10 +33,10 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
 
   // Navigation items for the BottomNavigationBar
   final List<Map<String, dynamic>> _navItems = [
-    {'icon': Icons.home, 'label': 'Home', 'screen': AttendanceScreen()},
-    {'icon': Icons.work_off, 'label': 'Leave', 'screen': ApplyLeaveScreen()},
-    {'icon': Icons.feedback, 'label': 'Feedback', 'screen': Container()},
-    {'icon': Icons.person, 'label': 'Profile', 'screen': UserProfileScreen()},
+    {'icon': Icons.home, 'label': 'Home', 'screen': ()},
+    {'icon': Icons.work_off, 'label': 'Leave', 'screen': ()},
+    {'icon': Icons.feedback, 'label': 'Feedback', 'screen': ()},
+    {'icon': Icons.person, 'label': 'Profile', 'screen': ()},
     {'icon': Icons.logout, 'label': 'Logout', 'screen': ()},
   ];
 
@@ -122,7 +122,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
         if (snapshot.hasData) {
           return Text(
             DateFormat('EEEE, MMMM d, yyyy • h:mm:ss a').format(snapshot.data!),
-            style: const TextStyle(fontSize: 14, color: Colors.teal, fontWeight: FontWeight.bold),
+            style: const TextStyle(fontSize: 14, color: Colors.black87, fontWeight: FontWeight.bold),
           );
         }
         return const CircularProgressIndicator();
@@ -135,7 +135,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
       {'icon': Icons.access_time, 'label': 'Attendance', 'screen': AttendanceScreen()},
       {'icon': Icons.date_range, 'label': 'Apply Leave', 'screen': ApplyLeaveScreen()},
       {'icon': Icons.money, 'label': 'Apply Advance', 'screen': ApplyAdvanceSalaryScreen()},
-      {'icon': Icons.history, 'label': 'Coming soon', 'screen': Container()},
+      {'icon': Icons.person, 'label': 'Profile', 'screen': UserProfileScreen()},
       {'icon': Icons.history, 'label': 'Coming soon', 'screen': Container()},
       {'icon': Icons.history, 'label': 'Coming soon', 'screen': Container()},
       {'icon': Icons.history, 'label': 'Coming soon', 'screen': Container()},
@@ -187,7 +187,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Admin Dashboard', style: TextStyle( fontSize: 40,
+        title: const Text('Admin Dashboard', style: TextStyle( fontSize: 30,
           fontWeight: FontWeight.bold,
           color: Colors.white,),),
         backgroundColor: Colors.teal,
@@ -202,7 +202,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  '${getWelcomeMessage()}, ${_currentUser?.name ?? 'Admin'}',
+                  '${getWelcomeMessage()}, ${_currentUser?.name ?? 'Employee'}',
                   style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w800, color: Colors.teal),
                 ),
                 _buildClock(),

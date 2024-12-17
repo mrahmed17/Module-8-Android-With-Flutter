@@ -7,8 +7,11 @@ import 'package:get/get_core/src/get_main.dart';
 import 'package:payroll_app/src/constants/colors.dart';
 import 'package:payroll_app/src/constants/image_strings.dart';
 import 'package:payroll_app/src/constants/sizes.dart';
+import 'package:payroll_app/src/features/core/controllers/profile_controller/profile_controller.dart';
 import 'package:payroll_app/src/features/core/screens/profile/profile_menu_widget.dart';
 import 'package:payroll_app/src/features/core/screens/profile/update_profile_screen.dart';
+import 'package:payroll_app/src/features/employee/model/employee.dart';
+import 'package:payroll_app/src/features/employee/screen/employee_screen.dart';
 import 'package:payroll_app/src/repository/authentication/authentication_repository.dart';
 
 class ProfileScreen extends StatelessWidget {

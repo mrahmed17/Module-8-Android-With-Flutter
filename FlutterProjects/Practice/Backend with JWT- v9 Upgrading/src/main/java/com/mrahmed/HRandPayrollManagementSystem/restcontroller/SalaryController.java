@@ -18,39 +18,41 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/salaries")
 @CrossOrigin(origins = "*")
-public class SalaryRestController {
+public class SalaryController {
 
     @Autowired
     private SalaryService salaryService;
+
     @Autowired
     private BonusRepository bonusRepository;
+
     @Autowired
     private UserRepository userRepository;
 
-    @PostMapping("/calculate/{userId}")
-    public ResponseEntity<Salary> calculateAndSaveSalary(@PathVariable Long userId) {
-        try {
-            // Calculate salary
-            Salary salary = salaryService.calculateSalary(userId);
-
-            // Save the calculated salary
-            salary = salaryService.saveSalary(salary);
-
-            return ResponseEntity.ok(salary);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
-        }
-    }
-
 //    @PostMapping("/calculate/{userId}")
-//    public ResponseEntity<Salary> calculateSalary(@PathVariable Long userId) {
+//    public ResponseEntity<Salary> calculateAndSaveSalary(@PathVariable Long userId) {
 //        try {
+//            // Calculate salary
 //            Salary salary = salaryService.calculateSalary(userId);
+//
+//            // Save the calculated salary
+//            salary = salaryService.saveSalary(salary);
+//
 //            return ResponseEntity.ok(salary);
 //        } catch (Exception e) {
 //            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
 //        }
 //    }
+
+    @PostMapping("/calculate/{userId}")
+    public ResponseEntity<Salary> calculateSalary(@RequestBody Salary salaryId) {
+        try {
+            Salary salary = salaryService.calculateSalary(salaryId);
+            return ResponseEntity.ok(salary);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        }
+    }
 
 //    @PostMapping("/calculate/{userId}")
 //    public ResponseEntity<Salary> calculateAndSaveSalary(@PathVariable Long userId) {

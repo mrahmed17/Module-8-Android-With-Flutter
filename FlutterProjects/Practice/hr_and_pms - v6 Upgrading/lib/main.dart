@@ -8,7 +8,6 @@ void main() => runApp(MyApp());
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
@@ -18,22 +17,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.teal,
       ),
-      // home: AllDepartmentViewScreen(),
-      home: SplashScreen(),
-      // home: AdvanceSalaryFilterScreen(),
-      // home: AdvanceSalaryStatusScreen(userId: 3),
-      // home: CreateAdvanceSalaryScreen(),
-      // home: AdvanceSalaryStatusScreen(userId: 3, isEmployee: true),
-      // home: AdvanceSalaryHistoryScreen(userId: 3),
-      // home: PendingApplicationsScreen(),
-      // home: AdvanceSalaryApplyScreen(),
-      // home: HomeScreen(),
-      // home: DashboardScreen(),
-      // home: AttendanceScreen(attendanceService: AttendanceService()),
-      // home: ManagerDashboardScreen(),
-      // home: AdminDashboardScreen(),
-      // home: UserListScreen(),
-      // home: RegistrationScreen(),
+      home: SplashScreen()
       // home: LoginScreen(),
     );
   }
